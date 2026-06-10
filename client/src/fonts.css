@@ -1,0 +1,18 @@
+/* Geist Sans & Mono — variable faces + metric-adjusted fallbacks */
+@font-face {
+  font-family: 'Geist Fallback';
+  src: local('Arial');
+  size-adjust: 100.06%;
+  ascent-override: 95%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Geist Mono Fallback';
+  src: local('Courier New');
+  size-adjust: 100%;
+  ascent-override: 85%;
+  descent-override: 25%;
+  line-gap-override: 0%;
+}
