@@ -79,6 +79,9 @@ body{font-family:var(--font-geist-sans);background:var(--background);color:var(-
 .app-shell{display:flex;width:100%;min-height:100vh;position:relative;background:var(--background)}
 .app-init{display:flex;align-items:center;justify-content:center;width:100%;min-height:100vh;background:var(--background)}
 .app-init-spinner{width:32px;height:32px;border:3px solid var(--g200);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+.app-init-error{flex-direction:column;gap:12px;padding:24px;text-align:center;max-width:420px;margin:0 auto}
+.app-init-error-title{font-size:var(--text-lg);font-weight:800;color:var(--heading)}
+.app-init-error-msg{font-size:var(--text-sm);color:var(--g500);line-height:1.5;margin:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ═══ LOGIN ═══ */

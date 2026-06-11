@@ -8,7 +8,9 @@ async function request(path, options = {}) {
       ...options,
     });
   } catch {
-    throw new Error('Cannot reach API server. Run: npm run dev');
+    throw new Error(
+      'Cannot reach the API. If you are on the deployed site, redeploy after the latest fix. For local dev, run: npm run dev'
+    );
   }
 
   const text = await res.text();

@@ -41,7 +41,7 @@ function ProjectRouteSync() {
 }
 
 function AppShell() {
-  const { user, initializing, sidebarOpen, setSidebarOpen, sidebarCollapsed } = useApp();
+  const { user, initializing, initError, retryInit, sidebarOpen, setSidebarOpen, sidebarCollapsed } = useApp();
   const location = useLocation();
 
   useEffect(() => {
@@ -57,10 +57,22 @@ function AppShell() {
     };
   }, [sidebarOpen]);
 
-  if (initializing || !user) {
+  if (initializing) {
     return (
       <div className="app-init" aria-busy="true" aria-label="Loading application">
         <div className="app-init-spinner" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="app-init app-init-error">
+        <div className="app-init-error-title">Could not load VoltusWave ALM</div>
+        <p className="app-init-error-msg">{initError || 'Unable to connect to the API.'}</p>
+        <button type="button" className="btn btn-primary" onClick={retryInit}>
+          Retry
+        </button>
       </div>
     );
   }

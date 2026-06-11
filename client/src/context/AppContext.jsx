@@ -28,6 +28,7 @@ export function AppProvider({ children }) {
   const [assignCtx, setAssignCtx] = useState({ issueId: null, userId: null });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(readSidebarCollapsed);
+  const [initError, setInitError] = useState(null);
 
   const toggleSidebarCollapsed = useCallback(() => {
     setSidebarCollapsed((collapsed) => {
@@ -175,10 +176,13 @@ export function AppProvider({ children }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setInitError(null);
+      setInitializing(true);
       try {
         await login(DEFAULT_ROLE);
       } catch (e) {
         console.error('Failed to initialize session', e);
+        if (!cancelled) setInitError(e.message || 'Failed to connect to API');
       } finally {
         if (!cancelled) setInitializing(false);
       }
@@ -188,8 +192,22 @@ export function AppProvider({ children }) {
     };
   }, [login]);
 
+  const retryInit = useCallback(async () => {
+    setInitError(null);
+    setInitializing(true);
+    try {
+      await login(DEFAULT_ROLE);
+    } catch (e) {
+      setInitError(e.message || 'Failed to connect to API');
+    } finally {
+      setInitializing(false);
+    }
+  }, [login]);
+
   const value = {
     initializing,
+    initError,
+    retryInit,
     role,
     user,
     users,

@@ -2,6 +2,7 @@
   "name": "almsphere-enterprise",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "install:all": "npm install && npm install --prefix server && npm install --prefix client",
     "postinstall": "npm install --prefix client && npm install --prefix server",
@@ -16,5 +17,9 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
   }
 }
