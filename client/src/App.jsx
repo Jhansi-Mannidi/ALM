@@ -42,6 +42,21 @@ function ProjectRouteSync() {
 
 function AppShell() {
   const { user, initializing, sidebarOpen, setSidebarOpen, sidebarCollapsed } = useApp();
+  const location = useLocation();
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname, setSidebarOpen]);
+
+  useEffect(() => {
+    if (!sidebarOpen) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [sidebarOpen]);
+
   if (initializing || !user) {
     return (
       <div className="app-init" aria-busy="true" aria-label="Loading application">

@@ -878,7 +878,8 @@ a.iid.task-link:hover{text-decoration:underline}
 
 /* ═══ RESPONSIVE — MOBILE (≤768px) ═══ */
 @media (max-width:768px){
-  body{overflow:auto}
+  html,body{overflow-x:hidden;max-width:100%}
+  body{overflow:auto;-webkit-overflow-scrolling:touch}
   .menu-btn{display:flex}
   .sidebar{width:min(280px,88vw);transform:translateX(-100%);transition:transform .25s ease;z-index:200;box-shadow:none}
   .sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.35)}
@@ -889,22 +890,32 @@ a.iid.task-link:hover{text-decoration:underline}
   .app-shell.sidebar-collapsed .main{margin-left:0;width:100%}
   .sb-collapse-btn{display:none!important}
   .sidebar-close{display:flex;align-items:center;justify-content:center}
-  .main{margin-left:0;width:100%;height:auto;min-height:100vh}
+  .main{margin-left:0;width:100%;max-width:100%;height:auto;min-height:100vh;overflow:visible}
   .topbar{padding:0 14px;height:auto;min-height:44px;flex-wrap:wrap;gap:8px;padding-top:8px;padding-bottom:8px}
   .tb-right{flex-wrap:wrap}
   .tb-hide-mobile{display:none!important}
-  .proj-tabs-bar{padding:0 14px;gap:10px;min-height:36px}
-  .proj-tabs-project{max-width:120px;padding-right:10px;margin-right:0}
-  .proj-tab{padding:0 10px;font-size:11px}
+  .proj-tabs-bar{flex-wrap:wrap;padding:8px 14px;gap:8px;min-height:auto;align-items:center;max-width:100%;overflow:hidden}
+  .proj-tabs-project{flex:1 1 auto;min-width:0;max-width:none;border-right:none;margin-right:0;padding:0;order:1}
+  .proj-tabs-create{order:2;margin-left:0;flex-shrink:0}
+  .proj-tabs-wrap{order:3;flex:1 1 100%;width:100%;min-width:0;overflow:hidden}
+  .proj-tabs{width:100%;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .proj-tab{padding:8px 10px;font-size:11px;min-height:36px}
+  .proj-tab-icon{flex-shrink:0}
   .tb-btn-full{display:none}
   .tb-btn-short{display:inline}
-  .content{padding:14px 14px 24px}
-  .ph{flex-direction:row;align-items:flex-start;flex-wrap:nowrap}
-  .ph-actions{align-self:flex-start}
+  .content{padding:14px 14px 24px;overflow:visible;flex:none;max-width:100%}
+  .page-view{max-width:100%;overflow-x:hidden}
+  .ph{flex-wrap:wrap;align-items:flex-start}
+  .ph-actions{align-self:flex-start;margin-left:0}
   .ph .fx{flex-wrap:wrap}
   .g2,.g3,.g4,.g5,.dash-grid,.sdlc-grid,.standup-grid{grid-template-columns:1fr}
   .scope-sheet-toolbar{flex-direction:column;align-items:stretch}
   .scope-sheet-add{width:100%;justify-content:center}
+  .scope-sheet-item{flex-wrap:wrap;align-items:flex-start}
+  .scope-sheet-actions{margin-left:auto}
+  .scope-dev-link{flex-wrap:wrap}
+  .scope-dev-link-lbl{min-width:0}
+  .scope-dev-link-url{white-space:normal;word-break:break-all}
   .f2{grid-template-columns:1fr}
   .login-wrap{flex-direction:column;gap:28px;padding:72px 16px 32px}
   .login-hero{text-align:center}
@@ -942,6 +953,9 @@ a.iid.task-link:hover{text-decoration:underline}
   .fc{padding:8px 12px}
   .proj-card:hover{transform:none}
   .kcard:hover{transform:none}
+  .proj-card-hd{flex-wrap:wrap}
+  .proj-card-status{margin-left:auto}
+  .task-detail-row{grid-template-columns:1fr;gap:4px}
 }
 
 /* ═══ RESPONSIVE — SMALL MOBILE (≤480px) ═══ */
