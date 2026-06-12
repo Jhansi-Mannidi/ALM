@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import RoleAccessDropdown from './RoleAccessDropdown';
 import { AppIcon, Icons } from './icons';
 
 function NavBtn({ to, children, badge, badgeRed, onNavigate, className = '', end = false }) {
@@ -24,14 +24,42 @@ function closeSidebar(setSidebarOpen) {
   setSidebarOpen(false);
 }
 
+function ProjectRow({ project, isActive, isStarred, onSelect, onToggleStar }) {
+  return (
+    <motion.div
+      className={`proj-item-wrap${isActive ? ' active' : ''}`}
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.22 }}
+      whileHover={{ x: 2 }}
+    >
+      <button type="button" className="proj-item" onClick={() => onSelect(project.id)}>
+        <span className="proj-name" title={project.name}>
+          {project.name}
+        </span>
+      </button>
+      <button
+        type="button"
+        className={`proj-star-btn${isStarred ? ' starred' : ''}`}
+        aria-label={isStarred ? `Remove ${project.name} from starred` : `Star ${project.name}`}
+        title={isStarred ? 'Remove from starred' : 'Add to starred'}
+        onClick={() => onToggleStar(project.id)}
+      >
+        <AppIcon icon={Icons.star} size={12} fill={isStarred ? 'currentColor' : 'none'} />
+      </button>
+    </motion.div>
+  );
+}
+
 export default function Sidebar() {
   const {
     projects = [],
     project,
+    starredProjects,
+    isProjectStarred,
+    toggleStarProject,
     badges,
-    permissions,
     switchProject,
-    setModal,
     sidebarOpen,
     setSidebarOpen,
     sidebarCollapsed,
@@ -57,8 +85,8 @@ export default function Sidebar() {
             <AppIcon icon={Icons.logo} size={16} strokeWidth={2.5} className="sb-logo-icon" />
           </div>
           <div>
-            <div className="sb-name">VoltusWave ALM</div>
-            <div className="sb-tag">Enterprise</div>
+            <div className="sb-name">VoltusWorkspace</div>
+            <div className="sb-tag">Tasks &amp; Projects</div>
           </div>
         </div>
         <button
@@ -71,10 +99,6 @@ export default function Sidebar() {
           <AppIcon icon={sidebarCollapsed ? Icons.panelLeftOpen : Icons.panelLeftClose} size={18} />
         </button>
       </div>
-      <div className="sb-role-badge">
-        <RoleAccessDropdown variant="sidebar" />
-      </div>
-
       <div className="sb-section">
         <div className="sb-slabel">Workspace</div>
         <NavBtn to="/portfolio" onNavigate={() => closeSidebar(setSidebarOpen)}>
@@ -85,10 +109,6 @@ export default function Sidebar() {
           <AppIcon icon={Icons.listChecks} size={13} />
           My Tasks
         </NavBtn>
-        <NavBtn to="/notifications" badge={badges.notif} badgeRed onNavigate={() => closeSidebar(setSidebarOpen)}>
-          <AppIcon icon={Icons.bell} size={13} />
-          Notifications
-        </NavBtn>
       </div>
 
       <div className="sb-section sb-team-global-section">
@@ -97,6 +117,28 @@ export default function Sidebar() {
           <AppIcon icon={Icons.users} size={13} />
           All Team Members
         </NavBtn>
+        <NavBtn to="/time-tracking" onNavigate={() => closeSidebar(setSidebarOpen)}>
+          <AppIcon icon={Icons.timer} size={13} />
+          Time Tracking
+        </NavBtn>
+      </div>
+
+      <div className="sb-section sb-starred-section">
+        <div className="sb-slabel">Starred</div>
+        {starredProjects.length === 0 && (
+          <div className="sb-proj-empty">Star a project from the list below</div>
+        )}
+        {starredProjects.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            className={`nav-item${project?.id === p.id ? ' active' : ''}`}
+            onClick={() => selectProject(p.id)}
+          >
+            <AppIcon icon={Icons.star} size={13} className="sb-starred-icon" fill="currentColor" />
+            <span className="proj-name" title={p.name}>{p.name}</span>
+          </button>
+        ))}
       </div>
 
       <div className="sb-proj-section">
@@ -115,17 +157,6 @@ export default function Sidebar() {
             />
             Projects
           </button>
-          {permissions.createProj && (
-            <button
-              type="button"
-              className="sb-proj-add"
-              title="Create project"
-              aria-label="Create project"
-              onClick={() => setModal('newproj')}
-            >
-              <AppIcon icon={Icons.plus} size={14} />
-            </button>
-          )}
         </div>
 
         {projectsOpen && (
@@ -133,22 +164,16 @@ export default function Sidebar() {
             {projects.length === 0 && (
               <div className="sb-proj-empty">No projects yet</div>
             )}
-            {projects.map((p) => {
-              const isActive = project?.id === p.id;
-              return (
-                <button
-                  key={p.id}
-                  type="button"
-                  className={`proj-item${isActive ? ' active' : ''}`}
-                  onClick={() => selectProject(p.id)}
-                >
-                  <div className="proj-dot" style={{ background: p.color }} />
-                  <span className="proj-name" title={p.name}>
-                    {p.name}
-                  </span>
-                </button>
-              );
-            })}
+            {projects.map((p) => (
+              <ProjectRow
+                key={p.id}
+                project={p}
+                isActive={project?.id === p.id}
+                isStarred={isProjectStarred(p.id)}
+                onSelect={selectProject}
+                onToggleStar={toggleStarProject}
+              />
+            ))}
           </div>
         )}
       </div>

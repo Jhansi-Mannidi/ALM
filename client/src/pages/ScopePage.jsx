@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api/client';
 import { useApp } from '../context/AppContext';
 import { AppIcon, IconButton, Icons } from '../components/icons';
+import ConfirmModal from '../components/ConfirmModal';
 import PageHeader from '../components/PageHeader';
 import { downloadScopeSheet, formatScopeAudit, formatSheetDate } from '../utils/helpers';
 
@@ -64,6 +65,118 @@ const CONTENT_TYPES = [
 ];
 
 const RECORDING_EXT = ['.mp3', '.wav', '.m4a', '.webm', '.ogg', '.aac'];
+
+const CUSTOM_SECTION_CHIPS = ['chip-purple', 'chip-navy', 'chip-blue', 'chip-teal', 'chip-amber'];
+
+function customSectionApiKey(sectionId) {
+  return `custom-${sectionId}`;
+}
+
+function canManageScopeSections(permissions) {
+  return !!(permissions.addClientReq || permissions.addDevReq || permissions.addTesterScope);
+}
+
+function ScopeCardHeader({ title, chipClass, chipLabel, canDelete, onDeleteRequest }) {
+  return (
+    <div className="card-hd">
+      <div className="card-title">{title}</div>
+      <div className="scope-card-hd-actions fx g6">
+        <span className={`chip ${chipClass}`}>{chipLabel}</span>
+        {canDelete && (
+          <IconButton
+            icon={Icons.trash}
+            label={`Delete ${title} section`}
+            variant="danger"
+            size={14}
+            onClick={onDeleteRequest}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function buildSectionDeleteDetail(title, docCount, extraNote) {
+  const parts = [`You are about to delete the "${title}" section.`];
+  if (docCount) parts.push(`${docCount} document(s) inside will be removed.`);
+  if (extraNote) parts.push(extraNote);
+  parts.push('This action cannot be undone.');
+  return parts.join(' ');
+}
+
+function CreateScopeSectionModal({ open, saving, addedByUser, onClose, onSubmit }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    if (!open) return;
+    setTitle('');
+    setDescription('');
+  }, [open]);
+
+  if (!open) return null;
+
+  const close = () => {
+    if (saving) return;
+    onClose();
+  };
+
+  return (
+    <div className="modal-ov open" onClick={(e) => e.target === e.currentTarget && close()}>
+      <div className="modal" style={{ width: 460 }}>
+        <div className="modal-hd">
+          <span className="modal-title">Create Scope Section</span>
+          <button type="button" className="modal-x" onClick={close} aria-label="Close" disabled={saving}>
+            <AppIcon icon={Icons.x} size={16} />
+          </button>
+        </div>
+        <div className="modal-body">
+          <p className="scope-create-intro">
+            Add a new scope column for other document types — e.g. <strong>BA Scope</strong>, DevOps runbooks,
+            or compliance packs. Each section gets its own card with title, description, and file uploads.
+          </p>
+          <div className="fl">
+            <label>Section Title *</label>
+            <input
+              className="fi"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. BA Scope, DevOps Docs, Compliance"
+            />
+          </div>
+          <div className="fl">
+            <label>Description</label>
+            <textarea
+              className="fa"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="What kind of documents belong in this section?"
+              rows={3}
+            />
+          </div>
+          <div className="fl">
+            <label>Created By</label>
+            <input className="fi fi-readonly" value={addedByUser?.name || '—'} readOnly tabIndex={-1} />
+          </div>
+        </div>
+        <div className="modal-foot">
+          <button type="button" className="btn btn-ghost" onClick={close} disabled={saving}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary fx g4"
+            onClick={() => onSubmit({ title: title.trim(), description: description.trim() })}
+            disabled={saving || !title.trim()}
+          >
+            <AppIcon icon={Icons.plus} size={14} />
+            {saving ? 'Creating…' : 'Create Section'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function AddScopeDocModal({ open, allowedExt, uploading, addedByUser, onClose, onSubmit }) {
   const today = new Date().toISOString().slice(0, 10);
@@ -556,6 +669,8 @@ function ScopeFileSection({
   const [editSheet, setEditSheet] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sheetToDelete, setSheetToDelete] = useState(null);
+  const [deletingSheet, setDeletingSheet] = useState(false);
   const extPattern = new RegExp(`(${allowedExt.map((e) => e.replace('.', '\\.')).join('|')})$`, 'i');
   const recordingPattern = new RegExp(`(${RECORDING_EXT.map((e) => e.replace('.', '\\.')).join('|')})$`, 'i');
 
@@ -625,14 +740,18 @@ function ScopeFileSection({
     }
   };
 
-  const removeSheet = async (sheet) => {
-    if (!window.confirm(`Remove "${sheet.title}"?`)) return;
+  const confirmRemoveSheet = async () => {
+    if (!sheetToDelete) return;
+    setDeletingSheet(true);
     try {
-      await api.deleteScopeSheet(project.id, section, sheet.id);
+      await api.deleteScopeSheet(project.id, section, sheetToDelete.id);
       await refreshProjects();
+      setSheetToDelete(null);
       toast('File removed', 'ok');
     } catch (err) {
       toast(err.message || 'Failed to remove', 'err');
+    } finally {
+      setDeletingSheet(false);
     }
   };
 
@@ -712,7 +831,7 @@ function ScopeFileSection({
                       label={`Remove ${sheet.title}`}
                       variant="danger"
                       size={14}
-                      onClick={() => removeSheet(sheet)}
+                      onClick={() => setSheetToDelete(sheet)}
                     />
                   </>
                 )}
@@ -741,6 +860,16 @@ function ScopeFileSection({
           onSubmit={submitEdit}
         />
       )}
+      <ConfirmModal
+        open={!!sheetToDelete}
+        title="Are you sure you want to delete?"
+        message={`Remove "${sheetToDelete?.title}"?`}
+        detail="This document will be permanently removed from this section."
+        confirmLabel="Delete"
+        busy={deletingSheet}
+        onClose={() => !deletingSheet && setSheetToDelete(null)}
+        onConfirm={confirmRemoveSheet}
+      />
     </>
   );
 
@@ -753,8 +882,67 @@ function ScopeFileSection({
   );
 }
 
+function CustomScopeCard({
+  section,
+  sheets,
+  chipClass,
+  canEdit,
+  onDeleteRequest,
+  user,
+  toast,
+  refreshProjects,
+  project,
+}) {
+  return (
+    <div className="card scope-card scope-card-custom">
+      <ScopeCardHeader
+        title={section.title}
+        chipClass={chipClass}
+        chipLabel={`${sheets.length} documents`}
+        canDelete={canEdit}
+        onDeleteRequest={() =>
+          onDeleteRequest({
+            sectionId: section.id,
+            title: section.title,
+            docCount: sheets.length,
+          })
+        }
+      />
+      <div className="card-body scope-card-body">
+        {section.description && <p className="scope-client-note">{section.description}</p>}
+        {section.addedByName && (
+          <div className="scope-section-meta t-muted-xs">
+            Created by {section.addedByName}
+            {section.addedAt ? ` · ${formatSheetDate(section.addedAt)}` : ''}
+          </div>
+        )}
+        <ScopeFileSection
+          subsectionTitle="Documents"
+          sheets={sheets}
+          section={customSectionApiKey(section.id)}
+          sectionLabel={section.title}
+          project={project}
+          canEdit={canEdit}
+          toast={toast}
+          refreshProjects={refreshProjects}
+          addedByUser={user}
+          allowedExt={['.pdf', '.xlsx', '.xls']}
+          addLabel="Add PDF / Excel"
+          emptyMessage={`Upload documents for ${section.title}`}
+          hideSubTitle
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function ScopePage() {
   const { project, permissions, user, toast, refreshProjects } = useApp();
+  const [createSectionOpen, setCreateSectionOpen] = useState(false);
+  const [creatingSection, setCreatingSection] = useState(false);
+  const [sectionToDelete, setSectionToDelete] = useState(null);
+  const [deletingSection, setDeletingSection] = useState(false);
+
   if (!project) return null;
 
   const dev = project.developerScope || {};
@@ -763,20 +951,93 @@ export default function ScopePage() {
   const clientSheets = scopeSheets.client || [];
   const testerSheets = scopeSheets.tester || [];
   const developerSheets = scopeSheets.developer || [];
+  const customSections = project.customScopeSections || [];
+  const hiddenSections = project.hiddenScopeSections || [];
+  const canCreateSection = canManageScopeSections(permissions);
+  const showClient = !hiddenSections.includes('client');
+  const showDeveloper = !hiddenSections.includes('developer');
+  const showTester = !hiddenSections.includes('tester');
+  const hasVisibleSections =
+    showClient || showDeveloper || showTester || customSections.length > 0;
+
+  const requestDeleteSection = (payload) => setSectionToDelete(payload);
+
+  const confirmDeleteSection = async () => {
+    if (!sectionToDelete) return;
+    setDeletingSection(true);
+    try {
+      await api.deleteScopeSection(project.id, sectionToDelete.sectionId);
+      await refreshProjects();
+      toast(`"${sectionToDelete.title}" section removed`, 'ok');
+      setSectionToDelete(null);
+    } catch (err) {
+      toast(err.message || 'Failed to delete section', 'err');
+    } finally {
+      setDeletingSection(false);
+    }
+  };
+
+  const submitCreateSection = async ({ title, description }) => {
+    if (!title) return toast('Section title required', 'err');
+    setCreatingSection(true);
+    try {
+      await api.createScopeSection(project.id, {
+        title,
+        description,
+        addedBy: user?.id || '',
+        addedByName: user?.name || '',
+      });
+      await refreshProjects();
+      setCreateSectionOpen(false);
+      toast(`${title} section created`, 'ok');
+    } catch (err) {
+      toast(err.message || 'Failed to create section', 'err');
+    } finally {
+      setCreatingSection(false);
+    }
+  };
 
   return (
     <>
       <PageHeader
         title="Scope & Requirements"
-        subtitle="Client requirements, developer feature list & testers scope"
+        subtitle="Client requirements, developer feature list, testers scope & custom document sections"
+        actions={
+          canCreateSection ? (
+            <button
+              type="button"
+              className="btn btn-primary btn-sm ph-btn-compact fx g4"
+              onClick={() => setCreateSectionOpen(true)}
+            >
+              <AppIcon icon={Icons.plus} size={14} />
+              Create Section
+            </button>
+          ) : null
+        }
       />
 
+      {!hasVisibleSections && (
+        <div className="card scope-empty-all">
+          <p>No scope sections on this project. Use <strong>Create Section</strong> to add one.</p>
+        </div>
+      )}
+
       <div className="g3 scope-grid">
+        {showClient && (
         <div className="card scope-card">
-          <div className="card-hd">
-            <div className="card-title">Client Requirements</div>
-            <span className="chip chip-green">{clientSheets.length} documents</span>
-          </div>
+          <ScopeCardHeader
+            title="Client Requirements"
+            chipClass="chip-green"
+            chipLabel={`${clientSheets.length} documents`}
+            canDelete={permissions.addClientReq}
+            onDeleteRequest={() =>
+              requestDeleteSection({
+                sectionId: 'client',
+                title: 'Client Requirements',
+                docCount: clientSheets.length,
+              })
+            }
+          />
           <div className="card-body scope-card-body">
             <p className="scope-client-note">
               Client requirements are captured in uploaded PDF or Excel documents — not listed as text here.
@@ -798,12 +1059,24 @@ export default function ScopePage() {
             />
           </div>
         </div>
+        )}
 
+        {showDeveloper && (
         <div className="card scope-card">
-          <div className="card-hd">
-            <div className="card-title">Developer feature list</div>
-            <span className="chip chip-teal">{techStack.length + developerSheets.length} items</span>
-          </div>
+          <ScopeCardHeader
+            title="Developer feature list"
+            chipClass="chip-teal"
+            chipLabel={`${techStack.length + developerSheets.length} items`}
+            canDelete={permissions.addDevReq || permissions.editTechStack}
+            onDeleteRequest={() =>
+              requestDeleteSection({
+                sectionId: 'developer',
+                title: 'Developer feature list',
+                docCount: techStack.length + developerSheets.length,
+                extraNote: 'Design links and tech stack will be cleared too.',
+              })
+            }
+          />
           <div className="card-body scope-card-body">
             <DeveloperScopeSections
               project={project}
@@ -827,12 +1100,23 @@ export default function ScopePage() {
             />
           </div>
         </div>
+        )}
 
+        {showTester && (
         <div className="card scope-card">
-          <div className="card-hd">
-            <div className="card-title">Testers Scope</div>
-            <span className="chip chip-amber">{testerSheets.length} documents</span>
-          </div>
+          <ScopeCardHeader
+            title="Testers Scope"
+            chipClass="chip-amber"
+            chipLabel={`${testerSheets.length} documents`}
+            canDelete={permissions.addTesterScope}
+            onDeleteRequest={() =>
+              requestDeleteSection({
+                sectionId: 'tester',
+                title: 'Testers Scope',
+                docCount: testerSheets.length,
+              })
+            }
+          />
           <div className="card-body scope-card-body">
             <p className="scope-client-note">
               Test scope, cases and scenarios are captured in uploaded PDF or Excel documents — not listed as text here.
@@ -854,7 +1138,60 @@ export default function ScopePage() {
             />
           </div>
         </div>
+        )}
+
+        {customSections.map((section, idx) => {
+          const sheets = scopeSheets[customSectionApiKey(section.id)] || [];
+          const chipClass = CUSTOM_SECTION_CHIPS[idx % CUSTOM_SECTION_CHIPS.length];
+          return (
+            <CustomScopeCard
+              key={section.id}
+              section={section}
+              sheets={sheets}
+              chipClass={chipClass}
+              project={project}
+              canEdit={canCreateSection}
+              onDeleteRequest={requestDeleteSection}
+              user={user}
+              toast={toast}
+              refreshProjects={refreshProjects}
+            />
+          );
+        })}
       </div>
+
+      {createSectionOpen && (
+        <CreateScopeSectionModal
+          open
+          saving={creatingSection}
+          addedByUser={user}
+          onClose={() => setCreateSectionOpen(false)}
+          onSubmit={submitCreateSection}
+        />
+      )}
+
+      <ConfirmModal
+        open={!!sectionToDelete}
+        title="Are you sure you want to delete?"
+        message={
+          sectionToDelete
+            ? `Delete the "${sectionToDelete.title}" section?`
+            : ''
+        }
+        detail={
+          sectionToDelete
+            ? buildSectionDeleteDetail(
+                sectionToDelete.title,
+                sectionToDelete.docCount,
+                sectionToDelete.extraNote,
+              )
+            : ''
+        }
+        confirmLabel="Delete"
+        busy={deletingSection}
+        onClose={() => !deletingSection && setSectionToDelete(null)}
+        onConfirm={confirmDeleteSection}
+      />
     </>
   );
 }

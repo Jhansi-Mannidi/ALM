@@ -1,55 +1,161 @@
-import { useApp } from '../context/AppContext';
-import { AppIcon, CEREMONY_ICONS, Icons } from '../components/icons';
+import { useState } from 'react';
+import { api } from '../api/client';
+import CeremonyModal from '../components/CeremonyModal';
+import ConfirmModal from '../components/ConfirmModal';
+import { AppIcon, CEREMONY_ICONS, IconButton, Icons } from '../components/icons';
 import PageHeader from '../components/PageHeader';
-import { sprintCompletion } from '../utils/helpers';
-
-const CEREMONIES = [
-  { icon: 'planning', title: 'Sprint Planning', sub: 'Define goal, select backlog items', date: 'Jun 30', dur: '4 hrs', chip: 'chip-green', lbl: 'Completed' },
-  { icon: 'standup', title: 'Daily Standup', sub: 'Yesterday · Today · Blockers', date: 'Daily 9:30 AM', dur: '15 min', chip: 'chip-blue', lbl: 'Today 9:30' },
-  { icon: 'review', title: 'Sprint Review', sub: 'Demo completed features to stakeholders', date: 'Jul 11', dur: '2 hrs', chip: 'chip-amber', lbl: 'In 4 days' },
-  { icon: 'retro', title: 'Retrospective', sub: 'What went well / Improve / Actions', date: 'Jul 11', dur: '1.5 hrs', chip: 'chip-amber', lbl: 'In 4 days' },
-  { icon: 'grooming', title: 'Backlog Grooming', sub: 'Refine and prioritize items', date: 'Jul 8', dur: '2 hrs', chip: 'chip-amber', lbl: 'In 1 day' },
-  { icon: 'stakeholder', title: 'Stakeholder Sync', sub: 'Status update and milestone review', date: 'Weekly Fri', dur: '1 hr', chip: 'chip-gray', lbl: 'Recurring' },
-];
+import { useApp } from '../context/AppContext';
+import { formatCeremonySchedule } from '../utils/ceremonyHelpers';
+import { canManageCeremonies, isWorkflowComplete, sprintCompletion } from '../utils/helpers';
 
 export default function ScrumPage() {
-  const { project } = useApp();
+  const { project, role, refreshProjects, toast } = useApp();
+  const [modal, setModal] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [saving, setSaving] = useState(false);
+
   if (!project) return null;
 
   const p = project;
-  const blockers = p.bugs.filter((b) => b.status !== 'Resolved' && b.sev === 'Critical');
+  const ceremonies = p.ceremonies || [];
+  const canManage = canManageCeremonies(role);
+  const blockers = p.bugs.filter((b) => !isWorkflowComplete(b.status) && b.sev === 'Critical');
   const sprintProg = sprintCompletion(p, p.curSprint);
+
+  const openCreate = () => setModal({ mode: 'create' });
+  const openEdit = (ceremony) => setModal({ mode: 'edit', ceremony });
+
+  const saveCeremony = async (form) => {
+    if (!form.title.trim()) {
+      toast('Title is required', 'warn');
+      return;
+    }
+    if (!form.startDate || !form.endDate) {
+      toast('Start and end date are required', 'warn');
+      return;
+    }
+    setSaving(true);
+    try {
+      if (modal?.mode === 'edit' && modal.ceremony?.id) {
+        await api.updateCeremony(p.id, modal.ceremony.id, form);
+        toast('Ceremony updated', 'ok');
+      } else {
+        await api.createCeremony(p.id, form);
+        toast('Ceremony added', 'ok');
+      }
+      await refreshProjects();
+      setModal(null);
+    } catch (e) {
+      toast(e.message || 'Could not save ceremony', 'err');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setSaving(true);
+    try {
+      await api.deleteCeremony(p.id, deleteTarget.id);
+      await refreshProjects();
+      toast('Ceremony deleted', 'ok');
+      setDeleteTarget(null);
+    } catch (e) {
+      toast(e.message || 'Could not delete ceremony', 'err');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <>
-      <PageHeader title="Scrum & Ceremonies" subtitle={`${p.name} · Sprint ${p.curSprint}`} />
+      <PageHeader
+        title="Scrum & Ceremonies"
+        subtitle={`${p.name} · Sprint ${p.curSprint}`}
+        actions={
+          canManage ? (
+            <button type="button" className="btn btn-primary btn-sm fx g4" onClick={openCreate}>
+              <AppIcon icon={Icons.plus} size={14} />
+              Add ceremony
+            </button>
+          ) : null
+        }
+      />
 
-      <div className="g3 mb16">
-        {CEREMONIES.map((c) => (
-          <div key={c.title} className="card">
-            <div className="card-body">
-              <div className="t-icon-3xl" style={{ marginBottom: 9 }}>
-                <AppIcon icon={CEREMONY_ICONS[c.icon]} size={28} />
-              </div>
-              <div className="t-navy-sm-fw800" style={{ marginBottom: 3 }}>{c.title}</div>
-              <div className="t-muted-sm" style={{ marginBottom: 10 }}>{c.sub}</div>
-              <div className="fx g12">
-                <div className="t-body-xs fx g4">
-                  <AppIcon icon={Icons.calendarDays} size={12} />
-                  {c.date}
+      {ceremonies.length === 0 ? (
+        <div className="card ceremony-empty">
+          <div className="card-body ceremony-empty-body">
+            <AppIcon icon={Icons.calendarDays} size={32} className="ceremony-empty-icon" />
+            <div className="t-navy-sm-fw800">No ceremonies yet</div>
+            <p className="t-muted-sm ceremony-empty-text">
+              Add Sprint Planning, Daily Standup, Retrospective, and other recurring events for your team.
+            </p>
+            {canManage && (
+              <button type="button" className="btn btn-primary btn-sm fx g4" onClick={openCreate}>
+                <AppIcon icon={Icons.plus} size={14} />
+                Add ceremony
+              </button>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="g3 mb16">
+          {ceremonies.map((c) => (
+            <div key={c.id} className="card ceremony-card">
+              {canManage && (
+                <div className="ceremony-card-actions">
+                  <IconButton
+                    icon={Icons.pencil}
+                    label="Edit ceremony"
+                    size={14}
+                    onClick={() => openEdit(c)}
+                  />
+                  <IconButton
+                    icon={Icons.trash}
+                    label="Delete ceremony"
+                    variant="danger"
+                    size={14}
+                    onClick={() => setDeleteTarget(c)}
+                  />
                 </div>
-                <div className="t-body-xs fx g4">
-                  <AppIcon icon={Icons.timer} size={12} />
-                  {c.dur}
+              )}
+              <div className="card-body">
+                <div className="t-icon-3xl" style={{ marginBottom: 9 }}>
+                  <AppIcon icon={CEREMONY_ICONS[c.icon] || CEREMONY_ICONS.planning} size={28} />
                 </div>
-              </div>
-              <div style={{ marginTop: 8 }}>
-                <span className={`chip ${c.chip}`}>{c.lbl}</span>
+                <div className="t-navy-sm-fw800" style={{ marginBottom: 3 }}>
+                  {c.title}
+                </div>
+                <div className="t-muted-sm" style={{ marginBottom: 10 }}>
+                  {c.description || '—'}
+                </div>
+                <div className="fx g12" style={{ flexWrap: 'wrap' }}>
+                  {formatCeremonySchedule(c) && (
+                    <div className="t-body-xs fx g4">
+                      <AppIcon icon={Icons.calendarDays} size={12} />
+                      {formatCeremonySchedule(c)}
+                    </div>
+                  )}
+                  {c.startDate && c.endDate && c.startDate !== c.endDate && (
+                    <span className="chip chip-navy ceremony-daily-chip">Daily</span>
+                  )}
+                  {c.duration && (
+                    <div className="t-body-xs fx g4">
+                      <AppIcon icon={Icons.timer} size={12} />
+                      {c.duration}
+                    </div>
+                  )}
+                </div>
+                {c.statusLabel && (
+                  <div style={{ marginTop: 8 }}>
+                    <span className={`chip ${c.statusChip || 'chip-gray'}`}>{c.statusLabel}</span>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <div className="g2 mb14">
         <div className="card">
@@ -128,7 +234,9 @@ export default function ScrumPage() {
                 <div className="prog">
                   <div className="prog-fill" style={{ width: `${sprintProg.pct}%`, background: 'var(--blue)' }} />
                 </div>
-                <div className="t-muted-xs" style={{ marginTop: 3 }}>{sprintProg.pct}% complete</div>
+                <div className="t-muted-xs" style={{ marginTop: 3 }}>
+                  {sprintProg.pct}% complete
+                </div>
               </div>
             </div>
           </div>
@@ -168,6 +276,25 @@ export default function ScrumPage() {
           </div>
         </div>
       </div>
+
+      <CeremonyModal
+        open={!!modal}
+        ceremony={modal?.mode === 'edit' ? modal.ceremony : null}
+        saving={saving}
+        onClose={() => !saving && setModal(null)}
+        onSave={saveCeremony}
+      />
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        title="Delete ceremony?"
+        message={`Remove "${deleteTarget?.title}" from this project?`}
+        detail="This cannot be undone."
+        confirmLabel="Delete"
+        busy={saving}
+        onConfirm={confirmDelete}
+        onClose={() => !saving && setDeleteTarget(null)}
+      />
     </>
   );
 }

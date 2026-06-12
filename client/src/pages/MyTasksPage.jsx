@@ -4,11 +4,15 @@ import { useApp } from '../context/AppContext';
 import PageHeader from '../components/PageHeader';
 import { api } from '../api/client';
 import { AppIcon, IconButton, Icons } from '../components/icons';
-import { formatSheetDate, prioChip, sChip } from '../utils/helpers';
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
+import {
+  formatSheetDate,
+  isMyTasksActiveStatus,
+  isWorkflowComplete,
+  prioChip,
+  sChip,
+  workflowStatusLabel,
+} from '../utils/helpers';
+import { todayISO } from '../utils/timeHelpers';
 
 function tomorrowISO() {
   const d = new Date();
@@ -103,12 +107,12 @@ export default function MyTasksPage() {
   const uid = user?.id;
   const allIssues = projects.flatMap((p) =>
     p.issues
-      .filter((i) => i.assign === uid && i.status !== 'Done')
+      .filter((i) => i.assign === uid && isMyTasksActiveStatus(i.status))
       .map((i) => ({ ...i, pName: p.name, pCode: p.code, projectId: p.id }))
   );
   const critBugs = projects.flatMap((p) =>
     p.bugs.filter(
-      (b) => b.assign === uid && (b.sev === 'Critical' || b.postpones) && b.status !== 'Resolved'
+      (b) => b.assign === uid && (b.sev === 'Critical' || b.postpones) && !isWorkflowComplete(b.status)
     )
   );
 
@@ -252,7 +256,7 @@ export default function MyTasksPage() {
                   <span className={`chip ${prioChip(t.prio)}`}>{t.prio}</span>
                 </td>
                 <td>
-                  <span className={`chip ${sChip(t.status)}`}>{t.status}</span>
+                  <span className={`chip ${sChip(t.status)}`}>{workflowStatusLabel(t.status)}</span>
                 </td>
                 <td className="t-muted-xs">{t.due || '—'}</td>
                 <td>

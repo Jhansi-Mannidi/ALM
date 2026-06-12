@@ -1,5 +1,7 @@
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { slideDownVariants } from '../motion/presets';
 import ThemeToggle from './ThemeToggle';
 import { AppIcon, Icons } from './icons';
 
@@ -8,7 +10,12 @@ export default function Topbar() {
   const navigate = useNavigate();
 
   return (
-    <div className="topbar">
+    <motion.div
+      className="topbar"
+      variants={slideDownVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <button
         type="button"
         className="icon-btn menu-btn"
@@ -27,6 +34,6 @@ export default function Topbar() {
           <AppIcon icon={Icons.bell} size={15} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -11,7 +11,24 @@ const ENVS = [
 ];
 
 const RELEASE_TYPES = ['Patch', 'Minor', 'Major', 'Beta', 'Alpha'];
-const RELEASE_STATUSES = ['Stable', 'Beta', 'Deprecated', 'Rolling Out'];
+const RELEASE_ENVIRONMENTS = ['dev', 'qa', 'uat', 'prod'];
+
+function envChip(env) {
+  return (
+    {
+      dev: 'chip-blue',
+      qa: 'chip-amber',
+      uat: 'chip-purple',
+      prod: 'chip-green',
+    }[env] || 'chip-gray'
+  );
+}
+
+function testCaseBarColor(pct) {
+  if (pct >= 90) return 'var(--green)';
+  if (pct >= 70) return 'var(--amber)';
+  return 'var(--red)';
+}
 
 function releaseKey(r) {
   return r.id || r.ver;
@@ -75,14 +92,26 @@ function ReleaseModal({ open, initial, onClose, onSave }) {
             />
           </div>
           <div className="fl">
-            <label>Status</label>
-            <select className="fs" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-              {RELEASE_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
+            <label>Environment</label>
+            <select className="fs" value={form.environment} onChange={(e) => setForm({ ...form, environment: e.target.value })}>
+              {RELEASE_ENVIRONMENTS.map((env) => (
+                <option key={env} value={env}>
+                  {env}
                 </option>
               ))}
             </select>
+          </div>
+          <div className="fl">
+            <label>Test Cases %</label>
+            <input
+              className="fi"
+              type="number"
+              min={0}
+              max={100}
+              value={form.testCasePct}
+              onChange={(e) => setForm({ ...form, testCasePct: e.target.value })}
+              placeholder="e.g. 95"
+            />
           </div>
           <div className="fl">
             <label>Deployed By</label>
@@ -131,7 +160,8 @@ export default function DeployPage() {
       date: release.date,
       type: release.type,
       changes: release.changes,
-      status: release.status,
+      environment: release.environment || 'prod',
+      testCasePct: release.testCasePct ?? 0,
       by: release.by,
     });
   };
@@ -146,7 +176,8 @@ export default function DeployPage() {
         date: form.date,
         type: form.type,
         changes: form.changes,
-        status: form.status,
+        environment: form.environment,
+        testCasePct: Number(form.testCasePct) || 0,
         by: form.by,
       });
       await refreshProjects();
@@ -207,7 +238,8 @@ export default function DeployPage() {
               <th>Released</th>
               <th>Type</th>
               <th>Changes</th>
-              <th>Status</th>
+              <th>Test Cases</th>
+              <th>Environment</th>
               <th>Deployed By</th>
               {permissions.deploy && <th>Action</th>}
             </tr>
@@ -224,7 +256,21 @@ export default function DeployPage() {
                 </td>
                 <td className="t-body-sm">{r.changes}</td>
                 <td>
-                  <span className="chip chip-green">{r.status}</span>
+                  <div className="deploy-tc-pct">
+                    <span className="deploy-tc-pct-val">{r.testCasePct ?? 0}%</span>
+                    <div className="prog deploy-tc-pct-bar">
+                      <div
+                        className="prog-fill"
+                        style={{
+                          width: `${Math.min(100, Math.max(0, r.testCasePct ?? 0))}%`,
+                          background: testCaseBarColor(r.testCasePct ?? 0),
+                        }}
+                      />
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span className={`chip ${envChip(r.environment)}`}>{r.environment || 'prod'}</span>
                 </td>
                 <td className="t-body-xs">{r.by}</td>
                 {permissions.deploy && (

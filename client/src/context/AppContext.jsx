@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { api } from '../api/client';
-import { can, canCreateAnyWorkItem, roleLabel } from '../utils/helpers';
+import { can, canCreateAnyWorkItem, isWorkflowComplete, roleLabel } from '../utils/helpers';
+import { readStarredProjectIds, writeStarredProjectIds } from '../utils/starredProjects';
 
 const AppContext = createContext(null);
 const DEFAULT_ROLE = 'admin';
@@ -24,11 +25,11 @@ export function AppProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [toasts, setToasts] = useState([]);
   const [modal, setModal] = useState(null);
-  const [createTab, setCreateTab] = useState('story');
-  const [assignCtx, setAssignCtx] = useState({ issueId: null, userId: null });
+  const [assignCtx, setAssignCtx] = useState({ issueId: null, ticketId: null, userId: null });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(readSidebarCollapsed);
   const [initError, setInitError] = useState(null);
+  const [starredIds, setStarredIds] = useState(readStarredProjectIds);
 
   const toggleSidebarCollapsed = useCallback(() => {
     setSidebarCollapsed((collapsed) => {
@@ -126,16 +127,36 @@ export function AppProvider({ children }) {
     [refreshNotifications]
   );
 
+  const starredProjects = useMemo(
+    () => starredIds.map((id) => projects.find((p) => p.id === id)).filter(Boolean),
+    [starredIds, projects]
+  );
+
+  const isProjectStarred = useCallback((projectId) => starredIds.includes(projectId), [starredIds]);
+
+  const toggleStarProject = useCallback(
+    (projectId) => {
+      setStarredIds((prev) => {
+        const next = prev.includes(projectId)
+          ? prev.filter((id) => id !== projectId)
+          : [...prev, projectId];
+        writeStarredProjectIds(next);
+        return next;
+      });
+    },
+    []
+  );
+
   const badges = useMemo(() => {
     const openBugs = (projects ?? []).reduce(
-      (s, pr) => s + (pr.bugs ?? []).filter((b) => b.status !== 'Resolved').length,
+      (s, pr) => s + (pr.bugs ?? []).filter((b) => !isWorkflowComplete(b.status)).length,
       0
     );
     return {
       tasks: project
-        ? (project.issues ?? []).filter((i) => i.assign === user?.id && i.status !== 'Done').length
+        ? (project.issues ?? []).filter((i) => i.assign === user?.id && !isWorkflowComplete(i.status)).length
         : 0,
-      backlog: project ? (project.issues ?? []).filter((i) => i.status !== 'Done').length : 0,
+      backlog: project ? (project.issues ?? []).filter((i) => !isWorkflowComplete(i.status)).length : 0,
       bugs: openBugs,
       notif: (notifications ?? []).filter((n) => !n.read).length,
     };
@@ -219,8 +240,6 @@ export function AppProvider({ children }) {
     permissions,
     modal,
     setModal,
-    createTab,
-    setCreateTab,
     assignCtx,
     setAssignCtx,
     sidebarOpen,
@@ -237,6 +256,9 @@ export function AppProvider({ children }) {
     refreshNotifications,
     refreshUsers,
     addNotification,
+    starredProjects,
+    isProjectStarred,
+    toggleStarProject,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

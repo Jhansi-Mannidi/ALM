@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
 import { AppIcon, IconButton, Icons } from '../components/icons';
 import PageHeader from '../components/PageHeader';
-import { can, uById } from '../utils/helpers';
+import TimeTrackerButton from '../components/TimeTrackerButton';
+import { can, isWorkflowComplete, uById, workflowStatusChip } from '../utils/helpers';
+import { sumMinutesForTarget, todayISO } from '../utils/timeHelpers';
 
 function formatBugDue(dueTime) {
   if (!dueTime) return '—';
@@ -22,12 +25,14 @@ const FILTERS = [
   ['all', 'All', null],
   ['critical', 'Critical', Icons.circleAlert],
   ['high', 'High', Icons.alertTriangle],
-  ['open', 'Open', null],
-  ['resolved', 'Resolved', null],
+  ['open', 'In Pipeline', null],
+  ['prod', 'Prod', null],
 ];
 
 export default function BugsPage() {
-  const { role, user, project, users, permissions, toast, refreshProjects, setModal, setCreateTab } = useApp();
+  const { role, user, project, users, permissions, toast, refreshProjects } = useApp();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [bugFil, setBugFil] = useState('all');
   const [bugSearch, setBugSearch] = useState('');
 
@@ -36,8 +41,8 @@ export default function BugsPage() {
   let bugs = project.bugs;
   if (bugFil === 'critical') bugs = bugs.filter((b) => b.sev === 'Critical');
   else if (bugFil === 'high') bugs = bugs.filter((b) => b.sev === 'High');
-  else if (bugFil === 'open') bugs = bugs.filter((b) => b.status !== 'Resolved');
-  else if (bugFil === 'resolved') bugs = bugs.filter((b) => b.status === 'Resolved');
+  else if (bugFil === 'open') bugs = bugs.filter((b) => !isWorkflowComplete(b.status));
+  else if (bugFil === 'prod') bugs = bugs.filter((b) => isWorkflowComplete(b.status));
   if (bugSearch) {
     const q = bugSearch.toLowerCase();
     bugs = bugs.filter(
@@ -52,13 +57,13 @@ export default function BugsPage() {
 
   const tot = project.bugs.length;
   const crit = project.bugs.filter((b) => b.sev === 'Critical').length;
-  const open = project.bugs.filter((b) => b.status !== 'Resolved').length;
-  const res = project.bugs.filter((b) => b.status === 'Resolved').length;
+  const open = project.bugs.filter((b) => !isWorkflowComplete(b.status)).length;
+  const res = project.bugs.filter((b) => isWorkflowComplete(b.status)).length;
   const affected = project.bugs.filter((b) => b.postpones).length;
 
   const resolveBug = async (bugId) => {
     try {
-      await api.updateBug(project.id, bugId, { status: 'Resolved', postpones: false });
+      await api.updateBug(project.id, bugId, { status: 'Prod', postpones: false });
       await refreshProjects();
       toast(`${bugId} resolved ✓`, 'ok');
     } catch (e) {
@@ -70,16 +75,13 @@ export default function BugsPage() {
     <>
       <PageHeader
         title="Bug Tracker"
-        subtitle={`${project.bugs.length} total · ${project.bugs.filter((b) => b.status !== 'Resolved').length} open`}
+        subtitle={`${project.bugs.length} total · ${project.bugs.filter((b) => !isWorkflowComplete(b.status)).length} in pipeline`}
         actions={
           permissions.bug && (
             <button
               type="button"
               className="btn btn-red btn-sm ph-btn-compact fx g4"
-              onClick={() => {
-                setCreateTab('bug');
-                setModal('create');
-              }}
+              onClick={() => navigate('/create?type=bug', { state: { from: location.pathname } })}
             >
               <AppIcon icon={Icons.plus} size={14} />
               Report Bug
@@ -108,7 +110,7 @@ export default function BugsPage() {
         </div>
         <div className="stat">
           <div className="stat-bar" style={{ background: 'var(--green)' }} />
-          <div className="stat-label">Resolved</div>
+          <div className="stat-label">Prod</div>
           <div className="stat-value" style={{ color: 'var(--green)' }}>
             {res}
           </div>
@@ -152,6 +154,7 @@ export default function BugsPage() {
               <th>Assignee</th>
               <th>Message</th>
               <th>Reported</th>
+              <th>Time today</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -199,7 +202,7 @@ export default function BugsPage() {
                   </td>
                   <td>
                     <span
-                      className={`chip ${b.status === 'Resolved' ? 'chip-green' : b.status === 'In Progress' ? 'chip-blue' : 'chip-amber'}`}
+                      className={`chip ${workflowStatusChip(b.status)}`}
                     >
                       {b.status}
                     </span>
@@ -220,11 +223,28 @@ export default function BugsPage() {
                   </td>
                   <td className="t-muted-xs">{b.reported}</td>
                   <td>
+                    {user?.id === b.assign && !isWorkflowComplete(b.status) ? (
+                      <TimeTrackerButton
+                        projectId={project.id}
+                        targetType="bug"
+                        targetId={b.id}
+                        userId={user.id}
+                        projects={[project]}
+                        loggedMinutes={sumMinutesForTarget(project, user.id, b.id, todayISO())}
+                        onChange={refreshProjects}
+                        toast={toast}
+                        compact
+                      />
+                    ) : (
+                      <span className="t-muted-xs">—</span>
+                    )}
+                  </td>
+                  <td>
                     <div className="fx g4">
-                      {b.status !== 'Resolved' && (can(role, 'assign') || user?.id === b.assign) && (
+                      {!isWorkflowComplete(b.status) && (can(role, 'assign') || user?.id === b.assign) && (
                         <IconButton icon={Icons.checkCircle} label="Resolve bug" variant="success" onClick={() => resolveBug(b.id)} />
                       )}
-                      {can(role, 'assign') && b.status !== 'Resolved' && (
+                      {can(role, 'assign') && !isWorkflowComplete(b.status) && (
                         <IconButton icon={Icons.arrowLeftRight} label="Reassign bug" onClick={() => toast('Bug reassigned', 'ok')} />
                       )}
                     </div>

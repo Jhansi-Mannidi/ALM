@@ -1,16 +1,7 @@
 import { useApp } from '../context/AppContext';
 import { AppIcon, IconButton, Icons } from '../components/icons';
 import PageHeader from '../components/PageHeader';
-import { can, uById } from '../utils/helpers';
-
-const COLS = ['To Do', 'In Progress', 'Code Review', 'Testing', 'Done'];
-const COL_COLORS = {
-  Done: 'var(--green)',
-  'In Progress': 'var(--blue)',
-  'Code Review': 'var(--purple)',
-  Testing: 'var(--amber)',
-  'To Do': 'var(--g600)',
-};
+import { can, isWorkflowComplete, uById, WORKFLOW_COL_COLORS, WORKFLOW_STATUSES } from '../utils/helpers';
 
 export default function SprintPage() {
   const { role, project, users, toast, setModal, setAssignCtx } = useApp();
@@ -34,10 +25,9 @@ export default function SprintPage() {
 
   const cardStyle = (col, hasCritBug) => {
     const style = {};
-    if (col === 'In Progress') style.borderLeft = '3px solid var(--blue)';
-    else if (col === 'Code Review') style.borderLeft = '3px solid var(--purple)';
-    else if (col === 'Testing') style.borderLeft = '3px solid var(--amber)';
-    else if (col === 'Done') style.opacity = 0.72;
+    const accent = WORKFLOW_COL_COLORS[col];
+    if (accent) style.borderLeft = `3px solid ${accent}`;
+    if (col === 'Prod') style.opacity = 0.72;
     if (hasCritBug) style.borderLeft = '3px solid var(--red)';
     return Object.keys(style).length ? style : undefined;
   };
@@ -61,12 +51,12 @@ export default function SprintPage() {
       />
 
       <div className="board">
-        {COLS.map((col) => {
+        {WORKFLOW_STATUSES.map((col) => {
           const cards = spIssues.filter((i) => i.status === col);
           return (
             <div key={col} className="bcol">
               <div className="bcol-hd">
-                <span className="bcol-title" style={{ color: COL_COLORS[col] || 'var(--g600)' }}>
+                <span className="bcol-title" style={{ color: WORKFLOW_COL_COLORS[col] || 'var(--g600)' }}>
                   {col}
                 </span>
                 <span className="bcol-cnt">{cards.length}</span>
@@ -74,7 +64,7 @@ export default function SprintPage() {
               {cards.map((i) => {
                 const u = uById(users, i.assign);
                 const hasCritBug = p.bugs.some(
-                  (b) => b.linked === i.id && b.sev === 'Critical' && b.status !== 'Resolved'
+                  (b) => b.linked === i.id && b.sev === 'Critical' && !isWorkflowComplete(b.status)
                 );
                 return (
                   <div key={i.id} className="kcard" style={cardStyle(col, hasCritBug)}>

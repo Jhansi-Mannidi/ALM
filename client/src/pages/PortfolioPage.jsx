@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { roleLabel } from '../utils/helpers';
+import { isWorkflowComplete, roleLabel } from '../utils/helpers';
 import { AppIcon, Icons } from '../components/icons';
 import PageHeader from '../components/PageHeader';
 import { downloadScopeDoc, phaseChipClass, phaseLabel } from '../utils/helpers';
@@ -20,7 +20,7 @@ export default function PortfolioPage() {
   };
 
   return (
-    <>
+    <div className="portfolio-page">
       <PageHeader
         title="Portfolio Overview"
         subtitle={`${roleLabel(role).toUpperCase()} View · ${projects.length} projects`}
@@ -36,13 +36,11 @@ export default function PortfolioPage() {
 
       <div className="g4 mb20">
         <div className="stat">
-          <div className="stat-bar" style={{ background: 'var(--blue)' }} />
           <div className="stat-label">Total Projects</div>
           <div className="stat-value">{tot}</div>
           <div className="stat-sub">Active portfolio</div>
         </div>
         <div className="stat">
-          <div className="stat-bar" style={{ background: 'var(--green)' }} />
           <div className="stat-label">On Track</div>
           <div className="stat-value">{on}</div>
           <div className="stat-sub">
@@ -50,7 +48,6 @@ export default function PortfolioPage() {
           </div>
         </div>
         <div className="stat">
-          <div className="stat-bar" style={{ background: 'var(--red)' }} />
           <div className="stat-label">Delayed</div>
           <div className="stat-value">{del}</div>
           <div className="stat-sub">
@@ -58,7 +55,6 @@ export default function PortfolioPage() {
           </div>
         </div>
         <div className="stat">
-          <div className="stat-bar" style={{ background: 'var(--amber)' }} />
           <div className="stat-label">Total Issues</div>
           <div className="stat-value">{totIssues}</div>
           <div className="stat-sub">Across all projects</div>
@@ -67,8 +63,8 @@ export default function PortfolioPage() {
 
       <div className="g3">
         {projects.map((p) => {
-          const openBugs = p.bugs.filter((b) => b.status !== 'Resolved').length;
-          const crit = p.bugs.filter((b) => b.sev === 'Critical' && b.status !== 'Resolved').length;
+          const openBugs = p.bugs.filter((b) => !isWorkflowComplete(b.status)).length;
+          const crit = p.bugs.filter((b) => b.sev === 'Critical' && !isWorkflowComplete(b.status)).length;
           const statusChip =
             p.status === 'ontrack' ? 'chip-green' : p.status === 'delayed' ? 'chip-red' : 'chip-amber';
           const statusLabel =
@@ -76,13 +72,12 @@ export default function PortfolioPage() {
 
           return (
             <div key={p.id} className="proj-card" onClick={() => handleProjectClick(p.id)}>
-              <div className="proj-card-top">
+              <div className="proj-card-content">
                 <div className="proj-card-hd">
                   <div
                     className="proj-code-badge"
                     style={{
-                      background: `${p.color}22`,
-                      border: `1.5px solid ${p.color}44`,
+                      background: `${p.color}18`,
                       color: p.color,
                     }}
                   >
@@ -100,30 +95,29 @@ export default function PortfolioPage() {
                     {statusLabel}
                   </span>
                 </div>
-                <div className="proj-card-desc">{p.desc}</div>
+
+                <p className="proj-card-desc">{p.desc}</p>
+
                 <div className="proj-card-stage">
                   <span className="proj-card-stage-lbl">Stage</span>
                   <span className={`chip proj-card-phase-chip ${phaseChipClass(p.phase || 'development')}`}>
                     {phaseLabel(p.phase || 'development')}
                   </span>
                 </div>
-                <div className="proj-card-progress">
+
+                <div
+                  className="proj-card-progress"
+                  style={{ '--prog-color': p.status === 'delayed' ? 'var(--red)' : p.color }}
+                >
                   <div className="proj-card-progress-hd">
                     <span className="proj-card-lbl">Progress</span>
                     <span className="proj-card-val">{p.progress}%</span>
                   </div>
-                  <div className="prog">
-                    <div
-                      className="prog-fill"
-                      style={{
-                        width: `${p.progress}%`,
-                        background: p.status === 'delayed' ? 'var(--red)' : p.color,
-                      }}
-                    />
+                  <div className="proj-card-prog-track" role="progressbar" aria-valuenow={p.progress} aria-valuemin={0} aria-valuemax={100}>
+                    <div className="proj-card-prog-fill" style={{ width: `${p.progress}%` }} />
                   </div>
                 </div>
-              </div>
-              <div className="proj-card-body">
+
                 <div className="proj-card-stats">
                   <div className="proj-card-stat">
                     <span className="proj-card-stat-num">{p.members.length}</span>
@@ -140,19 +134,23 @@ export default function PortfolioPage() {
                   </div>
                   <div className="proj-card-stat">
                     <span className="proj-card-stat-num">
-                      {p.issues.filter((i) => i.status !== 'Done').length}
+                      {p.issues.filter((i) => !isWorkflowComplete(i.status)).length}
                     </span>
                     <span className="proj-card-stat-lbl">open</span>
                   </div>
                 </div>
-                <div className="proj-card-critical">
-                  {crit > 0 && (
+
+                <div className="proj-card-critical-row">
+                  {crit > 0 ? (
                     <span className="chip chip-red proj-card-critical-chip">
                       <AppIcon icon={Icons.circleAlert} size={11} />
                       {crit} critical
                     </span>
+                  ) : (
+                    <span className="proj-card-critical-placeholder" aria-hidden />
                   )}
                 </div>
+
                 {(p.scopeDocs?.length ?? 0) > 0 && (
                   <div className="proj-card-docs" onClick={(e) => e.stopPropagation()}>
                     <div className="proj-card-docs-lbl">Scope Documents</div>
@@ -175,7 +173,8 @@ export default function PortfolioPage() {
                     </div>
                   </div>
                 )}
-                <div className="proj-card-pm">
+
+                <div className="proj-card-footer">
                   PM: <strong>{p.pm}</strong>
                 </div>
               </div>
@@ -183,6 +182,6 @@ export default function PortfolioPage() {
           );
         })}
       </div>
-    </>
+    </div>
   );
 }

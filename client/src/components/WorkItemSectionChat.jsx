@@ -29,6 +29,7 @@ export default function WorkItemSectionChat({
   onSend,
   user,
   placeholder,
+  readOnly = false,
 }) {
   const inputRef = useRef(null);
 
@@ -71,29 +72,31 @@ export default function WorkItemSectionChat({
           ))
         )}
       </div>
-      <div className="cw-chat-compose">
-        <div className="cw-chat-avatar cw-chat-avatar-me" aria-hidden="true">
-          {initials(user?.name)}
+      {!readOnly && (
+        <div className="cw-chat-compose">
+          <div className="cw-chat-avatar cw-chat-avatar-me" aria-hidden="true">
+            {initials(user?.name)}
+          </div>
+          <textarea
+            ref={inputRef}
+            className="fa cw-chat-input"
+            rows={2}
+            value={draft}
+            onChange={(e) => onDraftChange(e.target.value)}
+            onKeyDown={onKeyDown}
+            placeholder={placeholder || 'Write a comment… Enter to send, Shift+Enter for new line.'}
+          />
+          <button
+            type="button"
+            className="btn btn-primary cw-chat-send"
+            onClick={handleSend}
+            disabled={!draft.trim()}
+            aria-label="Send comment"
+          >
+            <AppIcon icon={Icons.send} size={14} />
+          </button>
         </div>
-        <textarea
-          ref={inputRef}
-          className="fa cw-chat-input"
-          rows={2}
-          value={draft}
-          onChange={(e) => onDraftChange(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder={placeholder || 'Write a comment… Enter to send, Shift+Enter for new line.'}
-        />
-        <button
-          type="button"
-          className="btn btn-primary cw-chat-send"
-          onClick={handleSend}
-          disabled={!draft.trim()}
-          aria-label="Send comment"
-        >
-          <AppIcon icon={Icons.send} size={14} />
-        </button>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,18 +1,17 @@
 export const USERS = [
-  {id:'u1',name:'Raj Kumar',ini:'RK',role:'manager',email:'raj.kumar@almsphere.io',c:'c1',tasks:12,bugs:2,ontime:97,status:'Active',reportsTo:'u0'},
-  {id:'u2',name:'Priya Sharma',ini:'PS',role:'teamlead',email:'priya.sharma@almsphere.io',c:'c2',tasks:9,bugs:1,ontime:94,status:'Active',reportsTo:'u1'},
-  {id:'u3',name:'Arjun Mehta',ini:'AM',role:'developer',email:'arjun.mehta@almsphere.io',c:'c3',tasks:7,bugs:3,ontime:88,status:'Active',reportsTo:'u2'},
-  {id:'u4',name:'Sneha Rao',ini:'SR',role:'developer',email:'sneha.rao@almsphere.io',c:'c4',tasks:11,bugs:0,ontime:96,status:'Active',reportsTo:'u2'},
-  {id:'u5',name:'Kiran Patel',ini:'KP',role:'developer',email:'kiran.patel@almsphere.io',c:'c5',tasks:6,bugs:1,ontime:100,status:'Active',reportsTo:'u2'},
-  {id:'u6',name:'Nisha Verma',ini:'NV',role:'developer',email:'nisha.verma@almsphere.io',c:'c6',tasks:8,bugs:2,ontime:91,status:'Active',reportsTo:'u2'},
-  {id:'u7',name:'Vikram Gupta',ini:'VG',role:'developer',email:'vikram.gupta@almsphere.io',c:'c7',tasks:5,bugs:0,ontime:100,status:'Active',reportsTo:'u2'},
-  {id:'u8',name:'Lakshmi M.',ini:'LM',role:'developer',email:'lakshmi.m@almsphere.io',c:'c8',tasks:4,bugs:0,ontime:95,status:'Active',reportsTo:'u2'},
-  {id:'u9',name:'Ananya Iyer',ini:'AI',role:'tester',email:'ananya.iyer@almsphere.io',c:'c1',tasks:10,bugs:4,ontime:93,status:'Active',reportsTo:'u2'},
+  {id:'u1',name:'Ram Reddy',ini:'RR',role:'manager',email:'ram.reddy@almsphere.io',c:'c1',tasks:12,bugs:2,ontime:97,status:'Active',reportsTo:'u0'},
+  {id:'u2',name:'Anil Kumar',ini:'AK',role:'teamlead',email:'anil.kumar@almsphere.io',c:'c2',tasks:9,bugs:1,ontime:94,status:'Active',reportsTo:'u1'},
+  {id:'u3',name:'Jhansi Mannidi',ini:'JM',role:'developer',email:'jhansi.mannidi@almsphere.io',c:'c3',tasks:7,bugs:3,ontime:88,status:'Active',reportsTo:'u2'},
+  {id:'u4',name:'Sesi Kalyan',ini:'SK',role:'developer',email:'sesi.kalyan@almsphere.io',c:'c4',tasks:11,bugs:0,ontime:96,status:'Active',reportsTo:'u2'},
+  {id:'u5',name:'Anil Arjun',ini:'AA',role:'developer',email:'anil.arjun@almsphere.io',c:'c5',tasks:6,bugs:1,ontime:100,status:'Active',reportsTo:'u2'},
+  {id:'u6',name:'Lakshman Sai',ini:'LS',role:'developer',email:'lakshman.sai@almsphere.io',c:'c6',tasks:8,bugs:2,ontime:91,status:'Active',reportsTo:'u2'},
+  {id:'u7',name:'Nithish Varma',ini:'NV',role:'developer',email:'nithish.varma@almsphere.io',c:'c7',tasks:5,bugs:0,ontime:100,status:'Active',reportsTo:'u2'},
+  {id:'u8',name:'Hisham',ini:'HI',role:'developer',email:'hisham@almsphere.io',c:'c8',tasks:4,bugs:0,ontime:95,status:'Active',reportsTo:'u2'},
+  {id:'u9',name:'Tejaswi',ini:'TE',role:'tester',email:'tejaswi@almsphere.io',c:'c1',tasks:10,bugs:4,ontime:93,status:'Active',reportsTo:'u2'},
   {id:'u10',name:'Rohit Singh',ini:'RS',role:'tester',email:'rohit.singh@almsphere.io',c:'c2',tasks:8,bugs:5,ontime:90,status:'Active',reportsTo:'u2'},
-  {id:'u11',name:'Meera Joshi',ini:'MJ',role:'scrummaster',email:'meera.joshi@almsphere.io',c:'c3',tasks:6,bugs:1,ontime:98,status:'Active',reportsTo:'u1'},
-  {id:'u12',name:'Karan Desai',ini:'KD',role:'developer',email:'karan.desai@almsphere.io',c:'c4',tasks:5,bugs:0,ontime:92,status:'Active',reportsTo:'u2'},
-  {id:'u13',name:'Divya Nair',ini:'DN',role:'developer',email:'divya.nair@almsphere.io',c:'c5',tasks:7,bugs:1,ontime:89,status:'Active',reportsTo:'u2'},
-  {id:'u14',name:'Isha Reddy',ini:'IR',role:'ba',email:'isha.reddy@almsphere.io',c:'c6',tasks:4,bugs:0,ontime:96,status:'Active',reportsTo:'u1'},
+  {id:'u11',name:'Sai',ini:'SA',role:'scrummaster',email:'sai@almsphere.io',c:'c3',tasks:6,bugs:1,ontime:98,status:'Active',reportsTo:'u1'},
+  {id:'u12',name:'Vishnu Dutt',ini:'VD',role:'developer',email:'vishnu.dutt@almsphere.io',c:'c4',tasks:5,bugs:0,ontime:92,status:'Active',reportsTo:'u2'},
+  {id:'u14',name:'Vineesha Reddy',ini:'VR',role:'ba',email:'vineesha.reddy@almsphere.io',c:'c6',tasks:4,bugs:0,ontime:96,status:'Active',reportsTo:'u1'},
 ];
 
 export const ROLE_USERS = {
@@ -25,6 +24,15 @@ export const ROLE_USERS = {
   scrummaster:USERS[10],
 };
 
+export const DEFAULT_CEREMONIES = [
+  { id: 'cer-1', icon: 'planning', title: 'Sprint Planning', description: 'Define goal, select backlog items', startDate: '2025-06-30', endDate: '2025-06-30', dailyTime: '09:00', duration: '4 hrs', statusLabel: 'Completed', statusChip: 'chip-green' },
+  { id: 'cer-2', icon: 'standup', title: 'Daily Standup', description: 'Yesterday · Today · Blockers', startDate: '2025-06-30', endDate: '2025-07-11', dailyTime: '09:30', duration: '15 min', statusLabel: 'Today 9:30', statusChip: 'chip-blue' },
+  { id: 'cer-3', icon: 'review', title: 'Sprint Review', description: 'Demo completed features to stakeholders', startDate: '2025-07-11', endDate: '2025-07-11', dailyTime: '14:00', duration: '2 hrs', statusLabel: 'In 4 days', statusChip: 'chip-amber' },
+  { id: 'cer-4', icon: 'retro', title: 'Retrospective', description: 'What went well / Improve / Actions', startDate: '2025-07-11', endDate: '2025-07-11', dailyTime: '16:00', duration: '1.5 hrs', statusLabel: 'In 4 days', statusChip: 'chip-amber' },
+  { id: 'cer-5', icon: 'grooming', title: 'Backlog Grooming', description: 'Refine and prioritize items', startDate: '2025-07-08', endDate: '2025-07-08', dailyTime: '11:00', duration: '2 hrs', statusLabel: 'In 1 day', statusChip: 'chip-amber' },
+  { id: 'cer-6', icon: 'stakeholder', title: 'Stakeholder Sync', description: 'Status update and milestone review', startDate: '2025-06-30', endDate: '2025-07-11', dailyTime: '15:00', duration: '1 hr', statusLabel: 'Recurring', statusChip: 'chip-gray' },
+];
+
 export let PROJECTS = [
   {
     id:'p1',name:'Phoenix Platform v3.0',clientName:'VoltusWave Corp',code:'PHXN',color:'#2563EB',
@@ -32,13 +40,21 @@ export let PROJECTS = [
     desc:'Core platform rebuild with modern microservices architecture',
     start:'2025-01-15',end:'2025-12-31',spDur:'2 weeks',
     curSprint:7,totalSprints:12,
-    method:'Scrum',pm:'Raj Kumar',teamLead:'Priya Sharma',teamLeadId:'u2',
+    method:'Scrum',pm:'Ram Reddy',teamLead:'Anil Kumar',teamLeadId:'u2',
     scopeDocs:[
       {name:'Phoenix-BRD-v3.pdf',size:245760,added:'2025-01-10',content:'Business Requirements Document — Phoenix Platform v3.0\n\n1. Microservices migration\n2. OAuth 2.0 / SAML auth\n3. Real-time dashboard\n4. PCI-DSS payment module'},
       {name:'Phoenix-FRD-Auth.docx',size:184320,added:'2025-01-12',content:'Functional Requirements — Authentication Module\n\nFR-001 OAuth 2.0\nFR-002 RBAC\nFR-003 Session management'},
     ],
-    members:['u1','u2','u3','u4','u5','u6','u7','u8','u9','u10','u11','u12','u13','u14'],
+    members:['u1','u2','u3','u4','u5','u6','u7','u8','u9','u10','u11','u12','u14'],
     spGoal:'Complete Auth module hardening and API rate limiting',
+    ceremonies: [
+      { id: 'cer-1', icon: 'planning', title: 'Sprint Planning', description: 'Define goal, select backlog items', startDate: '2025-06-30', endDate: '2025-06-30', dailyTime: '09:00', duration: '4 hrs', statusLabel: 'Completed', statusChip: 'chip-green' },
+      { id: 'cer-2', icon: 'standup', title: 'Daily Standup', description: 'Yesterday · Today · Blockers', startDate: '2025-06-30', endDate: '2025-07-11', dailyTime: '09:30', duration: '15 min', statusLabel: 'Today 9:30', statusChip: 'chip-blue' },
+      { id: 'cer-3', icon: 'review', title: 'Sprint Review', description: 'Demo completed features to stakeholders', startDate: '2025-07-11', endDate: '2025-07-11', dailyTime: '14:00', duration: '2 hrs', statusLabel: 'In 4 days', statusChip: 'chip-amber' },
+      { id: 'cer-4', icon: 'retro', title: 'Retrospective', description: 'What went well / Improve / Actions', startDate: '2025-07-11', endDate: '2025-07-11', dailyTime: '16:00', duration: '1.5 hrs', statusLabel: 'In 4 days', statusChip: 'chip-amber' },
+      { id: 'cer-5', icon: 'grooming', title: 'Backlog Grooming', description: 'Refine and prioritize items', startDate: '2025-07-08', endDate: '2025-07-08', dailyTime: '11:00', duration: '2 hrs', statusLabel: 'In 1 day', statusChip: 'chip-amber' },
+      { id: 'cer-6', icon: 'stakeholder', title: 'Stakeholder Sync', description: 'Status update and milestone review', startDate: '2025-06-30', endDate: '2025-07-11', dailyTime: '15:00', duration: '1 hr', statusLabel: 'Recurring', statusChip: 'chip-gray' },
+    ],
     sprints:[
       {num:5,name:'Sprint 5',start:'Jun 2',end:'Jun 13',status:'done'},
       {num:6,name:'Sprint 6',start:'Jun 16',end:'Jun 27',status:'done'},
@@ -46,10 +62,13 @@ export let PROJECTS = [
       {num:8,name:'Sprint 8',start:'Jul 14',end:'Jul 25',status:'planned'},
     ],
     issues:[
-      {id:'PHXN-284',title:'Implement OAuth 2.0 refresh token rotation',type:'Feature',prio:'High',status:'Done',assign:'u2',sprint:'Sprint 7',due:'2025-07-08'},
-      {id:'PHXN-283',title:'Dashboard widget lazy loading',type:'Feature',prio:'Medium',status:'In Review',assign:'u6',sprint:'Sprint 7',due:'2025-07-10'},
+      {id:'PHXN-284',title:'Implement OAuth 2.0 refresh token rotation',type:'Feature',prio:'High',status:'Done',assign:'u2',reporter:'u1',sprint:'Sprint 7',due:'2025-07-08',labels:'auth, security, oauth',components:'Auth Service',fixVersion:'v3.0.0',epicLink:'Auth & Security',description:'<p>Rotate refresh tokens on each use and invalidate the previous token to reduce replay risk.</p><ul><li>Support sliding expiration window (7 days)</li><li>Store token family ID in Redis</li><li>Return <code>401</code> when reuse is detected</li></ul><p>QA sign-off required before production deploy.</p>',comments:[{id:'c-284-1',userName:'Tejaswi',text:'TC-1041 and TC-1042 passed on staging — refresh flow verified with Postman collection.',createdAt:'2025-07-07T14:30:00Z'},{id:'c-284-2',userName:'Anil Kumar',text:'Linked BUG-033 regression closed after password-reset invalidation fix.',createdAt:'2025-07-07T16:00:00Z'}]},
+      {id:'PHXN-283',title:'Dashboard widget lazy loading',type:'Feature',prio:'Medium',status:'In Review',assign:'u6',reporter:'u1',sprint:'Sprint 7',due:'2025-07-10',labels:'frontend, performance',components:'Dashboard',fixVersion:'v3.0.0',description:'<p>Defer non-critical dashboard widgets until they enter the viewport. Target LCP under 2s on 3G.</p>',comments:[{id:'c-283-1',userName:'Tejaswi',text:'TC-1055 passed — widget render under 2s on throttled 3G.',createdAt:'2025-07-07T11:00:00Z'}]},
       {id:'PHXN-279',title:'Payment gateway timeout on high load',type:'Bug',prio:'Critical',status:'In Progress',assign:'u3',sprint:'Sprint 7',due:'2025-07-07'},
-      {id:'PHXN-275',title:'API rate limiting middleware',type:'Feature',prio:'High',status:'In Progress',assign:'u2',sprint:'Sprint 7',due:'2025-07-09'},
+      {id:'PHXN-275',title:'API rate limiting middleware',type:'Feature',prio:'High',status:'In Progress',assign:'u2',reporter:'u1',sprint:'Sprint 7',due:'2025-07-09',labels:'api, platform, redis',components:'API Gateway',fixVersion:'v3.0.0',epicLink:'Platform Hardening',description:'<p>Introduce distributed rate limiting for public API endpoints using Redis token bucket.</p><p>Broken into sub-tasks for policy, implementation, and QA integration tests.</p>',comments:[{id:'c-275-1',userName:'Tejaswi',text:'TC-1060 skipped until PHXN-275b middleware is deployed to staging.',createdAt:'2025-07-06T09:15:00Z'}]},
+      {id:'PHXN-275a',title:'Define rate limit tiers and burst policy',type:'Sub-task',parentId:'PHXN-275',prio:'High',status:'Done',assign:'u2',sprint:'Sprint 7',due:'2025-07-05',description:'Document per-endpoint limits and burst allowance for public API.',url:'https://phxn-docs.almsphere.io/rate-limits',message:'Share draft with platform team before implementation.'},
+      {id:'PHXN-275b',title:'Implement Redis token bucket middleware',type:'Sub-task',parentId:'PHXN-275',prio:'High',status:'In Progress',assign:'u3',sprint:'Sprint 7',due:'2025-07-08',description:'Add Express middleware using Redis for distributed rate limiting.',url:'https://staging.phxn.io/api/health',message:'Coordinate with DevOps for Redis cluster access.'},
+      {id:'PHXN-275c',title:'Add integration tests for 429 responses',type:'Sub-task',parentId:'PHXN-275',prio:'Medium',status:'To Do',assign:'u4',sprint:'Sprint 7',due:'2025-07-09',description:'Automated tests verifying 429 status and Retry-After headers.',url:'',message:'Block QA sign-off until tests pass in CI.'},
       {id:'PHXN-271',title:'Database index optimization for reports',type:'Task',prio:'Medium',status:'Blocked',assign:'u3',sprint:'Sprint 7',due:'2025-07-09'},
       {id:'PHXN-268',title:'Mobile responsive nav breakpoints',type:'Feature',prio:'Low',status:'To Do',assign:'u6',sprint:'Sprint 8',due:'2025-07-18'},
       {id:'PHXN-261',title:'CI/CD pipeline node_modules cache',type:'Task',prio:'Medium',status:'To Do',assign:'u5',sprint:'Sprint 8',due:'2025-07-20'},
@@ -80,8 +99,8 @@ export let PROJECTS = [
       mockUrl:'https://phxn-mock.almsphere.io',
       uiUxUrl:'https://www.figma.com/file/phoenix-platform-v3',
       techStack:['React 18','TypeScript','Node.js 20','PostgreSQL 16','Redis','Docker','Kubernetes','GraphQL'],
-      linksMeta:{updatedBy:'u2',updatedByName:'Priya Sharma',updatedAt:'2025-06-20'},
-      techStackMeta:{updatedBy:'u2',updatedByName:'Priya Sharma',updatedAt:'2025-06-22'},
+      linksMeta:{updatedBy:'u2',updatedByName:'Anil Kumar',updatedAt:'2025-06-20'},
+      techStackMeta:{updatedBy:'u2',updatedByName:'Anil Kumar',updatedAt:'2025-06-22'},
     },
     scopeSheets:{
       client:[
@@ -90,15 +109,22 @@ export let PROJECTS = [
         {id:'scs-p1-c3',title:'FRD — Auth Module',description:'Functional requirements for OAuth, SAML and session management',date:'2025-01-15',name:'Phoenix-FRD-Auth.xlsx',size:184320},
       ],
       tester:[
-        {id:'scs-p1-t1',title:'QA Test Scope v3',description:'Overall test scope and coverage for Sprint 7',date:'2025-06-15',name:'Phoenix-Test-Scope.pdf',size:156000,addedBy:'u9',addedByName:'Ananya Iyer'},
-        {id:'scs-p1-t2',title:'Auth Regression Matrix',description:'Regression cases for authentication flows',date:'2025-06-18',name:'Phoenix-Auth-Tests.xlsx',size:98304,addedBy:'u9',addedByName:'Ananya Iyer'},
-        {id:'scs-p1-t3',title:'Payment QA Scenarios',description:'End-to-end payment and retry scenarios',date:'2025-07-01',name:'Phoenix-Payment-QA.xlsx',size:112640,addedBy:'u9',addedByName:'Ananya Iyer'},
+        {id:'scs-p1-t1',title:'QA Test Scope v3',description:'Overall test scope and coverage for Sprint 7',date:'2025-06-15',name:'Phoenix-Test-Scope.pdf',size:156000,addedBy:'u9',addedByName:'Tejaswi'},
+        {id:'scs-p1-t2',title:'Auth Regression Matrix',description:'Regression cases for authentication flows',date:'2025-06-18',name:'Phoenix-Auth-Tests.xlsx',size:98304,addedBy:'u9',addedByName:'Tejaswi'},
+        {id:'scs-p1-t3',title:'Payment QA Scenarios',description:'End-to-end payment and retry scenarios',date:'2025-07-01',name:'Phoenix-Payment-QA.xlsx',size:112640,addedBy:'u9',addedByName:'Tejaswi'},
       ],
       developer:[
         {id:'scs-p1-d1',title:'Sprint 7 Feature List',description:'Developer feature breakdown for current sprint',date:'2025-06-28',name:'Phoenix-Features-S7.xlsx',size:65536},
         {id:'scs-p1-d2',title:'API Endpoints Spec',description:'REST and GraphQL endpoints for v3 services',date:'2025-07-03',name:'Phoenix-API-Spec.xlsx',size:81920},
       ],
+      'custom-scope-ba1':[
+        {id:'scs-p1-ba1',title:'User Story Map v3',description:'End-to-end user journeys and story breakdown for Phoenix v3',date:'2025-06-20',name:'Phoenix-User-Story-Map.xlsx',size:92160,addedBy:'u14',addedByName:'Vineesha Reddy'},
+        {id:'scs-p1-ba2',title:'Process Flow — Checkout',description:'BA swimlane diagram for payment and retry flows',date:'2025-06-25',name:'Phoenix-Checkout-Flow.pdf',size:204800,addedBy:'u14',addedByName:'Vineesha Reddy'},
+      ],
     },
+    customScopeSections:[
+      {id:'scope-ba1',title:'BA Scope',description:'Business analyst process flows, user stories, and acceptance criteria — separate from client sign-off documents.',addedBy:'u14',addedByName:'Vineesha Reddy',addedAt:'2025-06-20'},
+    ],
     testCases:[
       {id:'TC-1041',suite:'Auth Suite',scene:'Verify OAuth token refresh on expiry',type:'Automated',result:'Pass',assign:'u4',exec:'Jul 7',linked:'PHXN-284'},
       {id:'TC-1042',suite:'Auth Suite',scene:'Invalid token returns 401',type:'Automated',result:'Pass',assign:'u4',exec:'Jul 7',linked:'PHXN-284'},
@@ -123,26 +149,26 @@ export let PROJECTS = [
       ]
     },
     tickets:[
-      {id:'SUP-441',title:'Payment double-charge edge case',prio:'P1',status:'In Progress',age:'6h'},
-      {id:'SUP-439',title:'Report export hangs on large dataset',prio:'P2',status:'In Progress',age:'1d'},
-      {id:'SUP-437',title:'Email notification delay',prio:'P3',status:'Open',age:'2d'},
+      {id:'SUP-441',title:'Payment double-charge edge case',description:'Customer charged twice when retrying failed checkout on slow network. Reproduced on staging with 3G throttling.',prio:'P1',status:'In Progress',age:'6h',assign:'u3'},
+      {id:'SUP-439',title:'Report export hangs on large dataset',description:'CSV export for >50k rows never completes. Browser tab becomes unresponsive after 2 minutes.',prio:'P2',status:'In Progress',age:'1d',assign:'u4'},
+      {id:'SUP-437',title:'Email notification delay',description:'Password reset and alert emails arriving 15–30 minutes late in production.',prio:'P3',status:'Open',age:'2d',assign:''},
     ],
     techDebt:[
       {id:'DEBT-12',title:'Migrate REST to GraphQL for nested queries',effort:'34 days',impact:'High',owner:'Priya'},
-      {id:'DEBT-18',title:'Replace lodash with native ES2022',effort:'8 days',impact:'Medium',owner:'Nisha'},
+      {id:'DEBT-18',title:'Replace lodash with native ES2022',effort:'8 days',impact:'Medium',owner:'Lakshman Sai'},
       {id:'DEBT-21',title:'Upgrade React 17 → 18 concurrent features',effort:'13 days',impact:'High',owner:'Priya'},
     ],
     releases:[
-      {id:'rel-p1-1',ver:'v2.8.7',date:'Jun 28',type:'Patch',changes:'3 bug fixes, security hardening',status:'Stable',by:'Kiran P.'},
-      {id:'rel-p1-2',ver:'v2.8.0',date:'Jun 14',type:'Minor',changes:'Auth redesign, 12 features',status:'Stable',by:'Kiran P.'},
-      {id:'rel-p1-3',ver:'v2.7.3',date:'May 30',type:'Patch',changes:'Performance: -30% API latency',status:'Stable',by:'Kiran P.'},
-      {id:'rel-p1-4',ver:'v2.7.0',date:'May 12',type:'Minor',changes:'Dashboard widgets, export to CSV',status:'Stable',by:'Priya S.'},
-      {id:'rel-p1-5',ver:'v2.6.2',date:'Apr 25',type:'Patch',changes:'Webhook retry logic, 2 CVE patches',status:'Stable',by:'Kiran P.'},
-      {id:'rel-p1-6',ver:'v2.6.0',date:'Apr 8',type:'Minor',changes:'Role-based access control, audit logs',status:'Stable',by:'Raj Kumar'},
-      {id:'rel-p1-7',ver:'v2.5.1',date:'Mar 20',type:'Patch',changes:'Fix session timeout, email template updates',status:'Stable',by:'Arjun M.'},
-      {id:'rel-p1-8',ver:'v2.5.0',date:'Mar 5',type:'Minor',changes:'Notification center, Slack integration',status:'Stable',by:'Kiran P.'},
-      {id:'rel-p1-9',ver:'v2.4.0',date:'Feb 14',type:'Minor',changes:'API v2 rollout, backward-compatible endpoints',status:'Stable',by:'Nisha R.'},
-      {id:'rel-p1-10',ver:'v2.3.2',date:'Jan 28',type:'Patch',changes:'Database migration fixes, index optimization',status:'Stable',by:'Kiran P.'},
+      {id:'rel-p1-1',ver:'v2.8.7',date:'Jun 28',type:'Patch',changes:'3 bug fixes, security hardening',environment:'prod',testCasePct:96,by:'Kiran P.'},
+      {id:'rel-p1-2',ver:'v2.8.0',date:'Jun 14',type:'Minor',changes:'Auth redesign, 12 features',environment:'prod',testCasePct:100,by:'Kiran P.'},
+      {id:'rel-p1-3',ver:'v2.7.3',date:'May 30',type:'Patch',changes:'Performance: -30% API latency',environment:'prod',testCasePct:98,by:'Kiran P.'},
+      {id:'rel-p1-4',ver:'v2.7.0',date:'May 12',type:'Minor',changes:'Dashboard widgets, export to CSV',environment:'uat',testCasePct:88,by:'Priya S.'},
+      {id:'rel-p1-5',ver:'v2.6.2',date:'Apr 25',type:'Patch',changes:'Webhook retry logic, 2 CVE patches',environment:'prod',testCasePct:100,by:'Kiran P.'},
+      {id:'rel-p1-6',ver:'v2.6.0',date:'Apr 8',type:'Minor',changes:'Role-based access control, audit logs',environment:'qa',testCasePct:76,by:'Ram Reddy'},
+      {id:'rel-p1-7',ver:'v2.5.1',date:'Mar 20',type:'Patch',changes:'Fix session timeout, email template updates',environment:'dev',testCasePct:52,by:'Arjun M.'},
+      {id:'rel-p1-8',ver:'v2.5.0',date:'Mar 5',type:'Minor',changes:'Notification center, Slack integration',environment:'prod',testCasePct:100,by:'Kiran P.'},
+      {id:'rel-p1-9',ver:'v2.4.0',date:'Feb 14',type:'Minor',changes:'API v2 rollout, backward-compatible endpoints',environment:'prod',testCasePct:94,by:'Lakshman Sai'},
+      {id:'rel-p1-10',ver:'v2.3.2',date:'Jan 28',type:'Patch',changes:'Database migration fixes, index optimization',environment:'prod',testCasePct:100,by:'Kiran P.'},
     ],
     credentials:[
       {id:'cred-p1-1',type:'database',name:'Database',notes:'Primary app database — read replicas on db-replica-01',updated:'Jul 5',fields:[
@@ -177,7 +203,7 @@ export let PROJECTS = [
     desc:'Cross-platform mobile application for iOS and Android',
     start:'2025-03-01',end:'2025-11-30',spDur:'2 weeks',
     curSprint:4,totalSprints:10,
-    method:'Scrum',pm:'Raj Kumar',teamLead:'Priya Sharma',teamLeadId:'u2',
+    method:'Scrum',pm:'Ram Reddy',teamLead:'Anil Kumar',teamLeadId:'u2',
     scopeDocs:[
       {name:'Nexus-Mobile-BRD.pdf',size:198400,added:'2025-03-05',content:'Business Requirements — Nexus Mobile App\n\nOffline sync, push notifications, biometric auth, iOS/Android parity.'},
       {name:'Nexus-UX-Scope.pdf',size:156672,added:'2025-03-08',content:'UX scope and screen inventory for Nexus mobile v1.'},
@@ -191,6 +217,9 @@ export let PROJECTS = [
     ],
     issues:[
       {id:'NXS-089',title:'Offline data sync with conflict resolution',type:'Feature',prio:'Critical',status:'In Progress',assign:'u3',sprint:'Sprint 4',due:'2025-07-10'},
+      {id:'NXS-089a',title:'Local SQLite cache schema',type:'Sub-task',parentId:'NXS-089',prio:'High',status:'Done',assign:'u3',sprint:'Sprint 4',due:'2025-07-02',description:'Design offline tables for user edits and sync queue.',url:'https://www.figma.com/file/nexus-offline-schema',message:'Schema approved in architecture review.'},
+      {id:'NXS-089b',title:'Background sync worker',type:'Sub-task',parentId:'NXS-089',prio:'Critical',status:'In Progress',assign:'u2',sprint:'Sprint 4',due:'2025-07-08',description:'iOS/Android background task to flush pending changes.',url:'https://nxs-staging.almsphere.io/sync',message:'Watch battery impact on Android mid-range devices.'},
+      {id:'NXS-089c',title:'Conflict resolution UI',type:'Sub-task',parentId:'NXS-089',prio:'High',status:'To Do',assign:'u6',sprint:'Sprint 4',due:'2025-07-10',description:'Modal flow when server and local copies diverge.',url:'',message:'Pair with UX for copy and illustration.'},
       {id:'NXS-087',title:'Push notification deep linking',type:'Feature',prio:'High',status:'To Do',assign:'u6',sprint:'Sprint 4',due:'2025-07-12'},
       {id:'NXS-082',title:'App crashes on Android 12 back gesture',type:'Bug',prio:'Critical',status:'In Progress',assign:'u5',sprint:'Sprint 4',due:'2025-07-08'},
       {id:'NXS-079',title:'Biometric authentication integration',type:'Feature',prio:'Medium',status:'Done',assign:'u6',sprint:'Sprint 4',due:'2025-07-05'},
@@ -212,13 +241,13 @@ export let PROJECTS = [
       uiUxUrl:'https://www.figma.com/file/nexus-mobile-flows',
       techStack:['React Native 0.73','TypeScript','Firebase','Postgres','Fastlane','Detox'],
       linksMeta:{updatedBy:'u3',updatedByName:'Rahul Mehta',updatedAt:'2025-05-18'},
-      techStackMeta:{updatedBy:'u2',updatedByName:'Priya Sharma',updatedAt:'2025-05-20'},
+      techStackMeta:{updatedBy:'u2',updatedByName:'Anil Kumar',updatedAt:'2025-05-20'},
     },
     scopeSheets:{
       client:[{id:'scs-p2-c1',title:'Mobile BRD',date:'2025-03-05',name:'Nexus-Mobile-BRD.xlsx',size:198400}],
       tester:[
-        {id:'scs-p2-t1',title:'Mobile Test Scope',date:'2025-05-20',name:'Nexus-Test-Scope.pdf',size:142000,addedBy:'u9',addedByName:'Ananya Iyer'},
-        {id:'scs-p2-t2',title:'Biometric Test Plan',date:'2025-05-22',name:'Nexus-Biometric-Tests.xlsx',size:76800,addedBy:'u9',addedByName:'Ananya Iyer'},
+        {id:'scs-p2-t1',title:'Mobile Test Scope',date:'2025-05-20',name:'Nexus-Test-Scope.pdf',size:142000,addedBy:'u9',addedByName:'Tejaswi'},
+        {id:'scs-p2-t2',title:'Biometric Test Plan',date:'2025-05-22',name:'Nexus-Biometric-Tests.xlsx',size:76800,addedBy:'u9',addedByName:'Tejaswi'},
       ],
       developer:[{id:'scs-p2-d1',title:'Offline Sync Features',date:'2025-06-10',name:'Nexus-Features.xlsx',size:54272}],
     },
@@ -239,16 +268,16 @@ export let PROJECTS = [
       ]
     },
     tickets:[
-      {id:'SUP-M21',title:'App crash on Android 12',prio:'P1',status:'In Progress',age:'2d'},
-      {id:'SUP-M19',title:'Push notifs not delivered on iOS 17',prio:'P2',status:'Open',age:'3d'},
+      {id:'SUP-M21',title:'App crash on Android 12',description:'App force-closes on launch for Pixel 6 devices running Android 12.',prio:'P1',status:'In Progress',age:'2d'},
+      {id:'SUP-M19',title:'Push notifs not delivered on iOS 17',description:'Users on iOS 17 not receiving push notifications until app is opened manually.',prio:'P2',status:'Open',age:'3d'},
     ],
     techDebt:[
       {id:'DEBT-M1',title:'Migrate to React Native 0.73',effort:'21 days',impact:'High',owner:'Arjun'},
-      {id:'DEBT-M2',title:'Remove legacy AsyncStorage usage',effort:'8 days',impact:'Medium',owner:'Nisha'},
+      {id:'DEBT-M2',title:'Remove legacy AsyncStorage usage',effort:'8 days',impact:'Medium',owner:'Lakshman Sai'},
     ],
     releases:[
-      {id:'rel-p2-1',ver:'v0.4.2',date:'Jun 20',type:'Beta',changes:'Biometric auth, 4 bug fixes',status:'Beta',by:'Kiran P.'},
-      {id:'rel-p2-2',ver:'v0.3.0',date:'Jun 1',type:'Alpha',changes:'Core navigation, settings',status:'Deprecated',by:'Kiran P.'},
+      {id:'rel-p2-1',ver:'v0.4.2',date:'Jun 20',type:'Beta',changes:'Biometric auth, 4 bug fixes',environment:'uat',testCasePct:82,by:'Kiran P.'},
+      {id:'rel-p2-2',ver:'v0.3.0',date:'Jun 1',type:'Alpha',changes:'Core navigation, settings',environment:'dev',testCasePct:65,by:'Kiran P.'},
     ],
     credentials:[
       {id:'cred-p2-1',type:'database',name:'Mobile Backend DB',notes:'Firebase + Postgres hybrid',updated:'Jun 18',fields:[
@@ -282,11 +311,11 @@ export let PROJECTS = [
     desc:'Enterprise analytics and reporting platform with AI insights',
     start:'2025-02-01',end:'2025-10-31',spDur:'2 weeks',
     curSprint:6,totalSprints:10,
-    method:'Scrum',pm:'Raj Kumar',teamLead:'Priya Sharma',teamLeadId:'u2',
+    method:'Scrum',pm:'Ram Reddy',teamLead:'Anil Kumar',teamLeadId:'u2',
     scopeDocs:[
       {name:'DataVault-Mock-Scope.pdf',size:131072,added:'2025-02-05',content:'Mock scope — DataVault Analytics\n\nETL ingestion, dashboard builder, AI insight widgets, scheduled reports.'},
     ],
-    members:['u1','u2','u4','u7','u8','u10','u12','u13'],
+    members:['u1','u2','u4','u7','u8','u10','u12'],
     spGoal:'Complete ETL pipeline and dashboard builder MVP',
     sprints:[
       {num:5,name:'Sprint 5',start:'Jun 9',end:'Jun 20',status:'done'},
@@ -313,14 +342,14 @@ export let PROJECTS = [
       mockUrl:'https://dva-mock.almsphere.io',
       uiUxUrl:'https://www.figma.com/file/datavault-dashboard-builder',
       techStack:['React 18','Python 3.12','ClickHouse','Apache Arrow','FastAPI','Celery','Redis'],
-      linksMeta:{updatedBy:'u2',updatedByName:'Priya Sharma',updatedAt:'2025-06-01'},
-      techStackMeta:{updatedBy:'u2',updatedByName:'Priya Sharma',updatedAt:'2025-06-03'},
+      linksMeta:{updatedBy:'u2',updatedByName:'Anil Kumar',updatedAt:'2025-06-01'},
+      techStackMeta:{updatedBy:'u2',updatedByName:'Anil Kumar',updatedAt:'2025-06-03'},
     },
     scopeSheets:{
       client:[{id:'scs-p3-c1',title:'Analytics Scope',date:'2025-02-05',name:'DataVault-Scope.xlsx',size:131072}],
       tester:[
-        {id:'scs-p3-t1',title:'Analytics Test Scope',date:'2025-06-01',name:'DataVault-Test-Scope.pdf',size:118000,addedBy:'u9',addedByName:'Ananya Iyer'},
-        {id:'scs-p3-t2',title:'ETL Validation Sheet',date:'2025-06-05',name:'DataVault-ETL-Tests.xlsx',size:89088,addedBy:'u9',addedByName:'Ananya Iyer'},
+        {id:'scs-p3-t1',title:'Analytics Test Scope',date:'2025-06-01',name:'DataVault-Test-Scope.pdf',size:118000,addedBy:'u9',addedByName:'Tejaswi'},
+        {id:'scs-p3-t2',title:'ETL Validation Sheet',date:'2025-06-05',name:'DataVault-ETL-Tests.xlsx',size:89088,addedBy:'u9',addedByName:'Tejaswi'},
       ],
       developer:[{id:'scs-p3-d1',title:'Dashboard Features v1',date:'2025-06-18',name:'DataVault-Features.xlsx',size:61440}],
     },
@@ -340,8 +369,8 @@ export let PROJECTS = [
       ]
     },
     tickets:[{id:'SUP-D11',title:'Dashboard timeout on large datasets',prio:'P2',status:'In Progress',age:'1d'}],
-    techDebt:[{id:'DEBT-D1',title:'Migrate query engine to Apache Arrow',effort:'34 days',impact:'High',owner:'Vikram'}],
-    releases:[{id:'rel-p3-1',ver:'v1.2.0',date:'Jun 22',type:'Minor',changes:'Caching layer, 6 new chart types',status:'Stable',by:'Kiran P.'}],
+    techDebt:[{id:'DEBT-D1',title:'Migrate query engine to Apache Arrow',effort:'34 days',impact:'High',owner:'Nithish Varma'}],
+    releases:[{id:'rel-p3-1',ver:'v1.2.0',date:'Jun 22',type:'Minor',changes:'Caching layer, 6 new chart types',environment:'prod',testCasePct:91,by:'Kiran P.'}],
     credentials:[
       {id:'cred-p3-1',type:'database',name:'Analytics Warehouse',notes:'ClickHouse cluster for reporting',updated:'Jul 2',fields:[
         {label:'Host',value:'ch.dva.internal',secret:false},
@@ -366,11 +395,11 @@ export let PROJECTS = [
 ];
 
 export let NOTIFS = [
-  {id:'n1',text:'<strong>Priya Sharma</strong> merged PR #284 — Auth module refactor',time:'12 min ago',read:false,type:'pr'},
+  {id:'n1',text:'<strong>Anil Kumar</strong> merged PR #284 — Auth module refactor',time:'12 min ago',read:false,type:'pr'},
   {id:'n2',text:'<strong>BUG-041</strong> Critical: Payment double-charge — assigned to Arjun',time:'1 hr ago',read:false,type:'bug'},
-  {id:'n3',text:'<strong>Sneha Rao</strong> closed 3 bugs in payment module',time:'2 hrs ago',read:false,type:'bug'},
+  {id:'n3',text:'<strong>Sesi Kalyan</strong> closed 3 bugs in payment module',time:'2 hrs ago',read:false,type:'bug'},
   {id:'n4',text:'<strong>Sprint 7</strong> is 70% through — 5 days remaining',time:'3 hrs ago',read:false,type:'sprint'},
-  {id:'n5',text:'<strong>Kiran Patel</strong> deployed v2.9.1 to Staging',time:'5 hrs ago',read:true,type:'deploy'},
+  {id:'n5',text:'<strong>Anil Arjun</strong> deployed v2.9.1 to Staging',time:'5 hrs ago',read:true,type:'deploy'},
   {id:'n6',text:'Retro action: Set 24hr PR review SLA — due tomorrow',time:'Yesterday',read:true,type:'task'},
 ];
 

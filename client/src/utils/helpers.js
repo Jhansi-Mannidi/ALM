@@ -143,12 +143,12 @@ export const APP_ROLES = [
 
 export const ROLE_LOGIN_USERS = {
   admin: { name: 'Sasi Paul', ini: 'SP', c: 'c1' },
-  manager: { name: 'Raj Kumar', ini: 'RK', c: 'c1' },
-  teamlead: { name: 'Priya Sharma', ini: 'PS', c: 'c2' },
-  developer: { name: 'Arjun Mehta', ini: 'AM', c: 'c3' },
-  tester: { name: 'Ananya Iyer', ini: 'AI', c: 'c1' },
-  ba: { name: 'Isha Reddy', ini: 'IR', c: 'c4' },
-  scrummaster: { name: 'Meera Joshi', ini: 'MJ', c: 'c3' },
+  manager: { name: 'Ram Reddy', ini: 'RR', c: 'c1' },
+  teamlead: { name: 'Anil Kumar', ini: 'AK', c: 'c2' },
+  developer: { name: 'Jhansi Mannidi', ini: 'JM', c: 'c3' },
+  tester: { name: 'Tejaswi', ini: 'TE', c: 'c1' },
+  ba: { name: 'Vineesha Reddy', ini: 'VR', c: 'c4' },
+  scrummaster: { name: 'Sai', ini: 'SA', c: 'c3' },
 };
 
 export const PERMS = {
@@ -246,6 +246,26 @@ export function resolvePermissionRole(role) {
 
 export const can = (role, action) => PERMS[resolvePermissionRole(role)]?.[action] || false;
 
+export function canManageCeremonies(role) {
+  return ['admin', 'manager', 'teamlead', 'scrummaster'].includes(resolvePermissionRole(role));
+}
+
+export const CEREMONY_ICON_OPTIONS = [
+  { id: 'planning', label: 'Planning' },
+  { id: 'standup', label: 'Standup' },
+  { id: 'review', label: 'Review' },
+  { id: 'retro', label: 'Retro' },
+  { id: 'grooming', label: 'Grooming' },
+  { id: 'stakeholder', label: 'Stakeholder' },
+];
+
+export const CEREMONY_STATUS_CHIPS = [
+  { id: 'chip-green', label: 'Completed' },
+  { id: 'chip-blue', label: 'Active / Today' },
+  { id: 'chip-amber', label: 'Upcoming' },
+  { id: 'chip-gray', label: 'Recurring' },
+];
+
 export function canCreateAnyWorkItem(role) {
   return (
     can(role, 'createTask') ||
@@ -255,8 +275,8 @@ export function canCreateAnyWorkItem(role) {
   );
 }
 
-/** Jira-style issue types for the Create work item flow */
-export const JIRA_ISSUE_TYPES = [
+/** Issue types for the Create work item flow */
+export const WORK_ITEM_TYPES = [
   { id: 'story', label: 'Story', type: 'Story', perm: 'createTask', chip: 'chip-teal' },
   { id: 'task', label: 'Task', type: 'Task', perm: 'createTask', chip: 'chip-gray' },
   { id: 'bug', label: 'Bug', type: 'Bug', perm: 'createBug', chip: 'chip-red' },
@@ -265,7 +285,7 @@ export const JIRA_ISSUE_TYPES = [
 ];
 
 export function getVisibleIssueTypes(permissions) {
-  return JIRA_ISSUE_TYPES.filter((t) => permissions?.[t.perm]);
+  return WORK_ITEM_TYPES.filter((t) => permissions?.[t.perm]);
 }
 
 export const CREDENTIAL_TEMPLATES = {
@@ -312,18 +332,80 @@ export const prioChip = (prio) =>
     Low: 'chip-gray',
   })[prio] || 'chip-gray';
 
-export const sChip = (s) =>
-  ({
-    Done: 'chip-green',
-    'In Progress': 'chip-blue',
-    'Code Review': 'chip-purple',
-    Testing: 'chip-amber',
-    Blocked: 'chip-red',
-    'In Review': 'chip-teal',
-    'To Do': 'chip-gray',
-    Open: 'chip-amber',
-    Resolved: 'chip-green',
-  })[s] || 'chip-gray';
+export const WORKFLOW_STATUSES = [
+  'Dev Progress',
+  'Dev Completed',
+  'QA',
+  'UAT',
+  'Prod',
+];
+
+const LEGACY_WORKFLOW_STATUS_MAP = {
+  'To Do': 'Dev Progress',
+  Open: 'Dev Progress',
+  'In Progress': 'Dev Progress',
+  Blocked: 'Dev Progress',
+  'On Hold': 'Dev Progress',
+  'In Review': 'Dev Completed',
+  'Code Review': 'Dev Completed',
+  Testing: 'QA',
+  Done: 'Prod',
+  Resolved: 'Prod',
+};
+
+export function normalizeWorkflowStatus(status) {
+  if (!status) return 'Dev Progress';
+  if (WORKFLOW_STATUSES.includes(status)) return status;
+  return LEGACY_WORKFLOW_STATUS_MAP[status] || 'Dev Progress';
+}
+
+export function workflowStatusChip(status) {
+  const s = normalizeWorkflowStatus(status);
+  return (
+    {
+      'Dev Progress': 'chip-blue',
+      'Dev Completed': 'chip-teal',
+      QA: 'chip-amber',
+      UAT: 'chip-purple',
+      Prod: 'chip-green',
+    }[s] || 'chip-gray'
+  );
+}
+
+export function isWorkflowComplete(status) {
+  return normalizeWorkflowStatus(status) === 'Prod';
+}
+
+export function isWorkflowInDevProgress(status) {
+  return normalizeWorkflowStatus(status) === 'Dev Progress';
+}
+
+export function workflowStatusLabel(status) {
+  const s = normalizeWorkflowStatus(status);
+  return (
+    {
+      'Dev Progress': 'In Progress',
+      'Dev Completed': 'Completed',
+      QA: 'QA',
+      UAT: 'UAT',
+      Prod: 'Completed',
+    }[s] || 'In Progress'
+  );
+}
+
+export function isMyTasksActiveStatus(status) {
+  return normalizeWorkflowStatus(status) === 'Dev Progress';
+}
+
+export const WORKFLOW_COL_COLORS = {
+  'Dev Progress': 'var(--blue)',
+  'Dev Completed': 'var(--teal)',
+  QA: 'var(--amber)',
+  UAT: 'var(--purple)',
+  Prod: 'var(--green)',
+};
+
+export const sChip = (s) => workflowStatusChip(s);
 
 export const TRAINING_OPTIONS = [
   'AWS Tasks',
@@ -382,6 +464,30 @@ export function findIssueInProjects(projects, issueId) {
   return null;
 }
 
+export function getSubtasks(project, parentId) {
+  if (!project || !parentId) return [];
+  return (project.issues ?? []).filter((i) => i.parentId === parentId);
+}
+
+export function getParentIssue(project, issue) {
+  if (!issue?.parentId || !project) return null;
+  return (project.issues ?? []).find((i) => i.id === issue.parentId) || null;
+}
+
+export function sortIssuesWithSubtasks(issues) {
+  const list = issues ?? [];
+  const parents = list.filter((i) => !i.parentId);
+  const rows = [];
+  for (const parent of parents) {
+    rows.push(parent);
+    list.filter((i) => i.parentId === parent.id).forEach((child) => rows.push(child));
+  }
+  list
+    .filter((i) => i.parentId && !parents.some((p) => p.id === i.parentId))
+    .forEach((orphan) => rows.push(orphan));
+  return rows;
+}
+
 export const issueTypeChip = (type) =>
   ({
     Bug: 'chip-red',
@@ -389,6 +495,7 @@ export const issueTypeChip = (type) =>
     Epic: 'chip-purple',
     Story: 'chip-teal',
     Task: 'chip-gray',
+    'Sub-task': 'chip-navy',
   })[type] || 'chip-gray';
 
 export function issuesForSprint(project, sprintNum) {
@@ -401,7 +508,7 @@ export function issuesForSprint(project, sprintNum) {
 
 export function sprintCompletion(project, sprintNum) {
   const issues = issuesForSprint(project, sprintNum);
-  const done = issues.filter((i) => i.status === 'Done').length;
+  const done = issues.filter((i) => isWorkflowComplete(i.status)).length;
   const total = issues.length;
   return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
 }
@@ -422,8 +529,8 @@ export function buildMemberRows(projects, users) {
         map.set(uid, { user, projects: [] });
       }
 
-      const assigned = (p.issues ?? []).filter((i) => i.assign === uid && i.status !== 'Done').length;
-      const bugs = (p.bugs ?? []).filter((b) => b.assign === uid && b.status !== 'Resolved').length;
+      const assigned = (p.issues ?? []).filter((i) => i.assign === uid && !isWorkflowComplete(i.status)).length;
+      const bugs = (p.bugs ?? []).filter((b) => b.assign === uid && !isWorkflowComplete(b.status)).length;
 
       map.get(uid).projects.push({
         id: p.id,
@@ -453,8 +560,8 @@ export function buildProjectMemberRows(project, users) {
     .map((uid) => {
       const user = uById(users, uid);
       if (!user) return null;
-      const assigned = (project.issues ?? []).filter((i) => i.assign === uid && i.status !== 'Done').length;
-      const bugs = (project.bugs ?? []).filter((b) => b.assign === uid && b.status !== 'Resolved').length;
+      const assigned = (project.issues ?? []).filter((i) => i.assign === uid && !isWorkflowComplete(i.status)).length;
+      const bugs = (project.bugs ?? []).filter((b) => b.assign === uid && !isWorkflowComplete(b.status)).length;
       return {
         user,
         projects: [{
@@ -496,26 +603,27 @@ export const PAGE_TITLES = {
   dashboard: 'Dashboard',
   members: 'Team Members',
   'team-members': 'Team Members',
+  'time-tracking': 'Time Tracking',
   'project-team': 'Project Team',
   backlog: 'Product Backlog',
   sprint: 'Sprint Board',
   scrum: 'Scrum & Ceremonies',
   scope: 'Scope & Requirements',
   bugs: 'Bug Tracker',
-  testing: 'Testing & QA',
   deploy: 'Deployment',
   maint: 'Maintenance',
-  roadmap: 'Roadmap',
+  calendar: 'Calendar',
   reports: 'Reports',
   credentials: 'Project Credentials',
+  time: 'Time Spent',
 };
 
 export const PROJ_PAGES = [
   'dashboard', 'project-team', 'backlog', 'sprint', 'scrum', 'scope',
-  'bugs', 'testing', 'deploy', 'credentials', 'maint', 'roadmap', 'reports',
+  'bugs', 'time', 'deploy', 'credentials', 'maint', 'calendar', 'reports',
 ];
 
-export const WORKSPACE_PAGES = ['portfolio', 'my-tasks', 'notifications', 'team-members'];
+export const WORKSPACE_PAGES = ['portfolio', 'my-tasks', 'notifications', 'team-members', 'time-tracking'];
 
 export const SIDEBAR_PROJECT_NAV = [
   { path: 'dashboard', label: 'Dashboard' },
@@ -525,11 +633,11 @@ export const SIDEBAR_PROJECT_NAV = [
   { path: 'scrum', label: 'Scrum & Ceremonies' },
   { path: 'scope', label: 'Scope & Reqs' },
   { path: 'bugs', label: 'Bug Tracker', badgeKey: 'bugs', badgeRed: true },
-  { path: 'testing', label: 'Testing & QA' },
+  { path: 'time', label: 'Time Spent' },
   { path: 'deploy', label: 'Deployment' },
   { path: 'credentials', label: 'Credentials' },
   { path: 'maint', label: 'Maintenance' },
-  { path: 'roadmap', label: 'Roadmap' },
+  { path: 'calendar', label: 'Calendar' },
   { path: 'reports', label: 'Reports' },
 ];
 
@@ -541,10 +649,10 @@ export const PROJECT_SECTIONS = [
   { path: 'scrum', label: 'Scrum' },
   { path: 'scope', label: 'Scope' },
   { path: 'bugs', label: 'Bugs', badgeKey: 'bugs', badgeRed: true },
-  { path: 'testing', label: 'Testing' },
+  { path: 'time', label: 'Time' },
   { path: 'deploy', label: 'Deploy' },
   { path: 'credentials', label: 'Credentials' },
   { path: 'maint', label: 'Maintenance' },
-  { path: 'roadmap', label: 'Roadmap' },
+  { path: 'calendar', label: 'Calendar' },
   { path: 'reports', label: 'Reports' },
 ];

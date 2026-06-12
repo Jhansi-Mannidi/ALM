@@ -1,13 +1,22 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { AppIcon, IconButton, Icons } from '../components/icons';
 import PageHeader from '../components/PageHeader';
-import { can, prioChip, sChip, uById } from '../utils/helpers';
+import {
+  can,
+  isWorkflowComplete,
+  issueTypeChip,
+  normalizeWorkflowStatus,
+  prioChip,
+  sChip,
+  sortIssuesWithSubtasks,
+  uById,
+  WORKFLOW_STATUSES,
+} from '../utils/helpers';
 const FILTERS = [
   ['all', 'All', null],
-  ['todo', 'To Do', null],
-  ['inprog', 'In Progress', null],
-  ['done', 'Done', null],
+  ...WORKFLOW_STATUSES.map((s) => [s, s, null]),
   ['bug', 'Bug', Icons.bug],
   ['critical', 'Critical', Icons.circleAlert],
 ];
@@ -20,10 +29,9 @@ export default function BacklogPage() {
   if (!project) return null;
 
   let issues = project.issues;
-  if (blFilter === 'todo') issues = issues.filter((i) => i.status === 'To Do');
-  else if (blFilter === 'inprog') issues = issues.filter((i) => ['In Progress', 'Code Review', 'Testing'].includes(i.status));
-  else if (blFilter === 'done') issues = issues.filter((i) => i.status === 'Done');
-  else if (blFilter === 'bug') issues = issues.filter((i) => i.type === 'Bug');
+  if (WORKFLOW_STATUSES.includes(blFilter)) {
+    issues = issues.filter((i) => normalizeWorkflowStatus(i.status) === blFilter);
+  } else if (blFilter === 'bug') issues = issues.filter((i) => i.type === 'Bug');
   else if (blFilter === 'critical') issues = issues.filter((i) => i.prio === 'Critical');
   if (blSearch) {
     const q = blSearch.toLowerCase();
@@ -35,14 +43,13 @@ export default function BacklogPage() {
     setModal('assign');
   };
 
-  const typeChip = (type) =>
-    type === 'Bug' ? 'chip-red' : type === 'Feature' ? 'chip-blue' : type === 'Epic' ? 'chip-purple' : 'chip-gray';
+  const displayIssues = sortIssuesWithSubtasks(issues);
 
   return (
     <>
       <PageHeader
         title="Product Backlog"
-        subtitle={`${project.issues.length} total · ${project.issues.filter((i) => i.status !== 'Done').length} open`}
+        subtitle={`${project.issues.length} total · ${project.issues.filter((i) => !isWorkflowComplete(i.status)).length} open`}
       />
 
       <div className="fbar">
@@ -85,18 +92,26 @@ export default function BacklogPage() {
             </tr>
           </thead>
           <tbody>
-            {issues.map((i) => {
+            {displayIssues.map((i) => {
               const u = uById(users, i.assign);
+              const isSubtask = !!i.parentId;
               return (
-                <tr key={i.id}>
+                <tr key={i.id} className={isSubtask ? 'tbl-subtask-row' : ''}>
                   <td>
-                    <span className="iid">{i.id}</span>
+                    <Link to={`/tasks/${i.id}`} className="iid task-link">
+                      {i.id}
+                    </Link>
                   </td>
                   <td>
-                    <div className="t-cell-sm" style={{ maxWidth: 220 }}>{i.title}</div>
+                    <div className={`t-cell-sm backlog-title-cell${isSubtask ? ' is-subtask' : ''}`}>
+                      {isSubtask && <span className="subtask-branch" aria-hidden="true" />}
+                      <Link to={`/tasks/${i.id}`} className="task-link">
+                        {i.title}
+                      </Link>
+                    </div>
                   </td>
                   <td>
-                    <span className={`chip ${typeChip(i.type)}`}>
+                    <span className={`chip ${issueTypeChip(i.type)}`}>
                       {i.type}
                     </span>
                   </td>

@@ -1,20 +1,30 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { slideDownVariants } from '../motion/presets';
 import { AppIcon, Icons, PROJECT_SECTION_ICONS } from './icons';
 import { PROJ_PAGES, PROJECT_SECTIONS } from '../utils/helpers';
 
 export default function ProjectTabs() {
-  const { project, projects, badges, permissions, setModal, setCreateTab } = useApp();
+  const { project, projects, badges, permissions } = useApp();
   const location = useLocation();
+  const navigate = useNavigate();
   const page = location.pathname.slice(1);
 
-  if (!PROJ_PAGES.includes(page)) return null;
-
   const activeProject = project || projects[0];
-  if (!activeProject) return null;
+  const visible = PROJ_PAGES.includes(page) && activeProject;
 
   return (
-    <div className="proj-tabs-bar">
+    <AnimatePresence>
+      {visible && (
+    <motion.div
+      className="proj-tabs-bar"
+      key={activeProject.id}
+      variants={slideDownVariants}
+      initial="hidden"
+      animate="visible"
+      exit={{ opacity: 0, y: -8, transition: { duration: 0.18 } }}
+    >
       <div className="proj-tabs-project">
         <span className="proj-tabs-dot" style={{ background: activeProject.color }} />
         <span className="proj-tabs-name" title={activeProject.name}>
@@ -42,15 +52,14 @@ export default function ProjectTabs() {
         <button
           type="button"
           className="btn btn-primary btn-sm proj-tabs-create fx"
-          onClick={() => {
-            setCreateTab('story');
-            setModal('create');
-          }}
+          onClick={() => navigate('/create?type=story', { state: { from: location.pathname } })}
         >
           <AppIcon icon={Icons.plus} size={14} />
           Create
         </button>
       )}
-    </div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

@@ -1,0 +1,78 @@
+import { NavLink, Outlet, Link } from 'react-router-dom';
+import { AppIcon, Icons } from '../../../components/icons';
+import { HR_WORKSPACE_NAV, HR_RECRUITMENT_NAV, HR_OPERATIONS_NAV } from '../../data/hrCatalog';
+import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
+import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
+
+const NAV_ICONS = {
+  layoutDashboard: Icons.layoutGrid,
+  users: Icons.users,
+  userPlus: Icons.userPlus,
+  briefcase: Icons.folder,
+  fileText: Icons.fileText,
+  clipboard: Icons.clipboardCheck,
+  listChecks: Icons.listChecks,
+  trendingUp: Icons.trendingUp,
+  logOut: Icons.logOut,
+  wrench: Icons.wrench,
+  sparkles: Icons.sparkles,
+};
+
+function NavBtn({ to, children, end = false, title }) {
+  return (
+    <NavLink
+      to={to}
+      end={end}
+      title={title}
+      className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
+    >
+      {children}
+    </NavLink>
+  );
+}
+
+function NavSection({ label, items, endIds = [] }) {
+  return (
+    <div className="sb-section">
+      <div className="sb-slabel">{label}</div>
+      {items.map((item) => (
+        <NavBtn key={item.id} to={item.path} end={endIds.includes(item.id)} title={item.label}>
+          <AppIcon icon={NAV_ICONS[item.icon] || Icons.circle} size={13} />
+          <span className="ws-nav-label">{item.label}</span>
+        </NavBtn>
+      ))}
+    </div>
+  );
+}
+
+export default function HrLayout() {
+  const { collapsed, toggle } = useProfileSidebarCollapsed();
+
+  return (
+    <div className={`ws-hr-shell${collapsed ? ' sidebar-collapsed' : ''}`}>
+      <aside className={`ws-hr-sidebar sidebar${collapsed ? ' collapsed' : ''}`}>
+        <ProfileSidebarBrand
+          icon="users"
+          subtitle="HR & People"
+          collapsed={collapsed}
+          onToggleCollapsed={toggle}
+        />
+
+        <NavSection label="Workspace" items={HR_WORKSPACE_NAV} endIds={['dashboard']} />
+
+        <NavSection label="Recruitment" items={HR_RECRUITMENT_NAV} endIds={['recruitment']} />
+
+        <NavSection label="Actions" items={HR_OPERATIONS_NAV} />
+
+        <Link to="/workspace/solutions/business-operations" className="ws-hr-back" title="Back to Workspace">
+          <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
+          <span className="ws-nav-label">Back to Workspace</span>
+        </Link>
+      </aside>
+
+      <div className="ws-hr-content">
+        <Outlet />
+      </div>
+    </div>
+  );
+}

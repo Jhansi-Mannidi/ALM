@@ -21,25 +21,24 @@ const emptyMember = () => ({
   training: [],
   ontime: 100,
 });
+import MotionModal from '../motion/MotionModal';
 import { AppIcon, Icons } from './icons';
-import CreateWorkItemModal from './CreateWorkItemModal';
 
 function Modal({ id, title, width, children, footer }) {
   const { modal, setModal } = useApp();
-  if (modal !== id) return null;
+  const open = modal === id;
+
   return (
-    <div className="modal-ov open" onClick={(e) => e.target === e.currentTarget && setModal(null)}>
-      <div className="modal" style={width ? { width } : undefined}>
-        <div className="modal-hd">
-          <span className="modal-title">{title}</span>
-          <button className="modal-x" onClick={() => setModal(null)} aria-label="Close">
-            <AppIcon icon={Icons.x} size={16} />
-          </button>
-        </div>
-        <div className="modal-body">{children}</div>
-        {footer && <div className="modal-foot">{footer}</div>}
+    <MotionModal open={open} onClose={() => setModal(null)} style={width ? { width } : undefined}>
+      <div className="modal-hd">
+        <span className="modal-title">{title}</span>
+        <button className="modal-x" onClick={() => setModal(null)} aria-label="Close">
+          <AppIcon icon={Icons.x} size={16} />
+        </button>
       </div>
-    </div>
+      <div className="modal-body">{children}</div>
+      {footer && <div className="modal-foot">{footer}</div>}
+    </MotionModal>
   );
 }
 
@@ -82,17 +81,26 @@ export default function Modals() {
   const [member, setMember] = useState(emptyMember());
   const [req, setReq] = useState({ title: '', type: 'FR', prio: 'Must Have' });
   const [tc, setTc] = useState({ title: '', suite: '', type: 'Automated', assign: '', linked: '' });
-  const [ticket, setTicket] = useState({ title: '', prio: 'P3 - Medium', assign: '' });
+  const [ticket, setTicket] = useState({ title: '', description: '', prio: 'P3 - Medium', assign: '' });
 
   const memOpts = project?.members
     ? project.members.map((id) => uById(users, id)).filter(Boolean)
     : users ?? [];
 
   useEffect(() => {
-    if (modal === 'assign' && assignCtx.userId) {
+    if (modal !== 'assign') return;
+    if (assignCtx.ticketId && project) {
+      const tk = project.tickets?.find((t) => t.id === assignCtx.ticketId);
+      setAssign({
+        assignId: assignCtx.userId || tk?.assign || '',
+        prio: tk?.prio || 'P3',
+      });
+      return;
+    }
+    if (assignCtx.userId) {
       setAssign((a) => ({ ...a, assignId: assignCtx.userId }));
     }
-  }, [modal, assignCtx]);
+  }, [modal, assignCtx, project]);
 
   useEffect(() => {
     if (modal !== 'addmem') return;
@@ -135,11 +143,30 @@ export default function Modals() {
 
   const confirmAssign = async () => {
     if (!assign.assignId) return toast('Select assignee', 'err');
-    await api.assignTask(project.id, { issueId: assignCtx.issueId, assignId: assign.assignId, prio: assign.prio });
     const u = uById(users, assign.assignId);
-    await addNotification(`<strong>${user.name}</strong> assigned ${assignCtx.issueId || 'a task'} to <strong>${u?.name}</strong>`, 'task');
+    if (assignCtx.ticketId) {
+      await api.updateTicket(project.id, assignCtx.ticketId, {
+        assign: assign.assignId,
+        prio: assign.prio,
+      });
+      await addNotification(
+        `<strong>${user.name}</strong> assigned ticket <strong>${assignCtx.ticketId}</strong> to <strong>${u?.name}</strong>`,
+        'task',
+      );
+    } else {
+      await api.assignTask(project.id, {
+        issueId: assignCtx.issueId,
+        assignId: assign.assignId,
+        prio: assign.prio,
+      });
+      await addNotification(
+        `<strong>${user.name}</strong> assigned ${assignCtx.issueId || 'a task'} to <strong>${u?.name}</strong>`,
+        'task',
+      );
+    }
     await refreshProjects();
     setModal(null);
+    setAssignCtx({ issueId: null, ticketId: null, userId: null });
     toast(`Assigned to ${u?.name || 'member'} ✓`, 'ok');
   };
 
@@ -214,13 +241,17 @@ export default function Modals() {
     await api.addTicket(project.id, ticket);
     await refreshProjects();
     setModal(null);
-    setTicket({ title: '', prio: 'P3 - Medium', assign: '' });
+    setTicket({ title: '', description: '', prio: 'P3 - Medium', assign: '' });
     toast('Ticket logged ✓', 'ok');
   };
 
   const assignIssue = assignCtx.issueId
     ? project?.issues.find((i) => i.id === assignCtx.issueId)
     : null;
+  const assignTicket = assignCtx.ticketId
+    ? project?.tickets?.find((t) => t.id === assignCtx.ticketId)
+    : null;
+  const isTicketAssign = !!assignCtx.ticketId;
 
   const userOpts = (
     <option value="">-- Select --</option>
@@ -325,12 +356,61 @@ export default function Modals() {
         </div>
       )}
 
-      <CreateWorkItemModal />
-
-      <Modal id="assign" title="Assign Task" width="460px" footer={<><button className="btn btn-ghost" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary fx g4" onClick={confirmAssign}><AppIcon icon={Icons.userPlus} size={14} />Assign Task</button></>}>
-        <div className="fl"><label>Task</label><div className="fi" style={{ background: 'var(--g50)', color: 'var(--heading)', fontWeight: 600 }}>{assignIssue ? `${assignIssue.id} — ${assignIssue.title}` : 'New assignment'}</div></div>
-        <div className="fl"><label>Assign To *</label><select className="fs" value={assign.assignId} onChange={(e) => setAssign({ ...assign, assignId: e.target.value })}>{userOpts}{memOpts.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.role})</option>)}</select></div>
-        <div className="fl"><label>Priority</label><select className="fs" value={assign.prio} onChange={(e) => setAssign({ ...assign, prio: e.target.value })}><option>Critical</option><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <Modal
+        id="assign"
+        title={isTicketAssign ? 'Assign Ticket' : 'Assign Task'}
+        width="460px"
+        footer={
+          <>
+            <button type="button" className="btn btn-ghost" onClick={() => setModal(null)}>
+              Cancel
+            </button>
+            <button type="button" className="btn btn-primary fx g4" onClick={confirmAssign}>
+              <AppIcon icon={Icons.userPlus} size={14} />
+              {isTicketAssign ? 'Assign Ticket' : 'Assign Task'}
+            </button>
+          </>
+        }
+      >
+        <div className="fl">
+          <label>{isTicketAssign ? 'Ticket' : 'Task'}</label>
+          <div className="fi" style={{ background: 'var(--g50)', color: 'var(--heading)', fontWeight: 600 }}>
+            {assignTicket
+              ? `${assignTicket.id} — ${assignTicket.title}`
+              : assignIssue
+                ? `${assignIssue.id} — ${assignIssue.title}`
+                : 'New assignment'}
+          </div>
+        </div>
+        <div className="fl">
+          <label>Assign To *</label>
+          <select className="fs" value={assign.assignId} onChange={(e) => setAssign({ ...assign, assignId: e.target.value })}>
+            {userOpts}
+            {memOpts.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.name} ({u.role})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="fl">
+          <label>Priority</label>
+          {isTicketAssign ? (
+            <select className="fs" value={assign.prio} onChange={(e) => setAssign({ ...assign, prio: e.target.value })}>
+              <option value="P1">P1 - Critical</option>
+              <option value="P2">P2 - High</option>
+              <option value="P3">P3 - Medium</option>
+              <option value="P4">P4 - Low</option>
+            </select>
+          ) : (
+            <select className="fs" value={assign.prio} onChange={(e) => setAssign({ ...assign, prio: e.target.value })}>
+              <option>Critical</option>
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+          )}
+        </div>
       </Modal>
 
       <Modal id="addmem" title="Add Team Member" width="560px" footer={<><button className="btn btn-ghost" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary fx g4" onClick={addMember}><AppIcon icon={Icons.userPlus} size={14} />Add Member</button></>}>
@@ -441,9 +521,13 @@ export default function Modals() {
         </div>
       </Modal>
 
-      <Modal id="ticket" title="Log Support Ticket" width="460px" footer={<><button className="btn btn-ghost" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary fx g4" onClick={addTicketFn}><AppIcon icon={Icons.plus} size={14} />Log Ticket</button></>}>
-        <div className="fl"><label>Issue Title *</label><input className="fi" value={ticket.title} onChange={(e) => setTicket({ ...ticket, title: e.target.value })} /></div>
-        <div className="fl"><label>Priority</label><select className="fs" value={ticket.prio} onChange={(e) => setTicket({ ...ticket, prio: e.target.value })}><option>P1 - Critical</option><option>P2 - High</option><option>P3 - Medium</option><option>P4 - Low</option></select></div>
+      <Modal id="ticket" title="Log Support Ticket" width="480px" footer={<><button className="btn btn-ghost" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary fx g4" onClick={addTicketFn}><AppIcon icon={Icons.plus} size={14} />Log Ticket</button></>}>
+        <div className="fl"><label>Issue Title *</label><input className="fi" value={ticket.title} onChange={(e) => setTicket({ ...ticket, title: e.target.value })} placeholder="Brief summary of the issue" /></div>
+        <div className="fl"><label>Description</label><textarea className="fa" rows={4} value={ticket.description} onChange={(e) => setTicket({ ...ticket, description: e.target.value })} placeholder="Steps to reproduce, environment, impact, and any other details…" /></div>
+        <div className="f2">
+          <div className="fl"><label>Priority</label><select className="fs" value={ticket.prio} onChange={(e) => setTicket({ ...ticket, prio: e.target.value })}><option>P1 - Critical</option><option>P2 - High</option><option>P3 - Medium</option><option>P4 - Low</option></select></div>
+          <div className="fl"><label>Assignee</label><select className="fs" value={ticket.assign} onChange={(e) => setTicket({ ...ticket, assign: e.target.value })}>{userOpts}{memOpts.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}</select></div>
+        </div>
       </Modal>
     </>
   );

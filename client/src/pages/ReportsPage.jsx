@@ -1,4 +1,5 @@
 import { useApp } from '../context/AppContext';
+import { isWorkflowComplete } from '../utils/helpers';
 import PageHeader from '../components/PageHeader';
 
 export default function ReportsPage() {
@@ -14,9 +15,9 @@ export default function ReportsPage() {
   const barColor = (k) =>
     k === 'Bug' ? 'var(--red)' : k === 'Feature' ? 'var(--blue)' : k === 'Epic' ? 'var(--purple)' : 'var(--g300)';
 
-  const open = project.issues.filter((i) => i.status !== 'Done').length;
-  const done = project.issues.filter((i) => i.status === 'Done').length;
-  const openBugs = project.bugs.filter((b) => b.status !== 'Resolved').length;
+  const open = project.issues.filter((i) => !isWorkflowComplete(i.status)).length;
+  const done = project.issues.filter((i) => isWorkflowComplete(i.status)).length;
+  const openBugs = project.bugs.filter((b) => !isWorkflowComplete(b.status)).length;
 
   return (
     <>
@@ -76,10 +77,10 @@ export default function ReportsPage() {
           </div>
           <div className="card-body">
             {[
-              ['Todo → In Progress', '1.2d', 24, 'var(--blue)'],
-              ['In Progress → Review', '2.3d', 46, 'var(--purple)'],
-              ['Review → Testing', '0.8d', 16, 'var(--amber)'],
-              ['Testing → Done', '0.6d', 12, 'var(--green)'],
+              ['Dev Progress → Dev Completed', '1.2d', 24, 'var(--blue)'],
+              ['Dev Completed → QA', '2.3d', 46, 'var(--teal)'],
+              ['QA → UAT', '0.8d', 16, 'var(--amber)'],
+              ['UAT → Prod', '0.6d', 12, 'var(--green)'],
             ].map(([l, v, w, c]) => (
               <div key={l} style={{ marginBottom: 11 }}>
                 <div className="fx" style={{ marginBottom: 4 }}>

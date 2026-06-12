@@ -55,6 +55,19 @@ export const api = {
     request(`/projects/${projectId}/members`, { method: 'POST', body: JSON.stringify(data) }),
   addRequirement: (projectId, data) =>
     request(`/projects/${projectId}/requirements`, { method: 'POST', body: JSON.stringify(data) }),
+  createScopeSection: (projectId, data) =>
+    request(`/projects/${projectId}/scope-sections`, { method: 'POST', body: JSON.stringify(data) }),
+  deleteScopeSection: (projectId, sectionId) =>
+    request(`/projects/${projectId}/scope-sections/${sectionId}`, { method: 'DELETE' }),
+  createCeremony: (projectId, data) =>
+    request(`/projects/${projectId}/ceremonies`, { method: 'POST', body: JSON.stringify(data) }),
+  updateCeremony: (projectId, ceremonyId, data) =>
+    request(`/projects/${projectId}/ceremonies/${ceremonyId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+  deleteCeremony: (projectId, ceremonyId) =>
+    request(`/projects/${projectId}/ceremonies/${ceremonyId}`, { method: 'DELETE' }),
   addScopeSheet: (projectId, section, data) =>
     request(`/projects/${projectId}/scope-sheets/${section}`, {
       method: 'POST',
@@ -75,6 +88,11 @@ export const api = {
     request(`/projects/${projectId}/test-cases/${tcId}`, { method: 'PATCH', body: JSON.stringify(data) }),
   addTicket: (projectId, data) =>
     request(`/projects/${projectId}/tickets`, { method: 'POST', body: JSON.stringify(data) }),
+  updateTicket: (projectId, ticketId, data) =>
+    request(`/projects/${projectId}/tickets/${ticketId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
   addCredential: (projectId, data) =>
     request(`/projects/${projectId}/credentials`, { method: 'POST', body: JSON.stringify(data) }),
   updateCredential: (projectId, credId, data) =>
@@ -89,4 +107,247 @@ export const api = {
   addNotification: (data) =>
     request('/notifications', { method: 'POST', body: JSON.stringify(data) }),
   clearNotifications: () => request('/notifications/read-all', { method: 'PATCH' }),
+  startTimeLog: (projectId, data) =>
+    request(`/projects/${projectId}/time-logs/start`, { method: 'POST', body: JSON.stringify(data) }),
+  stopTimeLog: (projectId, data) =>
+    request(`/projects/${projectId}/time-logs/stop`, { method: 'POST', body: JSON.stringify(data) }),
+  createTimeLog: (projectId, data) =>
+    request(`/projects/${projectId}/time-logs`, { method: 'POST', body: JSON.stringify(data) }),
+  getHrDashboard: () => request('/hr/dashboard'),
+  getHrApprovals: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/hr/approvals${q ? `?${q}` : ''}`);
+  },
+  updateHrApproval: (id, data) =>
+    request(`/hr/approvals/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  approveAllHrApprovals: () =>
+    request('/hr/approvals/approve-all', { method: 'POST' }),
+  getHrHikes: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/hr/hikes${q ? `?${q}` : ''}`);
+  },
+  getHrHikeCandidates: () => request('/hr/hikes/candidates'),
+  getHrHikeReview: (employeeId) => request(`/hr/hikes/review/${employeeId}`),
+  sendHrHikePerformance: (employeeId) =>
+    request(`/hr/hikes/review/${employeeId}/send-performance`, { method: 'POST' }),
+  updateHrHike: (id, data) =>
+    request(`/hr/hikes/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  createHrHike: (data) =>
+    request('/hr/hikes', { method: 'POST', body: JSON.stringify(data) }),
+  getEmployeePortal: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/portal${q ? `?${q}` : ''}`);
+  },
+  updateEmployeeProfile: (data) =>
+    request('/employee/profile', { method: 'PATCH', body: JSON.stringify(data) }),
+  getEmployeeAssets: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/assets${q ? `?${q}` : ''}`);
+  },
+  getEmployeeAssetTickets: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/asset-tickets${q ? `?${q}` : ''}`);
+  },
+  createEmployeeAssetTicket: (data) =>
+    request('/employee/asset-tickets', { method: 'POST', body: JSON.stringify(data) }),
+  getEmployeeAiSubscriptions: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/ai-subscriptions${q ? `?${q}` : ''}`);
+  },
+  getEmployeeAiTools: () => request('/employee/ai-tools'),
+  createEmployeeAiSubscriptionRequest: (data) =>
+    request('/employee/ai-subscriptions/requests', { method: 'POST', body: JSON.stringify(data) }),
+  getHrAiSubscriptionsOverview: () => request('/hr/ai-subscriptions/overview'),
+  getHrAiSubscriptionRequests: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/hr/ai-subscriptions/requests${q ? `?${q}` : ''}`);
+  },
+  updateHrAiSubscriptionRequest: (id, data) =>
+    request(`/hr/ai-subscriptions/requests/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getHrAiActiveSubscriptions: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/hr/ai-subscriptions/active${q ? `?${q}` : ''}`);
+  },
+  updateHrAiActiveSubscription: (id, data) =>
+    request(`/hr/ai-subscriptions/active/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getEmployeeColleagues: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/colleagues${q ? `?${q}` : ''}`);
+  },
+  getEmployeePayslips: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/payslips${q ? `?${q}` : ''}`);
+  },
+  getEmployeeDates: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/dates${q ? `?${q}` : ''}`);
+  },
+  getEmployeeDocuments: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/documents${q ? `?${q}` : ''}`);
+  },
+  addEmployeeDocuments: (documents) =>
+    request('/employee/documents', { method: 'POST', body: JSON.stringify({ documents }) }),
+  getEmployeeExitRequests: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/employee/exit-requests${q ? `?${q}` : ''}`);
+  },
+  createEmployeeExitRequest: (data) =>
+    request('/employee/exit-requests', { method: 'POST', body: JSON.stringify(data) }),
+  updateEmployeeExitRequest: (id, data) =>
+    request(`/employee/exit-requests/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getHrExitRequests: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/hr/exit-requests${q ? `?${q}` : ''}`);
+  },
+  updateHrExitRequest: (id, data) =>
+    request(`/hr/exit-requests/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getHrAssetTickets: (params) => {
+    const q = new URLSearchParams(params || {}).toString();
+    return request(`/hr/asset-tickets${q ? `?${q}` : ''}`);
+  },
+  updateHrAssetTicket: (id, data) =>
+    request(`/hr/asset-tickets/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getHrOnboarding: () => request('/hr/onboarding'),
+  getHrOnboardingHire: (id) => request(`/hr/onboarding/${id}`),
+  createHrOnboardingHire: (data) =>
+    request('/hr/onboarding', { method: 'POST', body: JSON.stringify(data) }),
+  updateHrOnboardingHire: (id, data) =>
+    request(`/hr/onboarding/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getHrStages: () => request('/hr/stages'),
+  getHrEmployees: () => request('/hr/employees'),
+  getHrEmployee: (id) => request(`/hr/employees/${id}`),
+  createHrEmployee: (data) =>
+    request('/hr/employees', { method: 'POST', body: JSON.stringify(data) }),
+  deleteHrEmployee: (id) => request(`/hr/employees/${id}`, { method: 'DELETE' }),
+  addHrEmployeeDocuments: (employeeId, documents) =>
+    request(`/hr/employees/${employeeId}/documents`, {
+      method: 'POST',
+      body: JSON.stringify({ documents }),
+    }),
+  addHrEmployeePayslip: (employeeId, data) =>
+    request(`/hr/employees/${employeeId}/payslips`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  deleteHrEmployeePayslip: (employeeId, payslipId) =>
+    request(`/hr/employees/${employeeId}/payslips/${payslipId}`, { method: 'DELETE' }),
+  addHrEmployeeAsset: (employeeId, data) =>
+    request(`/hr/employees/${employeeId}/assets`, { method: 'POST', body: JSON.stringify(data) }),
+  updateHrEmployeeAssetImage: (employeeId, assetId, image) =>
+    request(`/hr/employees/${employeeId}/assets/${assetId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ image }),
+    }),
+  getHrJobs: () => request('/hr/jobs'),
+  getHrJob: (id) => request(`/hr/jobs/${id}`),
+  createHrJob: (data) =>
+    request('/hr/jobs', { method: 'POST', body: JSON.stringify(data) }),
+  getHrCandidates: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/hr/candidates${q ? `?${q}` : ''}`);
+  },
+  getHrCandidate: (id) => request(`/hr/candidates/${id}`),
+  createHrCandidate: (data) =>
+    request('/hr/candidates', { method: 'POST', body: JSON.stringify(data) }),
+  updateCandidateStage: (id, data) =>
+    request(`/hr/candidates/${id}/stage`, { method: 'PATCH', body: JSON.stringify(data) }),
+  createHrInterview: (data) =>
+    request('/hr/interviews', { method: 'POST', body: JSON.stringify(data) }),
+  updateHrInterview: (id, data) =>
+    request(`/hr/interviews/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getHrInterviews: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/hr/interviews${q ? `?${q}` : ''}`);
+  },
+  getHrFeedback: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/hr/feedback${q ? `?${q}` : ''}`);
+  },
+  submitHrFeedback: (data) =>
+    request('/hr/feedback', { method: 'POST', body: JSON.stringify(data) }),
+  getFinanceDashboard: () => request('/finance/dashboard'),
+  getFinanceSettings: () => request('/finance/settings'),
+  updateFinanceSettings: (data) =>
+    request('/finance/settings', { method: 'PATCH', body: JSON.stringify(data) }),
+  getFinanceAccounts: () => request('/finance/accounts'),
+  getFinanceAccount: (id) => request(`/finance/accounts/${id}`),
+  createFinanceAccount: (data) =>
+    request('/finance/accounts', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceAccount: (id, data) =>
+    request(`/finance/accounts/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteFinanceAccount: (id) => request(`/finance/accounts/${id}`, { method: 'DELETE' }),
+  getFinanceJournalEntries: () => request('/finance/journal-entries'),
+  getFinanceJournalEntry: (id) => request(`/finance/journal-entries/${id}`),
+  createFinanceJournalEntry: (data) =>
+    request('/finance/journal-entries', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceJournalEntry: (id, data) =>
+    request(`/finance/journal-entries/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  postFinanceJournalEntry: (id) =>
+    request(`/finance/journal-entries/${id}`, { method: 'PATCH', body: JSON.stringify({ post: true }) }),
+  deleteFinanceJournalEntry: (id) =>
+    request(`/finance/journal-entries/${id}`, { method: 'DELETE' }),
+  getFinanceLedger: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/finance/ledger${q ? `?${q}` : ''}`);
+  },
+  getFinanceInvoices: () => request('/finance/invoices'),
+  getFinanceInvoice: (id) => request(`/finance/invoices/${id}`),
+  createFinanceInvoice: (data) =>
+    request('/finance/invoices', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceInvoice: (id, data) =>
+    request(`/finance/invoices/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteFinanceInvoice: (id) => request(`/finance/invoices/${id}`, { method: 'DELETE' }),
+  getFinanceExpenseCategories: () => request('/finance/expense-categories'),
+  getFinanceExpenseSummary: () => request('/finance/expenses/summary'),
+  getFinanceExpenses: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/finance/expenses${q ? `?${q}` : ''}`);
+  },
+  getFinanceExpense: (id) => request(`/finance/expenses/${id}`),
+  createFinanceExpense: (data) =>
+    request('/finance/expenses', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceExpense: (id, data) =>
+    request(`/finance/expenses/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteFinanceExpense: (id) => request(`/finance/expenses/${id}`, { method: 'DELETE' }),
+  getFinancePayments: () => request('/finance/payments'),
+  getFinancePayment: (id) => request(`/finance/payments/${id}`),
+  createFinancePayment: (data) =>
+    request('/finance/payments', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinancePayment: (id, data) =>
+    request(`/finance/payments/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteFinancePayment: (id) => request(`/finance/payments/${id}`, { method: 'DELETE' }),
+  getFinanceVendors: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/finance/vendors${q ? `?${q}` : ''}`);
+  },
+  getFinanceVendor: (id) => request(`/finance/vendors/${id}`),
+  createFinanceVendor: (data) =>
+    request('/finance/vendors', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceVendor: (id, data) =>
+    request(`/finance/vendors/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteFinanceVendor: (id) => request(`/finance/vendors/${id}`, { method: 'DELETE' }),
+  getFinanceModule: (moduleKey) => request(`/finance/modules/${moduleKey}`),
+  getFinanceModuleRecord: (moduleKey, id) => request(`/finance/modules/${moduleKey}/${id}`),
+  createFinanceModule: (moduleKey, data) =>
+    request(`/finance/modules/${moduleKey}`, { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceModule: (moduleKey, id, data) =>
+    request(`/finance/modules/${moduleKey}/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteFinanceModule: (moduleKey, id) =>
+    request(`/finance/modules/${moduleKey}/${id}`, { method: 'DELETE' }),
+  getFinanceReportCatalog: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/finance/report-catalog${q ? `?${q}` : ''}`);
+  },
+  updateFinanceReportCatalog: (id, data) =>
+    request(`/finance/report-catalog/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getFinanceBanking: () => request('/finance/banking'),
+  getFinanceBudgets: () => request('/finance/budgets'),
+  getFinanceBudget: (id) => request(`/finance/budgets/${id}`),
+  createFinanceBudget: (data) =>
+    request('/finance/budgets', { method: 'POST', body: JSON.stringify(data) }),
+  updateFinanceBudget: (id, data) =>
+    request(`/finance/budgets/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteFinanceBudget: (id) => request(`/finance/budgets/${id}`, { method: 'DELETE' }),
+  getFinanceReports: () => request('/finance/reports'),
 };
