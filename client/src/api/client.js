@@ -455,6 +455,47 @@ export const api = {
     request(`/product/briefs/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteProductBrief: (id) => request(`/product/briefs/${id}`, { method: 'DELETE' }),
   getProductShare: (token) => request(`/product/share/${token}`),
+  submitPortalIdea: (token, data) =>
+    request(`/product/share/${token}/ideas`, { method: 'POST', body: JSON.stringify(data) }),
+  getProductDrivers: () => request('/product/data/drivers'),
+  createProductDriver: (data) =>
+    request('/product/data/drivers', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductDriver: (id, data) =>
+    request(`/product/data/drivers/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductDriver: (id) => request(`/product/data/drivers/${id}`, { method: 'DELETE' }),
+  getProductFormula: () => request('/product/data/formula'),
+  updateProductFormula: (data) =>
+    request('/product/data/formula', { method: 'PATCH', body: JSON.stringify(data) }),
+  getProductSegments: () => request('/product/data/segments'),
+  createProductSegment: (data) =>
+    request('/product/data/segments', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductSegment: (id, data) =>
+    request(`/product/data/segments/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductSegment: (id) => request(`/product/data/segments/${id}`, { method: 'DELETE' }),
+  createProductTheme: (data) =>
+    request('/product/themes', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductTheme: (id, data) =>
+    request(`/product/themes/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductTheme: (id) => request(`/product/themes/${id}`, { method: 'DELETE' }),
+  getProductTags: () => request('/product/data/tags'),
+  createProductTag: (data) =>
+    request('/product/data/tags', { method: 'POST', body: JSON.stringify(data) }),
+  deleteProductTag: (id) => request(`/product/data/tags/${id}`, { method: 'DELETE' }),
+  getProductCustomFields: () => request('/product/data/custom-fields'),
+  createProductCustomField: (data) =>
+    request('/product/data/custom-fields', { method: 'POST', body: JSON.stringify(data) }),
+  deleteProductCustomField: (id) =>
+    request(`/product/data/custom-fields/${id}`, { method: 'DELETE' }),
+  getProductDocs: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/docs${q ? `?${q}` : ''}`);
+  },
+  createProductDoc: (data) =>
+    request('/product/docs', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductDoc: (id, data) =>
+    request(`/product/docs/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductDoc: (id) => request(`/product/docs/${id}`, { method: 'DELETE' }),
+  getProductAdoption: () => request('/product/adoption'),
   getOfficeDashboard: () => request('/office/dashboard'),
   getOfficeInventory: (params = {}) => {
     const q = new URLSearchParams(params).toString();

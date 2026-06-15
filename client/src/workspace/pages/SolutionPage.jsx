@@ -69,10 +69,10 @@ export default function SolutionPage() {
         <div className="ws-solution-banner-glow" aria-hidden />
         <div className="ws-solution-banner-inner">
           <div className="ws-solution-hero-icon">
-            <WorkspaceIcon name={solution.icon} size={32} style={{ color: solution.color }} />
+            <WorkspaceIcon name={solution.icon} size={36} strokeWidth={1.75} style={{ color: solution.color }} />
           </div>
           <div className="ws-solution-hero-copy">
-            <span className="ws-solution-kicker">Solution</span>
+            <span className="chip chip-blue chip-xs ws-solution-kicker">Solution</span>
             <h1 className="ws-solution-title">{solution.name}</h1>
             <p className="ws-solution-subtitle">{solution.description}</p>
           </div>
@@ -87,11 +87,11 @@ export default function SolutionPage() {
         </div>
       </header>
 
-      <section className="ws-solution-stats" aria-label="Solution metrics">
+      <section className="ws-hr-stats ws-solution-stats" aria-label="Solution metrics">
         {solution.stats.map((stat) => (
-            <div key={stat.label} className="ws-solution-stat">
-            <div className="ws-solution-stat-label">{stat.label}</div>
-            <div className="ws-solution-stat-value">{stat.value}</div>
+          <div key={stat.label} className="ws-hr-stat-card">
+            <div className="ws-hr-stat-value">{stat.value}</div>
+            <div className="ws-hr-stat-label">{stat.label}</div>
           </div>
         ))}
       </section>
@@ -99,8 +99,8 @@ export default function SolutionPage() {
       <section className="ws-solution-apps">
         <div className="ws-solution-apps-head">
           <div>
-            <h2 className="ws-solution-apps-title">Apps in this Solution</h2>
-            <p className="ws-solution-apps-sub">Launch a module to manage your operations</p>
+            <h2 className="ws-section-title">Apps in this Solution</h2>
+            <p className="ws-section-sub">Launch a module to manage your operations</p>
           </div>
           <span className="ws-solution-apps-count">{visibleApps.length} available</span>
         </div>

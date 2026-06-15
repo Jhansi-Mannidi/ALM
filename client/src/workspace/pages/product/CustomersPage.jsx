@@ -10,11 +10,16 @@ const EMPTY = { name: '', segment: 'Mid-market', tier: 'Standard', contactEmail:
 export default function CustomersPage() {
   const confirmDelete = usePmDeleteConfirm();
   const [customers, setCustomers] = useState([]);
+  const [segments, setSegments] = useState([]);
   const [form, setForm] = useState(EMPTY);
   const [editingId, setEditingId] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
-  const load = () => api.getProductCustomers().then(setCustomers).catch(() => {});
+  const load = () => {
+    Promise.all([api.getProductCustomers(), api.getProductSegments()])
+      .then(([c, s]) => { setCustomers(c); setSegments(s); })
+      .catch(() => api.getProductCustomers().then(setCustomers));
+  };
 
   useEffect(() => { load(); }, []);
 
@@ -67,7 +72,13 @@ export default function CustomersPage() {
           <h3 className="ws-pm-form-title">{editingId ? 'Edit customer' : 'New customer'}</h3>
           <div className="ws-pm-form-grid">
             <label>Name<input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></label>
-            <label>Segment<input value={form.segment} onChange={(e) => setForm({ ...form, segment: e.target.value })} /></label>
+            <label>Segment
+              <select value={form.segment} onChange={(e) => setForm({ ...form, segment: e.target.value })}>
+                {segments.length > 0
+                  ? segments.map((s) => <option key={s.id} value={s.name}>{s.name}</option>)
+                  : <option value={form.segment}>{form.segment || 'Mid-market'}</option>}
+              </select>
+            </label>
             <label>Tier<input value={form.tier} onChange={(e) => setForm({ ...form, tier: e.target.value })} /></label>
             <label>Email<input type="email" value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} /></label>
           </div>

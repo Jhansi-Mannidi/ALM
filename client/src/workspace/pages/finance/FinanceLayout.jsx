@@ -1,32 +1,11 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import { api } from '../../../api/client';
-import { AppIcon, Icons } from '../../../components/icons';
+import { AppIcon, Icons, resolveIcon } from '../../../components/icons';
 import { FINANCE_NAV_SECTIONS } from '../../data/financeCatalog';
 import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
 import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
 import { fiscalYearLabel } from './financeUtils';
-
-const NAV_ICONS = {
-  layoutDashboard: Icons.layoutGrid,
-  folder: Icons.folder,
-  users: Icons.users,
-  fileText: Icons.fileText,
-  cart: Icons.cart,
-  fileSpreadsheet: Icons.fileSpreadsheet,
-  refresh: Icons.refreshCw,
-  clipboard: Icons.clipboardCheck,
-  arrowLeftRight: Icons.arrowLeftRight,
-  building: Icons.building,
-  timer: Icons.timer,
-  list: Icons.list,
-  layers: Icons.layers,
-  listChecks: Icons.listChecks,
-  shieldCheck: Icons.shieldCheck,
-  barChart: Icons.barChart3,
-  trendingUp: Icons.trendingUp,
-  sliders: Icons.sliders,
-};
 
 function NavBtn({ to, children, end = false, title, quickAdd, quickAddPath }) {
   return (
@@ -141,7 +120,7 @@ export default function FinanceLayout() {
                       || (item.moduleKey ? `/workspace/finance/m/${item.moduleKey}/new` : undefined)
                     }
                   >
-                    <AppIcon icon={NAV_ICONS[item.icon] || Icons.circle} size={13} />
+                    <AppIcon icon={resolveIcon(item.icon)} size={13} />
                     <span className="ws-nav-label">{item.label}</span>
                   </NavBtn>
                 ))}

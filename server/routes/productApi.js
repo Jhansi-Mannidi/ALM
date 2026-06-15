@@ -12,6 +12,15 @@ import {
   pmRoadmapItems,
   pmPortals,
   pmBriefs,
+  pmDrivers,
+  pmFormula,
+  pmSegments,
+  pmTags,
+  pmCustomFields,
+  pmDocs,
+  pmWorkspaceMembers,
+  pmAdoptionActivity,
+  PM_PORTAL_COLUMNS,
   projects,
   findPmProduct,
   findPmFeature,
@@ -732,10 +741,235 @@ router.get('/product/share/:token', (req, res) => {
       return { ...r, featureTitle: feat?.title };
     });
   res.json({
-    portal: { name: portal.name, type: portal.type },
+    portal: { name: portal.name, type: portal.type, token: portal.token },
     product,
     roadmap,
     initiatives: pmInitiatives.filter((i) => i.productId === portal.productId),
+    portalColumns: PM_PORTAL_COLUMNS,
+  });
+});
+
+router.post('/product/share/:token/ideas', (req, res) => {
+  const portal = pmPortals.find((p) => p.token === req.params.token && p.published);
+  if (!portal) return res.status(404).json({ error: 'Portal not found' });
+  const { title, body, submitterName, submitterEmail } = req.body || {};
+  if (!title?.trim()) return res.status(400).json({ error: 'Title required' });
+  const ins = {
+    id: `ins-${Date.now()}`,
+    customerId: null,
+    title: String(title).trim(),
+    body: body || '',
+    source: 'portal',
+    status: 'unprocessed',
+    themeId: null,
+    featureId: null,
+    portalId: portal.id,
+    productId: portal.productId,
+    submitterName: submitterName || 'Portal visitor',
+    submitterEmail: submitterEmail || '',
+    createdAt: new Date().toISOString().slice(0, 10),
+  };
+  pmInsights.push(ins);
+  res.status(201).json({ ok: true, id: ins.id });
+});
+
+// ——— Data model admin ———
+router.get('/product/data/drivers', (_req, res) => res.json(pmDrivers));
+router.post('/product/data/drivers', (req, res) => {
+  const { name, key, description, weight, scaleMin, scaleMax, inverse } = req.body || {};
+  if (!name?.trim() || !key?.trim()) return res.status(400).json({ error: 'Name and key required' });
+  const driver = {
+    id: `drv-${Date.now()}`,
+    name: String(name).trim(),
+    key: String(key).trim(),
+    description: description || '',
+    weight: Number(weight) || 1,
+    scaleMin: Number(scaleMin) || 0,
+    scaleMax: Number(scaleMax) || 10,
+    inverse: Boolean(inverse),
+  };
+  pmDrivers.push(driver);
+  res.status(201).json(driver);
+});
+router.patch('/product/data/drivers/:id', (req, res) => {
+  const driver = pmDrivers.find((d) => d.id === req.params.id);
+  if (!driver) return res.status(404).json({ error: 'Driver not found' });
+  Object.assign(driver, req.body || {});
+  res.json(driver);
+});
+router.delete('/product/data/drivers/:id', (req, res) => {
+  const idx = pmDrivers.findIndex((d) => d.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Driver not found' });
+  pmDrivers.splice(idx, 1);
+  res.json({ ok: true });
+});
+
+router.get('/product/data/formula', (_req, res) => res.json(pmFormula));
+router.patch('/product/data/formula', (req, res) => {
+  const { name, expression, description } = req.body || {};
+  if (name != null) pmFormula.name = name;
+  if (expression != null) pmFormula.expression = expression;
+  if (description != null) pmFormula.description = description;
+  res.json(pmFormula);
+});
+
+router.get('/product/data/segments', (_req, res) => res.json(pmSegments));
+router.post('/product/data/segments', (req, res) => {
+  const { name, description } = req.body || {};
+  if (!name?.trim()) return res.status(400).json({ error: 'Name required' });
+  const seg = { id: `seg-${Date.now()}`, name: String(name).trim(), description: description || '' };
+  pmSegments.push(seg);
+  res.status(201).json(seg);
+});
+router.patch('/product/data/segments/:id', (req, res) => {
+  const seg = pmSegments.find((s) => s.id === req.params.id);
+  if (!seg) return res.status(404).json({ error: 'Segment not found' });
+  if (req.body?.name != null) seg.name = String(req.body.name).trim();
+  if (req.body?.description != null) seg.description = req.body.description;
+  res.json(seg);
+});
+router.delete('/product/data/segments/:id', (req, res) => {
+  const idx = pmSegments.findIndex((s) => s.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Segment not found' });
+  pmSegments.splice(idx, 1);
+  res.json({ ok: true });
+});
+
+router.post('/product/themes', (req, res) => {
+  const { name, featureIds } = req.body || {};
+  if (!name?.trim()) return res.status(400).json({ error: 'Name required' });
+  const theme = {
+    id: `theme-${Date.now()}`,
+    name: String(name).trim(),
+    insightCount: 0,
+    featureIds: featureIds || [],
+  };
+  pmThemes.push(theme);
+  res.status(201).json(theme);
+});
+router.patch('/product/themes/:id', (req, res) => {
+  const theme = pmThemes.find((t) => t.id === req.params.id);
+  if (!theme) return res.status(404).json({ error: 'Theme not found' });
+  if (req.body?.name != null) theme.name = String(req.body.name).trim();
+  if (req.body?.featureIds != null) theme.featureIds = req.body.featureIds;
+  res.json(theme);
+});
+router.delete('/product/themes/:id', (req, res) => {
+  const idx = pmThemes.findIndex((t) => t.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Theme not found' });
+  pmThemes.splice(idx, 1);
+  res.json({ ok: true });
+});
+
+router.get('/product/data/tags', (_req, res) => res.json(pmTags));
+router.post('/product/data/tags', (req, res) => {
+  const { name, color } = req.body || {};
+  if (!name?.trim()) return res.status(400).json({ error: 'Name required' });
+  const tag = { id: `tag-${Date.now()}`, name: String(name).trim(), color: color || '#64748B' };
+  pmTags.push(tag);
+  res.status(201).json(tag);
+});
+router.delete('/product/data/tags/:id', (req, res) => {
+  const idx = pmTags.findIndex((t) => t.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Tag not found' });
+  pmTags.splice(idx, 1);
+  res.json({ ok: true });
+});
+
+router.get('/product/data/custom-fields', (_req, res) => res.json(pmCustomFields));
+router.post('/product/data/custom-fields', (req, res) => {
+  const { entity, name, fieldKey, type, required } = req.body || {};
+  if (!name?.trim() || !fieldKey?.trim()) return res.status(400).json({ error: 'Name and field key required' });
+  const field = {
+    id: `cf-${Date.now()}`,
+    entity: entity || 'feature',
+    name: String(name).trim(),
+    fieldKey: String(fieldKey).trim(),
+    type: type || 'text',
+    required: Boolean(required),
+  };
+  pmCustomFields.push(field);
+  res.status(201).json(field);
+});
+router.delete('/product/data/custom-fields/:id', (req, res) => {
+  const idx = pmCustomFields.findIndex((f) => f.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Custom field not found' });
+  pmCustomFields.splice(idx, 1);
+  res.json({ ok: true });
+});
+
+// ——— Documents hub ———
+router.get('/product/docs', (req, res) => {
+  let list = pmDocs.map((d) => {
+    const product = findPmProduct(d.productId);
+    const feature = d.featureId ? findPmFeature(d.featureId) : null;
+    return { ...d, productName: product?.name, featureTitle: feature?.title };
+  });
+  const tab = req.query.tab || 'all';
+  const user = req.query.user || 'Jhansi Mannidi';
+  if (tab === 'created') list = list.filter((d) => d.createdBy === user);
+  else if (tab === 'shared-with-me') list = list.filter((d) => d.sharedWith?.includes(user) || d.sharedWith?.includes('u1'));
+  else if (tab === 'shared-with-others') list = list.filter((d) => d.sharedWith?.length > 0);
+  res.json(list.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)));
+});
+
+router.post('/product/docs', (req, res) => {
+  const { productId, title, content, status, featureId, sharedWith, createdBy } = req.body || {};
+  if (!title?.trim() || !productId) return res.status(400).json({ error: 'Title and product required' });
+  const doc = {
+    id: `doc-${Date.now()}`,
+    productId,
+    title: String(title).trim(),
+    content: content || '',
+    status: status || 'draft',
+    createdBy: createdBy || 'Jhansi Mannidi',
+    ownerId: 'u1',
+    sharedWith: sharedWith || [],
+    featureId: featureId || null,
+    updatedAt: new Date().toISOString().slice(0, 10),
+  };
+  pmDocs.push(doc);
+  res.status(201).json(doc);
+});
+
+router.patch('/product/docs/:id', (req, res) => {
+  const doc = pmDocs.find((d) => d.id === req.params.id);
+  if (!doc) return res.status(404).json({ error: 'Document not found' });
+  const fields = ['productId', 'title', 'content', 'status', 'featureId', 'sharedWith'];
+  for (const f of fields) {
+    if (req.body?.[f] != null) doc[f] = req.body[f];
+  }
+  doc.updatedAt = new Date().toISOString().slice(0, 10);
+  res.json(doc);
+});
+
+router.delete('/product/docs/:id', (req, res) => {
+  const idx = pmDocs.findIndex((d) => d.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Document not found' });
+  pmDocs.splice(idx, 1);
+  res.json({ ok: true });
+});
+
+// ——— Workspace adoption analytics ———
+router.get('/product/adoption', (_req, res) => {
+  const total = pmWorkspaceMembers.length;
+  const active = pmWorkspaceMembers.filter((m) => m.status === 'active').length;
+  const pending = pmWorkspaceMembers.filter((m) => m.status === 'pending').length;
+  const byRole = ['maker', 'contributor', 'viewer'].map((role) => ({
+    role,
+    count: pmWorkspaceMembers.filter((m) => m.role === role).length,
+  }));
+  res.json({
+    stats: {
+      total,
+      active,
+      pending,
+      activeRate: Math.round((active / Math.max(total, 1)) * 100),
+      makerSeatsLeft: 'unlimited',
+    },
+    members: pmWorkspaceMembers,
+    byRole,
+    activity: pmAdoptionActivity,
   });
 });
 

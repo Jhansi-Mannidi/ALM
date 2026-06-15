@@ -1,5 +1,5 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
-import { AppIcon, Icons } from '../../../components/icons';
+import { AppIcon, resolveIcon } from '../../../components/icons';
 import {
   EMPLOYEE_WORKSPACE_NAV,
   EMPLOYEE_PEOPLE_NAV,
@@ -8,18 +8,6 @@ import {
 } from '../../data/employeeCatalog';
 import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
 import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
-
-const NAV_ICONS = {
-  layoutDashboard: Icons.layoutGrid,
-  users: Icons.users,
-  fileText: Icons.fileText,
-  calendarDays: Icons.calendarDays,
-  monitor: Icons.monitor,
-  wrench: Icons.wrench,
-  plus: Icons.plus,
-  sparkles: Icons.sparkles,
-  logOut: Icons.logOut,
-};
 
 function NavBtn({ to, children, end = false, title }) {
   return (
@@ -40,7 +28,7 @@ function NavSection({ label, items, endIds = [] }) {
       <div className="sb-slabel">{label}</div>
       {items.map((item) => (
         <NavBtn key={item.id} to={item.path} end={endIds.includes(item.id)} title={item.label}>
-          <AppIcon icon={NAV_ICONS[item.icon] || Icons.circle} size={13} />
+          <AppIcon icon={resolveIcon(item.icon)} size={13} />
           <span className="ws-nav-label">{item.label}</span>
         </NavBtn>
       ))}

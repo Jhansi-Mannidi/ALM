@@ -119,7 +119,6 @@ export const SOLUTIONS = [
     stats: [
       { label: 'Active Roles', value: '6' },
       { label: 'Permissions', value: '42' },
-      { label: 'Org Units', value: '24' },
       { label: 'System Users', value: '150' },
     ],
     apps: [
@@ -131,15 +130,6 @@ export const SOLUTIONS = [
         solutionId: 'system-administration',
         isNew: true,
         route: '/workspace/admin/rbac/roles',
-      },
-      {
-        id: 'org-hierarchy',
-        name: 'Org Unit Hierarchy',
-        description: 'Configure organizational structure & data access',
-        icon: 'network',
-        solutionId: 'system-administration',
-        isNew: true,
-        route: '/workspace/org-units/hierarchy',
       },
     ],
   },
@@ -163,46 +153,3 @@ export function getAppById(appId) {
 export function getSolutionForApp(appId) {
   return SOLUTIONS.find((s) => s.apps.some((a) => a.id === appId));
 }
-
-export const ORG_TEMPLATES = [
-  {
-    id: 'enterprise',
-    name: 'Enterprise Global',
-    levels: ['HQ', 'Region', 'Country', 'Company', 'Branch', 'Department', 'Team'],
-  },
-  {
-    id: 'regional',
-    name: 'Regional Office',
-    levels: ['Company', 'Branch', 'Department', 'Work Location'],
-  },
-  {
-    id: 'standard',
-    name: 'Standard Corporate',
-    levels: ['Company', 'Branch', 'Department'],
-  },
-  {
-    id: 'project',
-    name: 'Project-Based',
-    levels: ['Organization', 'Division', 'Project', 'Workstream'],
-  },
-];
-
-export const DEFAULT_ORG_TREE = {
-  name: 'ACME Corporation',
-  children: [
-    {
-      name: 'North America',
-      children: [
-        { name: 'USA', children: [{ name: 'New York HQ' }, { name: 'San Francisco' }] },
-        { name: 'Canada', children: [{ name: 'Toronto' }] },
-      ],
-    },
-    {
-      name: 'EMEA',
-      children: [
-        { name: 'UAE', children: [{ name: 'Dubai Office' }] },
-        { name: 'UK', children: [{ name: 'London Office' }] },
-      ],
-    },
-  ],
-};

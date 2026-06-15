@@ -141,20 +141,20 @@ export function AppListCard({ app, solution, onOpen }) {
       tabIndex={0}
     >
       <div className="ws-solution-app-icon">
-        <WorkspaceIcon name={app.icon} size={24} style={{ color: accent }} />
+        <WorkspaceIcon name={app.icon} size={22} strokeWidth={1.75} style={{ color: accent }} />
       </div>
 
       <div className="ws-solution-app-content">
         <div className="ws-solution-app-head">
-          <h3 className="ws-solution-app-title">{app.name}</h3>
+          <h3 className="ws-app-list-title">{app.name}</h3>
           <div className="ws-solution-app-badges">
-            {app.isNew && <span className="ws-solution-badge new">New</span>}
+            {app.isNew && <span className="chip chip-xs chip-blue">New</span>}
             {app.notificationCount > 0 && (
-              <span className="ws-solution-badge count">{app.notificationCount}</span>
+              <span className="chip chip-xs chip-red">{app.notificationCount}</span>
             )}
           </div>
         </div>
-        <p className="ws-solution-app-desc">{app.description}</p>
+        <p className="ws-app-list-desc">{app.description}</p>
         {app.highlights?.length > 0 && (
           <div className="ws-solution-app-highlights">
             {app.highlights.map((h) => (
@@ -167,7 +167,7 @@ export function AppListCard({ app, solution, onOpen }) {
       <div className="ws-solution-app-action">
         <span className="ws-solution-open-btn">
           Open App
-          <AppIcon icon={Icons.arrowRight} size={14} />
+          <AppIcon icon={Icons.arrowRight} size={13} />
         </span>
       </div>
     </article>

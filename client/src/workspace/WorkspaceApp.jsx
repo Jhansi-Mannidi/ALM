@@ -13,6 +13,7 @@ import RolePermissionsPage from './pages/admin/RolePermissionsPage';
 import PermissionsPage from './pages/admin/PermissionsPage';
 import RbacUsersPage from './pages/admin/RbacUsersPage';
 import AuditLogsPage from './pages/admin/AuditLogsPage';
+import AdoptionReportsPage from './pages/admin/AdoptionReportsPage';
 import HrLayout from './pages/hr/HrLayout';
 import HrDashboardPage from './pages/hr/HrDashboardPage';
 import OnboardingPage from './pages/hr/OnboardingPage';
@@ -78,6 +79,8 @@ import PrioritizationPage from './pages/product/PrioritizationPage';
 import RoadmapPage from './pages/product/RoadmapPage';
 import ProductReleasesPage from './pages/product/ProductReleasesPage';
 import ProductReportsPage from './pages/product/ProductReportsPage';
+import ProductDataPage from './pages/product/ProductDataPage';
+import ProductDocsPage from './pages/product/ProductDocsPage';
 import PortalsPage from './pages/product/PortalsPage';
 import BriefsPage from './pages/product/BriefsPage';
 import ProductSharePage from './pages/product/ProductSharePage';
@@ -87,7 +90,6 @@ import InventoryPage from './pages/office/InventoryPage';
 import RequestsPage from './pages/office/RequestsPage';
 import OfficeVendorsPage from './pages/office/VendorsPage';
 import FoodPage from './pages/office/FoodPage';
-import OrgHierarchyPage from './pages/OrgHierarchyPage';
 import './workspace.css';
 
 export default function WorkspaceApp() {
@@ -107,8 +109,8 @@ export default function WorkspaceApp() {
               <Route path="permissions" element={<PermissionsPage />} />
               <Route path="users" element={<RbacUsersPage />} />
               <Route path="audit" element={<AuditLogsPage />} />
+              <Route path="adoption" element={<AdoptionReportsPage />} />
             </Route>
-            <Route path="org-units/hierarchy" element={<OrgHierarchyPage />} />
             <Route path="employee" element={<EmployeeLayout />}>
               <Route index element={<EmployeeDashboardPage />} />
               <Route path="profile" element={<EmployeeProfilePage />} />
@@ -190,6 +192,8 @@ export default function WorkspaceApp() {
               <Route path="roadmap" element={<RoadmapPage />} />
               <Route path="releases" element={<ProductReleasesPage />} />
               <Route path="reports" element={<ProductReportsPage />} />
+              <Route path="data" element={<ProductDataPage />} />
+              <Route path="docs" element={<ProductDocsPage />} />
               <Route path="portals" element={<PortalsPage />} />
               <Route path="briefs" element={<BriefsPage />} />
             </Route>

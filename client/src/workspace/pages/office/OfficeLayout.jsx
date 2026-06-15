@@ -1,17 +1,9 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
-import { AppIcon, Icons } from '../../../components/icons';
+import { AppIcon, resolveIcon } from '../../../components/icons';
 import { OFFICE_NAV_SECTIONS } from '../../data/officeCatalog';
 import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
 import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
 import { OfficeDeleteConfirmProvider } from './OfficeDeleteConfirmContext';
-
-const NAV_ICONS = {
-  layoutDashboard: Icons.layoutGrid,
-  package: Icons.package,
-  inbox: Icons.inbox,
-  truck: Icons.truck,
-  utensils: Icons.utensils,
-};
 
 function NavBtn({ to, children, end = false, title }) {
   return (
@@ -32,7 +24,7 @@ function NavSection({ label, items, endIds = [] }) {
       <div className="sb-slabel">{label}</div>
       {items.map((item) => (
         <NavBtn key={item.id} to={item.path} end={endIds.includes(item.id) || item.end} title={item.label}>
-          <AppIcon icon={NAV_ICONS[item.icon] || Icons.circle} size={13} />
+          <AppIcon icon={resolveIcon(item.icon)} size={13} />
           <span className="ws-nav-label">{item.label}</span>
         </NavBtn>
       ))}

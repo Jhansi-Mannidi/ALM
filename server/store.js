@@ -72,8 +72,19 @@ import {
   PM_ROADMAP_ITEMS as SEED_PM_ROADMAP_ITEMS,
   PM_PORTALS as SEED_PM_PORTALS,
   PM_BRIEFS as SEED_PM_BRIEFS,
-  pmScore,
+  pmScore as legacyPmScore,
 } from './data/productSeed.js';
+import {
+  PM_DRIVERS as SEED_PM_DRIVERS,
+  PM_FORMULA as SEED_PM_FORMULA,
+  PM_SEGMENTS as SEED_PM_SEGMENTS,
+  PM_TAGS as SEED_PM_TAGS,
+  PM_CUSTOM_FIELDS as SEED_PM_CUSTOM_FIELDS,
+  PM_DOCS as SEED_PM_DOCS,
+  PM_WORKSPACE_MEMBERS as SEED_PM_WORKSPACE_MEMBERS,
+  PM_ADOPTION_ACTIVITY as SEED_PM_ADOPTION_ACTIVITY,
+  PM_PORTAL_COLUMNS,
+} from './data/productDataSeed.js';
 import {
   OFFICE_INVENTORY as SEED_OFFICE_INVENTORY,
   OFFICE_REQUESTS as SEED_OFFICE_REQUESTS,
@@ -417,7 +428,31 @@ export let pmOkrs = clone(SEED_PM_OKRS);
 export let pmRoadmapItems = clone(SEED_PM_ROADMAP_ITEMS);
 export let pmPortals = clone(SEED_PM_PORTALS);
 export let pmBriefs = clone(SEED_PM_BRIEFS);
-export { pmScore };
+
+export let pmDrivers = clone(SEED_PM_DRIVERS);
+export let pmFormula = clone(SEED_PM_FORMULA);
+export let pmSegments = clone(SEED_PM_SEGMENTS);
+export let pmTags = clone(SEED_PM_TAGS);
+export let pmCustomFields = clone(SEED_PM_CUSTOM_FIELDS);
+export let pmDocs = clone(SEED_PM_DOCS);
+export let pmWorkspaceMembers = clone(SEED_PM_WORKSPACE_MEMBERS);
+export let pmAdoptionActivity = clone(SEED_PM_ADOPTION_ACTIVITY);
+export { PM_PORTAL_COLUMNS };
+
+export function pmScore(feature) {
+  const impact = Number(feature.impact) || 0;
+  const effort = Math.max(1, Number(feature.effort) || 1);
+  const demand = Number(feature.customerDemand) || 0;
+  const reach = Number(feature.reach) || 1;
+  try {
+    const expr = pmFormula?.expression || '(impact * customerDemand) / effort';
+    const fn = new Function('impact', 'effort', 'customerDemand', 'reach', `return ${expr}`);
+    const result = fn(impact, effort, demand, reach);
+    return Math.round(Number.isFinite(result) ? result : legacyPmScore(feature));
+  } catch {
+    return legacyPmScore(feature);
+  }
+}
 
 export let officeInventory = clone(SEED_OFFICE_INVENTORY);
 export let officeRequests = clone(SEED_OFFICE_REQUESTS);

@@ -107,10 +107,10 @@ export const RBAC_MODULES = [
   {
     id: 'system',
     name: 'System Administration',
-    description: 'Roles, permissions, org hierarchy, users & audit logs',
+    description: 'Roles, permissions, users & audit logs',
     icon: 'shield',
     color: '#6366F1',
-    appIds: ['roles-permissions', 'org-hierarchy'],
+    appIds: ['roles-permissions'],
     permissions: [
       { id: 'system.access', label: 'Access System Admin', description: 'Open system administration workspace' },
       { id: 'system.roles', label: 'Manage Roles', description: 'Create and edit roles & permission assignments' },
@@ -254,6 +254,7 @@ export const RBAC_NAV = [
   { id: 'permissions', label: 'Permissions', path: '/workspace/admin/rbac/permissions', icon: 'sliders' },
   { id: 'users', label: 'Users', path: '/workspace/admin/rbac/users', icon: 'users' },
   { id: 'audit', label: 'Audit Logs', path: '/workspace/admin/rbac/audit', icon: 'clipboardCheck' },
+  { id: 'adoption', label: 'Adoption', path: '/workspace/admin/rbac/adoption', icon: 'barChart3' },
 ];
 
 export function expandPermissions(permissions) {

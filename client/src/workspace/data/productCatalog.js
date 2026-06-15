@@ -47,7 +47,15 @@ export const PM_NAV_SECTIONS = [
     label: 'Sharing',
     items: [
       { id: 'portals', label: 'Portals', path: '/workspace/product/portals', icon: 'globe' },
+      { id: 'docs', label: 'Documents', path: '/workspace/product/docs', icon: 'fileText' },
       { id: 'briefs', label: 'Product Briefs', path: '/workspace/product/briefs', icon: 'fileText' },
+    ],
+  },
+  {
+    id: 'admin',
+    label: 'Data & Config',
+    items: [
+      { id: 'data', label: 'Data Model', path: '/workspace/product/data', icon: 'sliders' },
     ],
   },
 ];
@@ -60,7 +68,22 @@ export const PM_LANES = [
 
 export const PM_FEATURE_STATUSES = ['discovery', 'planned', 'in-progress', 'released'];
 
-export const PM_INSIGHT_SOURCES = ['manual', 'support', 'sales', 'email', 'survey', 'intercom'];
+export const PM_INSIGHT_SOURCES = ['support', 'sales', 'email', 'survey', 'intercom', 'portal', 'manual'];
+
+export const PM_DATA_TABS = ['drivers', 'formula', 'segments', 'themes', 'tags', 'custom-fields'];
+
+export const PM_DOC_TABS = [
+  { id: 'all', label: 'All documents' },
+  { id: 'created', label: 'Created by me' },
+  { id: 'shared-with-me', label: 'Shared with me' },
+  { id: 'shared-with-others', label: 'Shared with others' },
+];
+
+export const PM_PORTAL_COLUMNS = [
+  { id: 'consideration', label: 'Under Consideration', statuses: ['discovery'] },
+  { id: 'planned', label: 'Planned', statuses: ['planned', 'in-progress'] },
+  { id: 'launched', label: 'Launched', statuses: ['released', 'done'] },
+];
 
 export function statusChipClass(status) {
   const map = {

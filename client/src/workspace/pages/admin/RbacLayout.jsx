@@ -1,16 +1,8 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
-import { AppIcon, Icons } from '../../../components/icons';
+import { AppIcon, resolveIcon } from '../../../components/icons';
 import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
 import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
 import { RBAC_NAV } from '../../data/rbacCatalog';
-
-const NAV_ICONS = {
-  layoutGrid: Icons.layoutGrid,
-  shieldCheck: Icons.shieldCheck,
-  sliders: Icons.sliders,
-  users: Icons.users,
-  clipboardCheck: Icons.clipboardCheck,
-};
 
 function NavBtn({ to, children, end = false, title }) {
   return (
@@ -42,7 +34,7 @@ export default function RbacLayout() {
           <div className="sb-slabel">Administration</div>
           {RBAC_NAV.map((item) => (
             <NavBtn key={item.id} to={item.path} end={item.end} title={item.label}>
-              <AppIcon icon={NAV_ICONS[item.icon] || Icons.circle} size={13} />
+              <AppIcon icon={resolveIcon(item.icon)} size={13} />
               <span className="ws-nav-label">{item.label}</span>
             </NavBtn>
           ))}
