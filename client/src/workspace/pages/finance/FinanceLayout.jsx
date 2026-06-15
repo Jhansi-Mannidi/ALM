@@ -4,6 +4,7 @@ import { api } from '../../../api/client';
 import { AppIcon, Icons, resolveIcon } from '../../../components/icons';
 import { FINANCE_NAV_SECTIONS } from '../../data/financeCatalog';
 import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
+import ModuleMobileShell from '../../components/ModuleMobileShell';
 import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
 import { fiscalYearLabel } from './financeUtils';
 
@@ -88,66 +89,69 @@ export default function FinanceLayout() {
   };
 
   return (
-    <div className={`ws-hr-shell ws-fin-shell${collapsed ? ' sidebar-collapsed' : ''}`}>
-      <aside className={`ws-hr-sidebar sidebar ws-fin-sidebar${collapsed ? ' collapsed' : ''}`}>
-        <ProfileSidebarBrand
-          icon="dollar"
-          subtitle="Finance & Operations"
-          collapsed={collapsed}
-          onToggleCollapsed={toggle}
-        />
-
-        <div className="ws-fin-nav-scroll">
-          {FINANCE_NAV_SECTIONS.map((section) => {
-            const open = collapsed || expanded[section.id] !== false;
-            return (
-              <CollapsibleNavSection
-                key={section.id}
-                section={section}
-                open={open}
-                collapsed={collapsed}
-                onToggle={() => toggleSection(section.id)}
-              >
-                {section.items.map((item) => (
-                  <NavBtn
-                    key={item.id}
-                    to={item.path}
-                    end={item.end}
-                    title={item.label}
-                    quickAdd={item.quickAdd}
-                    quickAddPath={
-                      item.quickAddPath
-                      || (item.moduleKey ? `/workspace/finance/m/${item.moduleKey}/new` : undefined)
-                    }
-                  >
-                    <AppIcon icon={resolveIcon(item.icon)} size={13} />
-                    <span className="ws-nav-label">{item.label}</span>
-                  </NavBtn>
-                ))}
-              </CollapsibleNavSection>
-            );
-          })}
-        </div>
-
-        <div className="ws-fin-sidebar-foot">
-          {settings && !collapsed && (
-            <div className="ws-fin-org-context" title="Organization context">
-              <div className="ws-fin-org-name">{settings.companyName}</div>
-              <div className="ws-fin-org-meta">
-                {fiscalYearLabel(settings.fiscalYearStart)} · {settings.currency} · GST {settings.taxRate}%
+    <ModuleMobileShell
+      shellClassName="ws-hr-shell ws-fin-shell"
+      sidebarClassName="ws-hr-sidebar ws-fin-sidebar ws-module-sidebar"
+      contentClassName="ws-hr-content ws-fin-content"
+      moduleTitle="Finance & Operations"
+      sidebarCollapsed={collapsed}
+      sidebar={(
+        <>
+          <ProfileSidebarBrand
+            icon="dollar"
+            subtitle="Finance & Operations"
+            collapsed={collapsed}
+            onToggleCollapsed={toggle}
+          />
+          <div className="ws-fin-nav-scroll">
+            {FINANCE_NAV_SECTIONS.map((section) => {
+              const open = collapsed || expanded[section.id] !== false;
+              return (
+                <CollapsibleNavSection
+                  key={section.id}
+                  section={section}
+                  open={open}
+                  collapsed={collapsed}
+                  onToggle={() => toggleSection(section.id)}
+                >
+                  {section.items.map((item) => (
+                    <NavBtn
+                      key={item.id}
+                      to={item.path}
+                      end={item.end}
+                      title={item.label}
+                      quickAdd={item.quickAdd}
+                      quickAddPath={
+                        item.quickAddPath
+                        || (item.moduleKey ? `/workspace/finance/m/${item.moduleKey}/new` : undefined)
+                      }
+                    >
+                      <AppIcon icon={resolveIcon(item.icon)} size={13} />
+                      <span className="ws-nav-label">{item.label}</span>
+                    </NavBtn>
+                  ))}
+                </CollapsibleNavSection>
+              );
+            })}
+          </div>
+          <div className="ws-fin-sidebar-foot">
+            {settings && !collapsed && (
+              <div className="ws-fin-org-context" title="Organization context">
+                <div className="ws-fin-org-name">{settings.companyName}</div>
+                <div className="ws-fin-org-meta">
+                  {fiscalYearLabel(settings.fiscalYearStart)} · {settings.currency} · GST {settings.taxRate}%
+                </div>
               </div>
-            </div>
-          )}
-          <Link to="/workspace/solutions/business-operations" className="ws-hr-back" title="Back to Workspace">
-            <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
-            <span className="ws-nav-label">Back to Workspace</span>
-          </Link>
-        </div>
-      </aside>
-
-      <div className="ws-hr-content ws-fin-content">
-        <Outlet />
-      </div>
-    </div>
+            )}
+            <Link to="/workspace/solutions/business-operations" className="ws-hr-back" title="Back to Workspace">
+              <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
+              <span className="ws-nav-label">Back to Workspace</span>
+            </Link>
+          </div>
+        </>
+      )}
+    >
+      <Outlet />
+    </ModuleMobileShell>
   );
 }

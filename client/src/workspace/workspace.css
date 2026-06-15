@@ -2051,19 +2051,6 @@
 }
 
 @media (max-width: 768px) {
-  .ws-rbac-shell,
-  .ws-rbac-shell.sidebar-collapsed {
-    grid-template-columns: 1fr;
-    column-gap: 0;
-  }
-
-  .ws-rbac-sidebar {
-    position: static;
-    min-height: auto;
-    max-height: none;
-    border-bottom: 1px solid var(--sidebar-border);
-  }
-
   .ws-rbac-content {
     padding: 20px 16px 40px;
   }
@@ -2081,10 +2068,6 @@
 }
 
 @media (max-width: 900px) {
-  .ws-rbac-shell {
-    grid-template-columns: 1fr;
-  }
-
   .ws-app-list-card {
     flex-direction: column;
   }
@@ -6290,31 +6273,25 @@
 
 @media (max-width: 900px) {
   .ws-hr-shell,
-  .ws-hr-shell.sidebar-collapsed {
-    grid-template-columns: 1fr;
-    gap: 12px 0;
+  .ws-hr-shell.sidebar-collapsed,
+  .ws-rbac-shell,
+  .ws-rbac-shell.sidebar-collapsed {
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;
+    gap: 0;
   }
 
   .ws-profile-sb-collapse {
     display: none;
   }
 
-  .ws-hr-sidebar {
-    position: static;
-    min-height: auto;
-    max-height: none;
-    flex-direction: row;
-    flex-wrap: wrap;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 12px;
-  }
-
   .ws-hr-stats,
   .ws-hr-grid-2,
   .ws-hr-grid-3,
   .ws-hr-onboard-grid,
-  .ws-hr-job-stats {
+  .ws-hr-job-stats,
+  .ws-fin-stats {
     grid-template-columns: 1fr;
   }
 
@@ -6326,32 +6303,56 @@
 @media (max-width: 600px) {
   .ws-header-inner {
     padding: 0 12px;
+    height: 52px;
+  }
+
+  .ws-brand-name {
+    font-size: var(--text-base);
+  }
+
+  .ws-brand-tag {
+    display: none;
   }
 
   .ws-main {
     padding: 16px 12px 40px;
   }
 
-  .ws-hr-shell {
-    margin: -16px -12px -40px;
+  .ws-hr-shell,
+  .ws-rbac-shell,
+  .ws-fin-shell {
+    margin: 0 !important;
   }
 
-  .ws-hr-content {
-    padding: 16px;
+  .ws-hr-content,
+  .ws-rbac-content,
+  .ws-fin-content {
+    padding: 16px 12px 32px;
   }
 
   .ws-welcome-title {
-    font-size: var(--text-4xl);
+    font-size: var(--text-3xl);
   }
 
   .ws-grid {
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 14px;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .ws-card {
-    min-height: 240px;
-    padding: 22px 16px 20px;
+    min-height: 220px;
+    padding: 20px 16px 18px;
+  }
+
+  .ws-filters {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ws-filter-btn {
+    flex-shrink: 0;
   }
 }
 
@@ -10126,49 +10127,6 @@
   box-shadow: 0 6px 16px color-mix(in srgb, var(--app-accent) 28%, transparent);
 }
 
-@media (max-width: 900px) {
-  .ws-solution-banner-inner {
-    flex-wrap: wrap;
-    padding: 20px;
-  }
-
-  .ws-solution-hero-badges {
-    flex-direction: row;
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .ws-solution-stats.ws-hr-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .ws-solution-app-card {
-    grid-template-columns: auto 1fr;
-    align-items: start;
-  }
-
-  .ws-solution-app-action {
-    grid-column: 1 / -1;
-    width: 100%;
-  }
-
-  .ws-solution-open-btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 560px) {
-  .ws-solution-stats.ws-hr-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .ws-solution-apps-head {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
 /* —— Product data, docs, adoption —— */
 .ws-pm-data-tabs {
   display: flex;
@@ -10317,5 +10275,230 @@
   color: var(--green-d);
   font-weight: 600;
   font-size: 14px;
+}
+
+/* —— Mobile workspace & module navigation —— */
+.ws-brand-text {
+  min-width: 0;
+}
+
+.ws-header-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-right: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--g50);
+  color: var(--heading);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ws-mobile-search-toggle {
+  display: none;
+}
+
+.ws-header-mobile-search {
+  display: none;
+}
+
+.ws-module-mobile-bar,
+.ws-module-overlay,
+.ws-module-drawer-close {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .ws-header-brand {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .ws-header-menu-btn {
+    display: inline-flex;
+  }
+
+  .ws-mobile-search-toggle {
+    display: inline-flex;
+  }
+
+  .ws-search-wrap,
+  .ws-view-toggle {
+    display: none !important;
+  }
+
+  .ws-header-mobile-search {
+    display: block;
+    position: relative;
+    padding: 0 12px 10px;
+    border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--card) 95%, transparent);
+  }
+
+  .ws-header-mobile-search .ws-search-icon {
+    left: 22px;
+  }
+
+  .ws-search-mobile {
+    width: 100%;
+    height: 38px;
+  }
+
+  .ws-hr-shell,
+  .ws-hr-shell.sidebar-collapsed,
+  .ws-rbac-shell,
+  .ws-rbac-shell.sidebar-collapsed {
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;
+    width: 100%;
+    gap: 0;
+  }
+
+  .ws-module-mobile-bar {
+    display: none;
+  }
+
+  .ws-module-sidebar {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: min(300px, 88vw) !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    z-index: 200;
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    border-right: 1px solid var(--sidebar-border);
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    align-self: auto !important;
+  }
+
+  .ws-hr-shell.mobile-nav-open .ws-module-sidebar,
+  .ws-rbac-shell.mobile-nav-open .ws-module-sidebar {
+    display: flex !important;
+    transform: translateX(0) !important;
+  }
+
+  .ws-module-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    border: none;
+    padding: 0;
+    background: rgba(15, 23, 42, 0.45);
+    cursor: pointer;
+  }
+
+  .ws-module-drawer-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--card);
+    color: var(--heading);
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .ws-module-sidebar .ws-profile-sb-brand {
+    padding-right: 44px;
+  }
+
+  .ws-hr-content,
+  .ws-rbac-content,
+  .ws-fin-content {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .ws-solution-banner-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 16px;
+  }
+
+  .ws-solution-hero-badges {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .ws-solution-stats.ws-hr-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ws-solution-app-card {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .ws-solution-app-action {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .ws-solution-open-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ws-rbac-page-head,
+  .ws-page-head,
+  .ws-hr-panel-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .ws-rbac-page-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .ws-fin-table-wrap,
+  .tbl-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 560px) {
+  .ws-solution-stats.ws-hr-stats,
+  .ws-solution-page .ws-hr-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ws-solution-apps-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 901px) {
+  .ws-module-overlay,
+  .ws-module-drawer-close {
+    display: none !important;
+  }
 }
 

@@ -1,7 +1,8 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
-import { AppIcon, resolveIcon } from '../../../components/icons';
+import { AppIcon, Icons, resolveIcon } from '../../../components/icons';
 import { PM_NAV_SECTIONS } from '../../data/productCatalog';
 import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
+import ModuleMobileShell from '../../components/ModuleMobileShell';
 import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
 import { PmDeleteConfirmProvider } from './PmDeleteConfirmContext';
 
@@ -37,36 +38,39 @@ export default function ProductLayout() {
 
   return (
     <PmDeleteConfirmProvider>
-    <div className={`ws-hr-shell ws-pm-shell${collapsed ? ' sidebar-collapsed' : ''}`}>
-      <aside className={`ws-hr-sidebar sidebar ws-pm-sidebar${collapsed ? ' collapsed' : ''}`}>
-        <ProfileSidebarBrand
-          icon="layers"
-          subtitle="Product Management"
-          collapsed={collapsed}
-          onToggleCollapsed={toggle}
-        />
-
-        <div className="ws-pm-nav-scroll">
-          {PM_NAV_SECTIONS.map((section) => (
-            <NavSection
-              key={section.id}
-              label={section.label}
-              items={section.items}
-              endIds={['dashboard']}
+      <ModuleMobileShell
+        shellClassName="ws-hr-shell ws-pm-shell"
+        sidebarClassName="ws-hr-sidebar ws-pm-sidebar ws-module-sidebar"
+        contentClassName="ws-hr-content ws-pm-content"
+        moduleTitle="Product Management"
+        sidebarCollapsed={collapsed}
+        sidebar={(
+          <>
+            <ProfileSidebarBrand
+              icon="layers"
+              subtitle="Product Management"
+              collapsed={collapsed}
+              onToggleCollapsed={toggle}
             />
-          ))}
-        </div>
-
-        <Link to="/workspace/solutions/product-development" className="ws-hr-back" title="Back to Workspace">
-          <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
-          <span className="ws-nav-label">Back to Workspace</span>
-        </Link>
-      </aside>
-
-      <div className="ws-hr-content ws-pm-content">
+            <div className="ws-pm-nav-scroll">
+              {PM_NAV_SECTIONS.map((section) => (
+                <NavSection
+                  key={section.id}
+                  label={section.label}
+                  items={section.items}
+                  endIds={['dashboard']}
+                />
+              ))}
+            </div>
+            <Link to="/workspace/solutions/product-development" className="ws-hr-back" title="Back to Workspace">
+              <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
+              <span className="ws-nav-label">Back to Workspace</span>
+            </Link>
+          </>
+        )}
+      >
         <Outlet />
-      </div>
-    </div>
+      </ModuleMobileShell>
     </PmDeleteConfirmProvider>
   );
 }

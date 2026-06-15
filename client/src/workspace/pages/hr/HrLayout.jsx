@@ -1,7 +1,8 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
-import { AppIcon, resolveIcon } from '../../../components/icons';
+import { AppIcon, Icons, resolveIcon } from '../../../components/icons';
 import { HR_WORKSPACE_NAV, HR_RECRUITMENT_NAV, HR_OPERATIONS_NAV } from '../../data/hrCatalog';
 import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
+import ModuleMobileShell from '../../components/ModuleMobileShell';
 import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
 
 function NavBtn({ to, children, end = false, title }) {
@@ -35,30 +36,28 @@ export default function HrLayout() {
   const { collapsed, toggle } = useProfileSidebarCollapsed();
 
   return (
-    <div className={`ws-hr-shell${collapsed ? ' sidebar-collapsed' : ''}`}>
-      <aside className={`ws-hr-sidebar sidebar${collapsed ? ' collapsed' : ''}`}>
-        <ProfileSidebarBrand
-          icon="users"
-          subtitle="HR & People"
-          collapsed={collapsed}
-          onToggleCollapsed={toggle}
-        />
-
-        <NavSection label="Workspace" items={HR_WORKSPACE_NAV} endIds={['dashboard']} />
-
-        <NavSection label="Recruitment" items={HR_RECRUITMENT_NAV} endIds={['recruitment']} />
-
-        <NavSection label="Actions" items={HR_OPERATIONS_NAV} />
-
-        <Link to="/workspace/solutions/business-operations" className="ws-hr-back" title="Back to Workspace">
-          <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
-          <span className="ws-nav-label">Back to Workspace</span>
-        </Link>
-      </aside>
-
-      <div className="ws-hr-content">
-        <Outlet />
-      </div>
-    </div>
+    <ModuleMobileShell
+      moduleTitle="HR & People"
+      sidebarCollapsed={collapsed}
+      sidebar={(
+        <>
+          <ProfileSidebarBrand
+            icon="users"
+            subtitle="HR & People"
+            collapsed={collapsed}
+            onToggleCollapsed={toggle}
+          />
+          <NavSection label="Workspace" items={HR_WORKSPACE_NAV} endIds={['dashboard']} />
+          <NavSection label="Recruitment" items={HR_RECRUITMENT_NAV} endIds={['recruitment']} />
+          <NavSection label="Actions" items={HR_OPERATIONS_NAV} />
+          <Link to="/workspace/solutions/business-operations" className="ws-hr-back" title="Back to Workspace">
+            <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
+            <span className="ws-nav-label">Back to Workspace</span>
+          </Link>
+        </>
+      )}
+    >
+      <Outlet />
+    </ModuleMobileShell>
   );
 }

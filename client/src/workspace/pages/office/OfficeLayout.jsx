@@ -1,7 +1,8 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
-import { AppIcon, resolveIcon } from '../../../components/icons';
+import { AppIcon, Icons, resolveIcon } from '../../../components/icons';
 import { OFFICE_NAV_SECTIONS } from '../../data/officeCatalog';
 import ProfileSidebarBrand from '../../components/ProfileSidebarBrand';
+import ModuleMobileShell from '../../components/ModuleMobileShell';
 import { useProfileSidebarCollapsed } from '../../hooks/useProfileSidebarCollapsed';
 import { OfficeDeleteConfirmProvider } from './OfficeDeleteConfirmContext';
 
@@ -37,36 +38,39 @@ export default function OfficeLayout() {
 
   return (
     <OfficeDeleteConfirmProvider>
-      <div className={`ws-hr-shell ws-office-shell${collapsed ? ' sidebar-collapsed' : ''}`}>
-        <aside className={`ws-hr-sidebar sidebar ws-office-sidebar${collapsed ? ' collapsed' : ''}`}>
-          <ProfileSidebarBrand
-            icon="building"
-            subtitle="Office Manager"
-            collapsed={collapsed}
-            onToggleCollapsed={toggle}
-          />
-
-          <div className="ws-office-nav-scroll">
-            {OFFICE_NAV_SECTIONS.map((section) => (
-              <NavSection
-                key={section.id}
-                label={section.label}
-                items={section.items}
-                endIds={['dashboard']}
-              />
-            ))}
-          </div>
-
-          <Link to="/workspace/solutions/business-operations" className="ws-hr-back" title="Back to Workspace">
-            <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
-            <span className="ws-nav-label">Back to Workspace</span>
-          </Link>
-        </aside>
-
-        <div className="ws-hr-content ws-office-content">
-          <Outlet />
-        </div>
-      </div>
+      <ModuleMobileShell
+        shellClassName="ws-hr-shell ws-office-shell"
+        sidebarClassName="ws-hr-sidebar ws-office-sidebar ws-module-sidebar"
+        contentClassName="ws-hr-content ws-office-content"
+        moduleTitle="Office Manager"
+        sidebarCollapsed={collapsed}
+        sidebar={(
+          <>
+            <ProfileSidebarBrand
+              icon="building"
+              subtitle="Office Manager"
+              collapsed={collapsed}
+              onToggleCollapsed={toggle}
+            />
+            <div className="ws-office-nav-scroll">
+              {OFFICE_NAV_SECTIONS.map((section) => (
+                <NavSection
+                  key={section.id}
+                  label={section.label}
+                  items={section.items}
+                  endIds={['dashboard']}
+                />
+              ))}
+            </div>
+            <Link to="/workspace/solutions/business-operations" className="ws-hr-back" title="Back to Workspace">
+              <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
+              <span className="ws-nav-label">Back to Workspace</span>
+            </Link>
+          </>
+        )}
+      >
+        <Outlet />
+      </ModuleMobileShell>
     </OfficeDeleteConfirmProvider>
   );
 }
