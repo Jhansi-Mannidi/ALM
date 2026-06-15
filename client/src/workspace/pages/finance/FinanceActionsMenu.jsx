@@ -2,28 +2,28 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { createPortal } from 'react-dom';
 import { AppIcon, Icons } from '../../../components/icons';
 
-const MENU_MIN_WIDTH = 168;
-const MENU_ITEM_HEIGHT = 36;
-const MENU_PADDING = 12;
+const MENU_WIDTH = 148;
+const MENU_ITEM_HEIGHT = 34;
+const MENU_PADDING = 8;
 const VIEWPORT_PAD = 8;
 
-function computeMenuPosition(triggerEl, itemCount) {
+function computeMenuPosition(triggerEl, itemCount, hasDivider) {
   const rect = triggerEl.getBoundingClientRect();
-  const menuHeight = itemCount * MENU_ITEM_HEIGHT + MENU_PADDING;
-  const menuWidth = MENU_MIN_WIDTH;
+  const dividerHeight = hasDivider ? 9 : 0;
+  const menuHeight = itemCount * MENU_ITEM_HEIGHT + MENU_PADDING + dividerHeight;
 
-  let top = rect.bottom + 4;
-  let left = rect.right - menuWidth;
+  let top = rect.bottom + 6;
+  let left = rect.right - MENU_WIDTH;
 
   if (top + menuHeight > window.innerHeight - VIEWPORT_PAD) {
-    top = Math.max(VIEWPORT_PAD, rect.top - menuHeight - 4);
+    top = Math.max(VIEWPORT_PAD, rect.top - menuHeight - 6);
   }
   if (left < VIEWPORT_PAD) left = VIEWPORT_PAD;
-  if (left + menuWidth > window.innerWidth - VIEWPORT_PAD) {
-    left = window.innerWidth - menuWidth - VIEWPORT_PAD;
+  if (left + MENU_WIDTH > window.innerWidth - VIEWPORT_PAD) {
+    left = window.innerWidth - MENU_WIDTH - VIEWPORT_PAD;
   }
 
-  return { top, left, minWidth: menuWidth };
+  return { top, left, width: MENU_WIDTH };
 }
 
 export default function FinanceActionsMenu({ actions = [], disabled = false }) {
@@ -32,10 +32,12 @@ export default function FinanceActionsMenu({ actions = [], disabled = false }) {
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
 
+  const hasDivider = actions.some((a, i) => a.danger && i > 0 && !actions[i - 1]?.danger);
+
   const reposition = useCallback(() => {
     if (!triggerRef.current || !actions.length) return;
-    setMenuPos(computeMenuPosition(triggerRef.current, actions.length));
-  }, [actions.length]);
+    setMenuPos(computeMenuPosition(triggerRef.current, actions.length, hasDivider));
+  }, [actions.length, hasDivider]);
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -80,27 +82,36 @@ export default function FinanceActionsMenu({ actions = [], disabled = false }) {
     ? createPortal(
         <div
           ref={menuRef}
-          className="ws-fin-actions-dropdown ws-fin-actions-dropdown-portal"
+          className="ws-actions-dropdown ws-actions-dropdown-portal"
           role="menu"
-          style={{ top: menuPos.top, left: menuPos.left, minWidth: menuPos.minWidth }}
+          style={{ top: menuPos.top, left: menuPos.left, width: menuPos.width }}
         >
-          {actions.map((action) => (
-            <button
-              key={action.id}
-              type="button"
-              role="menuitem"
-              className={`ws-fin-actions-item${action.danger ? ' danger' : ''}`}
-              disabled={action.disabled}
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpen(false);
-                action.onClick?.();
-              }}
-            >
-              {action.icon && <AppIcon icon={action.icon} size={14} />}
-              {action.label}
-            </button>
-          ))}
+          {actions.map((action, index) => {
+            const showDivider = action.danger && index > 0 && !actions[index - 1]?.danger;
+            return (
+              <div key={action.id} className="ws-actions-dropdown-group">
+                {showDivider && <div className="ws-actions-divider" role="separator" />}
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={`ws-actions-item${action.danger ? ' danger' : ''}`}
+                  disabled={action.disabled}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen(false);
+                    action.onClick?.();
+                  }}
+                >
+                  {action.icon && (
+                    <span className="ws-actions-item-icon">
+                      <AppIcon icon={action.icon} size={14} />
+                    </span>
+                  )}
+                  <span className="ws-actions-item-label">{action.label}</span>
+                </button>
+              </div>
+            );
+          })}
         </div>,
         document.body,
       )
@@ -108,11 +119,11 @@ export default function FinanceActionsMenu({ actions = [], disabled = false }) {
 
   return (
     <>
-      <div className="ws-fin-actions-menu">
+      <div className="ws-actions-menu">
         <button
           ref={triggerRef}
           type="button"
-          className={`ws-fin-actions-trigger${open ? ' active' : ''}`}
+          className={`ws-actions-trigger${open ? ' active' : ''}`}
           aria-label="Options"
           aria-expanded={open}
           aria-haspopup="menu"

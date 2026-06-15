@@ -56,45 +56,65 @@ export default function SolutionPage() {
   };
 
   return (
-    <div className="ws-page">
+    <div
+      className="ws-page ws-solution-page"
+      style={{ '--solution-color': solution.color }}
+    >
       <Link to="/workspace" className="ws-back-link">
         <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
         Back to Workspace
       </Link>
 
-      <div className="ws-solution-hero">
-        <div className="ws-solution-hero-icon" style={{ background: `${solution.color}18` }}>
-          <WorkspaceIcon name={solution.icon} size={36} style={{ color: solution.color }} />
+      <header className="ws-solution-banner">
+        <div className="ws-solution-banner-glow" aria-hidden />
+        <div className="ws-solution-banner-inner">
+          <div className="ws-solution-hero-icon">
+            <WorkspaceIcon name={solution.icon} size={32} style={{ color: solution.color }} />
+          </div>
+          <div className="ws-solution-hero-copy">
+            <span className="ws-solution-kicker">Solution</span>
+            <h1 className="ws-solution-title">{solution.name}</h1>
+            <p className="ws-solution-subtitle">{solution.description}</p>
+          </div>
+          <div className="ws-solution-hero-badges">
+            <span className="ws-solution-pill">{visibleApps.length} apps</span>
+            {solution.notificationCount > 0 && (
+              <span className="ws-solution-pill ws-solution-pill-alert">
+                {solution.notificationCount} alerts
+              </span>
+            )}
+          </div>
         </div>
-        <div>
-          <h1 className="ws-page-title">{solution.name}</h1>
-          <p className="ws-page-subtitle">{solution.description}</p>
-        </div>
-      </div>
+      </header>
 
-      <div className="g4 mb20">
+      <section className="ws-solution-stats" aria-label="Solution metrics">
         {solution.stats.map((stat) => (
-          <div key={stat.label} className="stat">
-            <div className="stat-bar" style={{ background: solution.color }} />
-            <div className="stat-label">{stat.label}</div>
-            <div className="stat-value">{stat.value}</div>
+            <div key={stat.label} className="ws-solution-stat">
+            <div className="ws-solution-stat-label">{stat.label}</div>
+            <div className="ws-solution-stat-value">{stat.value}</div>
           </div>
         ))}
-      </div>
+      </section>
 
-      <div className="ws-section-head">
-        <h2 className="ws-section-title">Apps in this Solution</h2>
-        <p className="ws-section-sub">Select an app to get started</p>
-      </div>
+      <section className="ws-solution-apps">
+        <div className="ws-solution-apps-head">
+          <div>
+            <h2 className="ws-solution-apps-title">Apps in this Solution</h2>
+            <p className="ws-solution-apps-sub">Launch a module to manage your operations</p>
+          </div>
+          <span className="ws-solution-apps-count">{visibleApps.length} available</span>
+        </div>
 
-      <div className="ws-app-list">
-        {visibleApps.map((app) => (
-          <AppListCard key={app.id} app={app} solution={solution} onOpen={() => openApp(app)} />
-        ))}
-      </div>
-      {visibleApps.length === 0 && (
-        <p className="ws-rbac-muted">No apps available for your role in this solution.</p>
-      )}
+        <div className="ws-solution-app-list">
+          {visibleApps.map((app) => (
+            <AppListCard key={app.id} app={app} solution={solution} onOpen={() => openApp(app)} />
+          ))}
+        </div>
+
+        {visibleApps.length === 0 && (
+          <p className="ws-rbac-muted">No apps available for your role in this solution.</p>
+        )}
+      </section>
     </div>
   );
 }

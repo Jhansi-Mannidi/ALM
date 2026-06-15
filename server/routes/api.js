@@ -82,6 +82,8 @@ import {
   nextInvoiceNo,
 } from '../data/financeSeed.js';
 import { buildFullFinanceReports, buildFinanceDashboard } from '../data/financeReports.js';
+import productApi from './productApi.js';
+import officeApi from './officeApi.js';
 
 const router = Router();
 
@@ -3438,5 +3440,8 @@ function defaultSkillsForRole(role = '') {
   if (r.includes('marketing')) return ['Campaign Strategy', 'Content', 'SEO', 'Brand'];
   return ['Communication', 'Collaboration', 'Problem Solving'];
 }
+
+router.use(productApi);
+router.use(officeApi);
 
 export default router;

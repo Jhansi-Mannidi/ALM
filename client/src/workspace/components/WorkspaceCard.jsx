@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
+import { AppIcon, Icons } from '../../components/icons';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { WorkspaceIcon } from './WorkspaceIcons';
 
@@ -121,31 +122,54 @@ function CardContent({ app, solution, favorited, onToggleFavorite }) {
 }
 
 export function AppListCard({ app, solution, onOpen }) {
+  const accent = solution?.color || '#2563EB';
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onOpen();
+    }
+  };
+
   return (
-    <div className="ws-app-list-card">
-      <div className="ws-app-list-icon">
-        <WorkspaceIcon name={app.icon} size={22} />
+    <article
+      className="ws-solution-app-card"
+      style={{ '--app-accent': accent }}
+      onClick={onOpen}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+    >
+      <div className="ws-solution-app-icon">
+        <WorkspaceIcon name={app.icon} size={24} style={{ color: accent }} />
       </div>
-      <div className="ws-app-list-body">
-        <div className="ws-app-list-head">
-          <h3 className="ws-app-list-title">{app.name}</h3>
-          {app.isNew && <span className="ws-badge ws-badge-new ws-badge-inline">New</span>}
-          {app.notificationCount > 0 && (
-            <span className="ws-badge ws-badge-count ws-badge-inline">{app.notificationCount}</span>
-          )}
+
+      <div className="ws-solution-app-content">
+        <div className="ws-solution-app-head">
+          <h3 className="ws-solution-app-title">{app.name}</h3>
+          <div className="ws-solution-app-badges">
+            {app.isNew && <span className="ws-solution-badge new">New</span>}
+            {app.notificationCount > 0 && (
+              <span className="ws-solution-badge count">{app.notificationCount}</span>
+            )}
+          </div>
         </div>
-        <p className="ws-app-list-desc">{app.description}</p>
+        <p className="ws-solution-app-desc">{app.description}</p>
         {app.highlights?.length > 0 && (
-          <ul className="ws-app-highlights">
+          <div className="ws-solution-app-highlights">
             {app.highlights.map((h) => (
-              <li key={h}>{h}</li>
+              <span key={h} className="ws-solution-highlight-chip">{h}</span>
             ))}
-          </ul>
+          </div>
         )}
       </div>
-      <button type="button" className="btn btn-primary btn-sm" onClick={onOpen}>
-        Open App
-      </button>
-    </div>
+
+      <div className="ws-solution-app-action">
+        <span className="ws-solution-open-btn">
+          Open App
+          <AppIcon icon={Icons.arrowRight} size={14} />
+        </span>
+      </div>
+    </article>
   );
 }

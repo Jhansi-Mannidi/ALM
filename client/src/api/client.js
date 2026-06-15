@@ -350,4 +350,143 @@ export const api = {
     request(`/finance/budgets/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
   deleteFinanceBudget: (id) => request(`/finance/budgets/${id}`, { method: 'DELETE' }),
   getFinanceReports: () => request('/finance/reports'),
+  getProductDashboard: () => request('/product/dashboard'),
+  getProductProducts: () => request('/product/products'),
+  createProductProduct: (data) =>
+    request('/product/products', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductProduct: (id, data) =>
+    request(`/product/products/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductProduct: (id) => request(`/product/products/${id}`, { method: 'DELETE' }),
+  getProductComponents: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/components${q ? `?${q}` : ''}`);
+  },
+  createProductComponent: (data) =>
+    request('/product/components', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductComponent: (id, data) =>
+    request(`/product/components/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductComponent: (id) => request(`/product/components/${id}`, { method: 'DELETE' }),
+  getProductFeatures: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/features${q ? `?${q}` : ''}`);
+  },
+  createProductFeature: (data) =>
+    request('/product/features', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductFeature: (id, data) =>
+    request(`/product/features/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductFeature: (id) => request(`/product/features/${id}`, { method: 'DELETE' }),
+  getProductCustomers: () => request('/product/customers'),
+  createProductCustomer: (data) =>
+    request('/product/customers', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductCustomer: (id, data) =>
+    request(`/product/customers/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductCustomer: (id) => request(`/product/customers/${id}`, { method: 'DELETE' }),
+  getProductInsights: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/insights${q ? `?${q}` : ''}`);
+  },
+  createProductInsight: (data) =>
+    request('/product/insights', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductInsight: (id, data) =>
+    request(`/product/insights/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductInsight: (id) => request(`/product/insights/${id}`, { method: 'DELETE' }),
+  getProductThemes: () => request('/product/themes'),
+  getProductIntegrations: () => request('/product/integrations'),
+  createProductIntegration: (data) =>
+    request('/product/integrations', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductIntegration: (id, data) =>
+    request(`/product/integrations/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductIntegration: (id) => request(`/product/integrations/${id}`, { method: 'DELETE' }),
+  getProductInitiatives: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/initiatives${q ? `?${q}` : ''}`);
+  },
+  createProductInitiative: (data) =>
+    request('/product/initiatives', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductInitiative: (id, data) =>
+    request(`/product/initiatives/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductInitiative: (id) => request(`/product/initiatives/${id}`, { method: 'DELETE' }),
+  getProductOkrs: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/okrs${q ? `?${q}` : ''}`);
+  },
+  createProductOkr: (data) =>
+    request('/product/okrs', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductOkr: (id, data) =>
+    request(`/product/okrs/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductOkr: (id) => request(`/product/okrs/${id}`, { method: 'DELETE' }),
+  getProductPrioritization: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/prioritization${q ? `?${q}` : ''}`);
+  },
+  getProductRoadmap: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/roadmap${q ? `?${q}` : ''}`);
+  },
+  createProductRoadmapItem: (data) =>
+    request('/product/roadmap', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductRoadmapItem: (id, data) =>
+    request(`/product/roadmap/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductRoadmapItem: (id) => request(`/product/roadmap/${id}`, { method: 'DELETE' }),
+  getProductReleases: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/releases${q ? `?${q}` : ''}`);
+  },
+  createProductRelease: (data) =>
+    request('/product/releases', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductRelease: (projectId, releaseId, data) =>
+    request(`/product/releases/${projectId}/${releaseId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductRelease: (projectId, releaseId) =>
+    request(`/product/releases/${projectId}/${releaseId}`, { method: 'DELETE' }),
+  getProductReports: () => request('/product/reports'),
+  getProductPortals: () => request('/product/portals'),
+  createProductPortal: (data) =>
+    request('/product/portals', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductPortal: (id, data) =>
+    request(`/product/portals/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductPortal: (id) => request(`/product/portals/${id}`, { method: 'DELETE' }),
+  getProductBriefs: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/product/briefs${q ? `?${q}` : ''}`);
+  },
+  createProductBrief: (data) =>
+    request('/product/briefs', { method: 'POST', body: JSON.stringify(data) }),
+  updateProductBrief: (id, data) =>
+    request(`/product/briefs/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteProductBrief: (id) => request(`/product/briefs/${id}`, { method: 'DELETE' }),
+  getProductShare: (token) => request(`/product/share/${token}`),
+  getOfficeDashboard: () => request('/office/dashboard'),
+  getOfficeInventory: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/office/inventory${q ? `?${q}` : ''}`);
+  },
+  createOfficeInventory: (data) =>
+    request('/office/inventory', { method: 'POST', body: JSON.stringify(data) }),
+  updateOfficeInventory: (id, data) =>
+    request(`/office/inventory/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteOfficeInventory: (id) => request(`/office/inventory/${id}`, { method: 'DELETE' }),
+  getOfficeRequests: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/office/requests${q ? `?${q}` : ''}`);
+  },
+  createOfficeRequest: (data) =>
+    request('/office/requests', { method: 'POST', body: JSON.stringify(data) }),
+  updateOfficeRequest: (id, data) =>
+    request(`/office/requests/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteOfficeRequest: (id) => request(`/office/requests/${id}`, { method: 'DELETE' }),
+  getOfficeVendors: () => request('/office/vendors'),
+  createOfficeVendor: (data) =>
+    request('/office/vendors', { method: 'POST', body: JSON.stringify(data) }),
+  updateOfficeVendor: (id, data) =>
+    request(`/office/vendors/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteOfficeVendor: (id) => request(`/office/vendors/${id}`, { method: 'DELETE' }),
+  getOfficeFood: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return request(`/office/food${q ? `?${q}` : ''}`);
+  },
+  createOfficeFood: (data) =>
+    request('/office/food', { method: 'POST', body: JSON.stringify(data) }),
+  updateOfficeFood: (id, data) =>
+    request(`/office/food/${id}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  deleteOfficeFood: (id) => request(`/office/food/${id}`, { method: 'DELETE' }),
 };

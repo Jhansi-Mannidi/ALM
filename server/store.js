@@ -59,6 +59,28 @@ import {
   FINANCE_BULK_UPDATES as SEED_FINANCE_BULK_UPDATES,
   FINANCE_REPORT_CATALOG as SEED_FINANCE_REPORT_CATALOG,
 } from './data/financeModulesSeed.js';
+import {
+  PM_PRODUCTS as SEED_PM_PRODUCTS,
+  PM_COMPONENTS as SEED_PM_COMPONENTS,
+  PM_FEATURES as SEED_PM_FEATURES,
+  PM_CUSTOMERS as SEED_PM_CUSTOMERS,
+  PM_THEMES as SEED_PM_THEMES,
+  PM_INSIGHTS as SEED_PM_INSIGHTS,
+  PM_INTEGRATIONS as SEED_PM_INTEGRATIONS,
+  PM_INITIATIVES as SEED_PM_INITIATIVES,
+  PM_OKRS as SEED_PM_OKRS,
+  PM_ROADMAP_ITEMS as SEED_PM_ROADMAP_ITEMS,
+  PM_PORTALS as SEED_PM_PORTALS,
+  PM_BRIEFS as SEED_PM_BRIEFS,
+  pmScore,
+} from './data/productSeed.js';
+import {
+  OFFICE_INVENTORY as SEED_OFFICE_INVENTORY,
+  OFFICE_REQUESTS as SEED_OFFICE_REQUESTS,
+  OFFICE_VENDORS as SEED_OFFICE_VENDORS,
+  OFFICE_FOOD_ORDERS as SEED_OFFICE_FOOD_ORDERS,
+  officeIsLowStock,
+} from './data/officeSeed.js';
 import { migrateProjectWorkflowStatuses } from './utils/workflowStatuses.js';
 
 function clone(v) {
@@ -382,6 +404,42 @@ export let financeTransactionLocks = clone(SEED_FINANCE_TRANSACTION_LOCKS);
 export let financeBulkUpdates = clone(SEED_FINANCE_BULK_UPDATES);
 export let financeReportCatalog = clone(SEED_FINANCE_REPORT_CATALOG);
 export { HIKE_REVIEW_CYCLE };
+
+export let pmProducts = clone(SEED_PM_PRODUCTS);
+export let pmComponents = clone(SEED_PM_COMPONENTS);
+export let pmFeatures = clone(SEED_PM_FEATURES);
+export let pmCustomers = clone(SEED_PM_CUSTOMERS);
+export let pmThemes = clone(SEED_PM_THEMES);
+export let pmInsights = clone(SEED_PM_INSIGHTS);
+export let pmIntegrations = clone(SEED_PM_INTEGRATIONS);
+export let pmInitiatives = clone(SEED_PM_INITIATIVES);
+export let pmOkrs = clone(SEED_PM_OKRS);
+export let pmRoadmapItems = clone(SEED_PM_ROADMAP_ITEMS);
+export let pmPortals = clone(SEED_PM_PORTALS);
+export let pmBriefs = clone(SEED_PM_BRIEFS);
+export { pmScore };
+
+export let officeInventory = clone(SEED_OFFICE_INVENTORY);
+export let officeRequests = clone(SEED_OFFICE_REQUESTS);
+export let officeVendors = clone(SEED_OFFICE_VENDORS);
+export let officeFoodOrders = clone(SEED_OFFICE_FOOD_ORDERS);
+export { officeIsLowStock };
+
+export function findOfficeVendor(id) {
+  return officeVendors.find((v) => v.id === id);
+}
+
+export function findPmProduct(id) {
+  return pmProducts.find((p) => p.id === id);
+}
+
+export function findPmFeature(id) {
+  return pmFeatures.find((f) => f.id === id);
+}
+
+export function findPmCustomer(id) {
+  return pmCustomers.find((c) => c.id === id);
+}
 
 export function findHrEmployee(id) {
   return hrEmployees.find((e) => e.id === id);

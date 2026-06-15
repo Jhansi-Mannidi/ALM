@@ -66,6 +66,27 @@ import FinanceModuleFormPage from './pages/finance/FinanceModuleFormPage';
 import FinanceDedicatedFormPage from './pages/finance/FinanceDedicatedFormPage';
 import JournalEntryFormPage from './pages/finance/JournalEntryFormPage';
 import BankingPage from './pages/finance/BankingPage';
+import ProductLayout from './pages/product/ProductLayout';
+import ProductDashboardPage from './pages/product/ProductDashboardPage';
+import InsightsPage from './pages/product/InsightsPage';
+import CustomersPage from './pages/product/CustomersPage';
+import IntegrationsPage from './pages/product/IntegrationsPage';
+import HierarchyPage from './pages/product/HierarchyPage';
+import InitiativesPage from './pages/product/InitiativesPage';
+import OkrsPage from './pages/product/OkrsPage';
+import PrioritizationPage from './pages/product/PrioritizationPage';
+import RoadmapPage from './pages/product/RoadmapPage';
+import ProductReleasesPage from './pages/product/ProductReleasesPage';
+import ProductReportsPage from './pages/product/ProductReportsPage';
+import PortalsPage from './pages/product/PortalsPage';
+import BriefsPage from './pages/product/BriefsPage';
+import ProductSharePage from './pages/product/ProductSharePage';
+import OfficeLayout from './pages/office/OfficeLayout';
+import OfficeDashboardPage from './pages/office/OfficeDashboardPage';
+import InventoryPage from './pages/office/InventoryPage';
+import RequestsPage from './pages/office/RequestsPage';
+import OfficeVendorsPage from './pages/office/VendorsPage';
+import FoodPage from './pages/office/FoodPage';
 import OrgHierarchyPage from './pages/OrgHierarchyPage';
 import './workspace.css';
 
@@ -155,6 +176,29 @@ export default function WorkspaceApp() {
               <Route path="reports" element={<FinanceReportsHubPage />} />
               <Route path="reports/statements" element={<FinanceReportsPage />} />
               <Route path="settings" element={<FinanceSettingsPage />} />
+            </Route>
+            <Route path="product/share/:token" element={<ProductSharePage />} />
+            <Route path="product" element={<ProductLayout />}>
+              <Route index element={<ProductDashboardPage />} />
+              <Route path="insights" element={<InsightsPage />} />
+              <Route path="customers" element={<CustomersPage />} />
+              <Route path="integrations" element={<IntegrationsPage />} />
+              <Route path="hierarchy" element={<HierarchyPage />} />
+              <Route path="initiatives" element={<InitiativesPage />} />
+              <Route path="okrs" element={<OkrsPage />} />
+              <Route path="prioritization" element={<PrioritizationPage />} />
+              <Route path="roadmap" element={<RoadmapPage />} />
+              <Route path="releases" element={<ProductReleasesPage />} />
+              <Route path="reports" element={<ProductReportsPage />} />
+              <Route path="portals" element={<PortalsPage />} />
+              <Route path="briefs" element={<BriefsPage />} />
+            </Route>
+            <Route path="office" element={<OfficeLayout />}>
+              <Route index element={<OfficeDashboardPage />} />
+              <Route path="inventory" element={<InventoryPage />} />
+              <Route path="requests" element={<RequestsPage />} />
+              <Route path="vendors" element={<OfficeVendorsPage />} />
+              <Route path="food" element={<FoodPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/workspace" replace />} />
           </Route>
