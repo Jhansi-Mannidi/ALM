@@ -346,7 +346,7 @@ export const ALM_ROLE_TO_RBAC = {
 };
 
 export const RBAC_NAV = [
-  { id: 'dashboard', label: 'Dashboard', path: '/workspace/admin/rbac', icon: 'layoutGrid', end: true },
+  { id: 'dashboard', label: 'Dashboard', path: '/workspace/admin/rbac/dashboard', icon: 'layoutGrid' },
   { id: 'roles', label: 'Roles', path: '/workspace/admin/rbac/roles', icon: 'shieldCheck' },
   { id: 'permissions', label: 'Permissions', path: '/workspace/admin/rbac/permissions', icon: 'sliders' },
   { id: 'users', label: 'Users', path: '/workspace/admin/rbac/users', icon: 'users' },

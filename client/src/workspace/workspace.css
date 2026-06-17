@@ -2648,6 +2648,12 @@
   padding: 20px 24px 40px;
 }
 
+.ws-module-empty-main {
+  margin: -20px -24px -40px;
+  min-height: calc(100vh - var(--topbar-h, 40px));
+  background: var(--background);
+}
+
 .ws-module-app-shell .card,
 .ws-module-app-shell .stat,
 .ws-module-app-shell .tbl-wrap,

@@ -17,7 +17,7 @@ export default function SolutionPage() {
     return (
       <div className="ws-page">
         <p>Solution not found.</p>
-        <Link to="/workspace" className="btn btn-ghost btn-sm">
+        <Link to="/workspace/home" className="btn btn-ghost btn-sm">
           Back to Workspace
         </Link>
       </div>
@@ -27,7 +27,7 @@ export default function SolutionPage() {
   if (!canAccessSolution(solutionId)) {
     return (
       <div className="ws-page">
-        <Link to="/workspace" className="ws-back-link">
+        <Link to="/workspace/home" className="ws-back-link">
           <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
           Back to Workspace
         </Link>
@@ -60,7 +60,7 @@ export default function SolutionPage() {
       className="ws-page ws-solution-page"
       style={{ '--solution-color': solution.color }}
     >
-      <Link to="/workspace" className="ws-back-link">
+      <Link to="/workspace/home" className="ws-back-link">
         <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
         Back to Workspace
       </Link>

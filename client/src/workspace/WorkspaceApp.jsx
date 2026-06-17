@@ -5,6 +5,7 @@ import WorkspaceHomePage from './pages/WorkspaceHomePage';
 import SolutionPage from './pages/SolutionPage';
 import WorkspaceAppPage from './pages/WorkspaceAppPage';
 import RbacLayout from './pages/admin/RbacLayout';
+import RbacStartPage from './pages/admin/RbacStartPage';
 import RbacDashboardPage from './pages/admin/RbacDashboardPage';
 import RolesPage from './pages/admin/RolesPage';
 import RolePermissionsPage from './pages/admin/RolePermissionsPage';
@@ -99,11 +100,13 @@ export default function WorkspaceApp() {
       <Routes>
         <Route path="/workspace" element={<WorkspaceShell />}>
           <Route element={<AnimatedOutlet className="ws-page-motion" />}>
-            <Route index element={<WorkspaceHomePage />} />
+            <Route index element={<Navigate to="/workspace/admin/rbac" replace />} />
+            <Route path="home" element={<WorkspaceHomePage />} />
             <Route path="solutions/:solutionId" element={<SolutionPage />} />
             <Route path="solutions/:solutionId/apps/:appId" element={<WorkspaceAppPage />} />
             <Route path="admin/rbac" element={<RbacLayout />}>
-              <Route index element={<RbacDashboardPage />} />
+              <Route index element={<RbacStartPage />} />
+              <Route path="dashboard" element={<RbacDashboardPage />} />
               <Route path="roles" element={<RolesPage />} />
               <Route path="roles/:roleId" element={<RolePermissionsPage />} />
               <Route path="permissions" element={<PermissionsPage />} />
@@ -214,7 +217,7 @@ export default function WorkspaceApp() {
               <Route path="accounting" element={<FreightPlaceholderPage title="Accounting" />} />
               <Route path="tracking" element={<FreightPlaceholderPage title="Track & Trace" />} />
             </Route>
-            <Route path="*" element={<Navigate to="/workspace" replace />} />
+            <Route path="*" element={<Navigate to="/workspace/admin/rbac" replace />} />
           </Route>
         </Route>
       </Routes>
