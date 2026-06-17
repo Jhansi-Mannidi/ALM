@@ -1,5 +1,5 @@
 export const EMPLOYEE_WORKSPACE_NAV = [
-  { id: 'dashboard', label: 'Dashboard', path: '/workspace/employee', icon: 'layoutDashboard' },
+  { id: 'dashboard', label: 'Dashboard', path: '/workspace/employee', icon: 'layoutDashboard', end: true },
   { id: 'profile', label: 'My Profile', path: '/workspace/employee/profile', icon: 'users' },
   { id: 'documents', label: 'My Documents', path: '/workspace/employee/documents', icon: 'fileText' },
   { id: 'dates', label: 'Employment Dates', path: '/workspace/employee/dates', icon: 'calendarDays' },

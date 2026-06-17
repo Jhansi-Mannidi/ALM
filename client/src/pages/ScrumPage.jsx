@@ -8,11 +8,31 @@ import { useApp } from '../context/AppContext';
 import { formatCeremonySchedule } from '../utils/ceremonyHelpers';
 import { canManageCeremonies, isWorkflowComplete, sprintCompletion } from '../utils/helpers';
 
+const INITIAL_RETRO = {
+  wentWell: [
+    'OAuth module shipped on time',
+    'Zero P1 bugs in production',
+    'Sprint delivery improved week over week',
+  ],
+  improve: [
+    'Code review turnaround too slow',
+    'Test coverage gaps in payment module',
+    'Standup running over time',
+  ],
+  actions: [
+    'Set 4hr SLA for PR reviews',
+    'Add payment integration tests',
+    'Timebox standup to 15 min',
+  ],
+};
+
 export default function ScrumPage() {
   const { project, role, refreshProjects, toast } = useApp();
   const [modal, setModal] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [retro, setRetro] = useState(INITIAL_RETRO);
+  const [retroDraft, setRetroDraft] = useState({ wentWell: '', improve: '', actions: '' });
 
   if (!project) return null;
 
@@ -65,6 +85,20 @@ export default function ScrumPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const addRetroItem = (bucket) => {
+    const value = (retroDraft[bucket] || '').trim();
+    if (!value) return;
+    setRetro((prev) => ({ ...prev, [bucket]: [...prev[bucket], value] }));
+    setRetroDraft((prev) => ({ ...prev, [bucket]: '' }));
+  };
+
+  const removeRetroItem = (bucket, index) => {
+    setRetro((prev) => ({
+      ...prev,
+      [bucket]: prev[bucket].filter((_, i) => i !== index),
+    }));
   };
 
   return (
@@ -253,25 +287,100 @@ export default function ScrumPage() {
               <div className="retro-title" style={{ color: 'var(--green-d)' }}>
                 What went well
               </div>
-              <div className="retro-item">OAuth module shipped on time</div>
-              <div className="retro-item">Zero P1 bugs in production</div>
-              <div className="retro-item">Sprint delivery improved week over week</div>
+              {retro.wentWell.map((item, index) => (
+                <div key={`well-${index}`} className="retro-item retro-item-row">
+                  <span>{item}</span>
+                  {canManage && (
+                    <IconButton
+                      icon={Icons.trash}
+                      label="Remove item"
+                      variant="danger"
+                      size={12}
+                      className="icon-btn-sm retro-remove-btn"
+                      onClick={() => removeRetroItem('wentWell', index)}
+                    />
+                  )}
+                </div>
+              ))}
+              {canManage && (
+                <div className="retro-add-row">
+                  <input
+                    className="fi retro-add-input"
+                    value={retroDraft.wentWell}
+                    onChange={(e) => setRetroDraft((prev) => ({ ...prev, wentWell: e.target.value }))}
+                    placeholder="Add entry..."
+                  />
+                  <button type="button" className="btn btn-primary btn-sm" onClick={() => addRetroItem('wentWell')}>
+                    Add
+                  </button>
+                </div>
+              )}
             </div>
             <div className="retro-col" style={{ background: 'var(--amber-l)' }}>
               <div className="retro-title" style={{ color: 'var(--amber-d)' }}>
                 What to improve
               </div>
-              <div className="retro-item">Code review turnaround too slow</div>
-              <div className="retro-item">Test coverage gaps in payment module</div>
-              <div className="retro-item">Standup running over time</div>
+              {retro.improve.map((item, index) => (
+                <div key={`improve-${index}`} className="retro-item retro-item-row">
+                  <span>{item}</span>
+                  {canManage && (
+                    <IconButton
+                      icon={Icons.trash}
+                      label="Remove item"
+                      variant="danger"
+                      size={12}
+                      className="icon-btn-sm retro-remove-btn"
+                      onClick={() => removeRetroItem('improve', index)}
+                    />
+                  )}
+                </div>
+              ))}
+              {canManage && (
+                <div className="retro-add-row">
+                  <input
+                    className="fi retro-add-input"
+                    value={retroDraft.improve}
+                    onChange={(e) => setRetroDraft((prev) => ({ ...prev, improve: e.target.value }))}
+                    placeholder="Add entry..."
+                  />
+                  <button type="button" className="btn btn-primary btn-sm" onClick={() => addRetroItem('improve')}>
+                    Add
+                  </button>
+                </div>
+              )}
             </div>
             <div className="retro-col" style={{ background: 'var(--blue-l)' }}>
               <div className="retro-title" style={{ color: 'var(--blue-d)' }}>
                 Action items
               </div>
-              <div className="retro-item">Set 4hr SLA for PR reviews</div>
-              <div className="retro-item">Add payment integration tests</div>
-              <div className="retro-item">Timebox standup to 15 min</div>
+              {retro.actions.map((item, index) => (
+                <div key={`action-${index}`} className="retro-item retro-item-row">
+                  <span>{item}</span>
+                  {canManage && (
+                    <IconButton
+                      icon={Icons.trash}
+                      label="Remove item"
+                      variant="danger"
+                      size={12}
+                      className="icon-btn-sm retro-remove-btn"
+                      onClick={() => removeRetroItem('actions', index)}
+                    />
+                  )}
+                </div>
+              ))}
+              {canManage && (
+                <div className="retro-add-row">
+                  <input
+                    className="fi retro-add-input"
+                    value={retroDraft.actions}
+                    onChange={(e) => setRetroDraft((prev) => ({ ...prev, actions: e.target.value }))}
+                    placeholder="Add entry..."
+                  />
+                  <button type="button" className="btn btn-primary btn-sm" onClick={() => addRetroItem('actions')}>
+                    Add
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -7,10 +7,18 @@ import {
   MEMBER_STATUS_OPTIONS,
   PROJECT_PHASES,
   REPORTS_TO_ROLE_IDS,
+  isWorkflowComplete,
+  roleChipClass,
   roleLabel,
   TRAINING_OPTIONS,
   uById,
 } from '../utils/helpers';
+
+const emptyProjectTeamAdd = () => ({
+  selectedIds: [],
+  taskByUser: {},
+  search: '',
+});
 
 const emptyMember = () => ({
   name: '',
@@ -21,6 +29,7 @@ const emptyMember = () => ({
   training: [],
   ontime: 100,
 });
+
 import MotionModal from '../motion/MotionModal';
 import { AppIcon, Icons } from './icons';
 
@@ -62,6 +71,7 @@ export default function Modals() {
   const navigate = useNavigate();
   const location = useLocation();
   const isGlobalTeamAdd = location.pathname === '/team-members';
+  const isProjectTeamAdd = location.pathname === '/project-team';
 
   const emptyNp = () => ({
     name: '',
@@ -79,6 +89,7 @@ export default function Modals() {
   const [np, setNp] = useState(emptyNp);
   const [assign, setAssign] = useState({ assignId: '', prio: 'Medium' });
   const [member, setMember] = useState(emptyMember());
+  const [projectTeamAdd, setProjectTeamAdd] = useState(emptyProjectTeamAdd());
   const [req, setReq] = useState({ title: '', type: 'FR', prio: 'Must Have' });
   const [tc, setTc] = useState({ title: '', suite: '', type: 'Automated', assign: '', linked: '' });
   const [ticket, setTicket] = useState({ title: '', description: '', prio: 'P3 - Medium', assign: '' });
@@ -104,11 +115,15 @@ export default function Modals() {
 
   useEffect(() => {
     if (modal !== 'addmem') return;
+    if (isProjectTeamAdd) {
+      setProjectTeamAdd(emptyProjectTeamAdd());
+      return;
+    }
     setMember({
       ...emptyMember(),
       projectIds: !isGlobalTeamAdd && project?.id ? [project.id] : [],
     });
-  }, [modal, isGlobalTeamAdd, project?.id]);
+  }, [modal, isGlobalTeamAdd, isProjectTeamAdd, project?.id]);
 
   const teamLeadOptions = (users ?? []).filter((u) => u.role === 'teamlead');
 
@@ -215,6 +230,70 @@ export default function Modals() {
       toast(u.name + ' added ✓', 'ok');
     } catch (e) {
       toast(e.message || 'Failed to add member', 'err');
+    }
+  };
+
+  const projectMemberSet = new Set(project?.members ?? []);
+  const availableProjectMembers = (users ?? []).filter(
+    (u) => u.role !== 'admin' && !projectMemberSet.has(u.id),
+  );
+  const filteredAvailableMembers = availableProjectMembers.filter((u) => {
+    const q = projectTeamAdd.search.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      u.name.toLowerCase().includes(q) ||
+      roleLabel(u.role).toLowerCase().includes(q)
+    );
+  });
+  const openProjectIssues = (project?.issues ?? []).filter((i) => !isWorkflowComplete(i.status));
+
+  const toggleProjectTeamMember = (userId, checked) => {
+    setProjectTeamAdd((prev) => {
+      const selectedIds = checked
+        ? [...new Set([...prev.selectedIds, userId])]
+        : prev.selectedIds.filter((id) => id !== userId);
+      const taskByUser = { ...prev.taskByUser };
+      if (checked) {
+        if (taskByUser[userId] === undefined) taskByUser[userId] = '';
+      } else {
+        delete taskByUser[userId];
+      }
+      return { ...prev, selectedIds, taskByUser };
+    });
+  };
+
+  const setMemberTask = (userId, issueId) => {
+    setProjectTeamAdd((prev) => ({
+      ...prev,
+      taskByUser: { ...prev.taskByUser, [userId]: issueId },
+    }));
+  };
+
+  const addProjectMembers = async () => {
+    const { selectedIds, taskByUser } = projectTeamAdd;
+    if (!selectedIds.length) return toast('Select at least one team member', 'err');
+    const missingTask = selectedIds.some((id) => taskByUser[id] === undefined);
+    if (missingTask) return toast('Assign a task for each member (or choose Assign later)', 'err');
+
+    try {
+      for (const userId of selectedIds) {
+        await api.addMember(project.id, { userId });
+      }
+      for (const userId of selectedIds) {
+        const issueId = taskByUser[userId];
+        if (issueId) {
+          await api.assignTask(project.id, { issueId, assignId: userId, prio: 'Medium' });
+        }
+      }
+      await refreshProjects();
+      setModal(null);
+      setProjectTeamAdd(emptyProjectTeamAdd());
+      toast(
+        `${selectedIds.length} member${selectedIds.length !== 1 ? 's' : ''} added to project ✓`,
+        'ok',
+      );
+    } catch (e) {
+      toast(e.message || 'Failed to add members', 'err');
     }
   };
 
@@ -413,7 +492,105 @@ export default function Modals() {
         </div>
       </Modal>
 
-      <Modal id="addmem" title="Add Team Member" width="560px" footer={<><button className="btn btn-ghost" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary fx g4" onClick={addMember}><AppIcon icon={Icons.userPlus} size={14} />Add Member</button></>}>
+      <Modal
+        id="addmem"
+        title={isProjectTeamAdd ? 'Add Members to Project' : 'Add Team Member'}
+        width={isProjectTeamAdd ? '600px' : '560px'}
+        footer={
+          <>
+            <button type="button" className="btn btn-ghost" onClick={() => setModal(null)}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary fx g4"
+              onClick={isProjectTeamAdd ? addProjectMembers : addMember}
+            >
+              <AppIcon icon={Icons.userPlus} size={14} />
+              {isProjectTeamAdd ? 'Add to Project' : 'Add Member'}
+            </button>
+          </>
+        }
+      >
+        {isProjectTeamAdd ? (
+          <>
+            <div className="fl">
+              <label>Choose Team Members *</label>
+              <div className="si project-team-add-search">
+                <AppIcon icon={Icons.search} size={15} />
+                <input
+                  className="fi"
+                  placeholder="Search by name or role…"
+                  value={projectTeamAdd.search}
+                  onChange={(e) => setProjectTeamAdd((p) => ({ ...p, search: e.target.value }))}
+                />
+              </div>
+              <div className="member-project-picks project-team-member-picks">
+                {filteredAvailableMembers.length === 0 && (
+                  <div className="t-muted-xs">
+                    {availableProjectMembers.length === 0
+                      ? 'All team members are already on this project.'
+                      : 'No members match your search.'}
+                  </div>
+                )}
+                {filteredAvailableMembers.map((u) => (
+                  <label key={u.id} className="member-project-pick">
+                    <input
+                      type="checkbox"
+                      checked={projectTeamAdd.selectedIds.includes(u.id)}
+                      onChange={(e) => toggleProjectTeamMember(u.id, e.target.checked)}
+                    />
+                    <span className={`av av-xs ${u.c}`}>{u.ini}</span>
+                    <span style={{ fontWeight: 600 }}>{u.name}</span>
+                    <span className={`chip chip-sm ${roleChipClass(u.role)}`} style={{ marginLeft: 'auto' }}>
+                      {roleLabel(u.role)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <div className="t-muted-xs mt4">
+                Select one or more people from your organization to add to {project?.name}.
+              </div>
+            </div>
+
+            {projectTeamAdd.selectedIds.length > 0 && (
+              <div className="fl">
+                <label>Assign Tasks *</label>
+                <div className="project-team-task-assignments">
+                  {projectTeamAdd.selectedIds.map((userId) => {
+                    const u = uById(users, userId);
+                    if (!u) return null;
+                    return (
+                      <div key={userId} className="project-team-task-row">
+                        <div className="fx g8 project-team-task-member">
+                          <span className={`av av-xs ${u.c}`}>{u.ini}</span>
+                          <span style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{u.name}</span>
+                        </div>
+                        <select
+                          className="fs project-team-task-select"
+                          value={projectTeamAdd.taskByUser[userId] ?? ''}
+                          onChange={(e) => setMemberTask(userId, e.target.value)}
+                          required
+                        >
+                          <option value="">Assign later</option>
+                          {openProjectIssues.map((issue) => (
+                            <option key={issue.id} value={issue.id}>
+                              {issue.id} — {issue.title}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="t-muted-xs mt4">
+                  Task assignment is required for each member. Choose a task now or select &quot;Assign later&quot; to fill in later.
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
         <div className="fl">
           <label>Name *</label>
           <input className="fi" value={member.name} onChange={(e) => setMember({ ...member, name: e.target.value })} placeholder="e.g. Alex Morgan" />
@@ -499,6 +676,8 @@ export default function Modals() {
           />
           <div className="t-muted-xs mt4">Initial on-time delivery target (0–100%). Assigned tasks and bugs update automatically.</div>
         </div>
+          </>
+        )}
       </Modal>
 
       <Modal id="req" title="Add Requirement" width="480px" footer={<><button className="btn btn-ghost" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary fx g4" onClick={addReq}><AppIcon icon={Icons.fileText} size={14} />Add Requirement</button></>}>

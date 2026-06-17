@@ -1,7 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AnimatedOutlet from '../motion/AnimatedOutlet';
-import { WorkspaceProvider } from './context/WorkspaceContext';
-import { RbacProvider } from './context/RbacContext';
 import WorkspaceShell from './components/WorkspaceShell';
 import WorkspaceHomePage from './pages/WorkspaceHomePage';
 import SolutionPage from './pages/SolutionPage';
@@ -90,12 +88,14 @@ import InventoryPage from './pages/office/InventoryPage';
 import RequestsPage from './pages/office/RequestsPage';
 import OfficeVendorsPage from './pages/office/VendorsPage';
 import FoodPage from './pages/office/FoodPage';
+import FreightLeadsPage from './pages/freight/FreightLeadsPage';
+import FreightLayout from './pages/freight/FreightLayout';
+import FreightPlaceholderPage from './pages/freight/FreightPlaceholderPage';
 import './workspace.css';
+import './workspace-theme.css';
 
 export default function WorkspaceApp() {
   return (
-    <WorkspaceProvider>
-      <RbacProvider>
       <Routes>
         <Route path="/workspace" element={<WorkspaceShell />}>
           <Route element={<AnimatedOutlet className="ws-page-motion" />}>
@@ -204,11 +204,19 @@ export default function WorkspaceApp() {
               <Route path="vendors" element={<OfficeVendorsPage />} />
               <Route path="food" element={<FoodPage />} />
             </Route>
+            <Route path="freight" element={<FreightLayout />}>
+              <Route path="leads" element={<FreightLeadsPage />} />
+              <Route path="leads/suspects" element={<FreightLeadsPage />} />
+              <Route path="leads/prospects" element={<FreightLeadsPage />} />
+              <Route path="leads/opportunities" element={<FreightLeadsPage />} />
+              <Route path="leads/customers" element={<FreightLeadsPage />} />
+              <Route path="sales" element={<FreightPlaceholderPage title="Sales" />} />
+              <Route path="accounting" element={<FreightPlaceholderPage title="Accounting" />} />
+              <Route path="tracking" element={<FreightPlaceholderPage title="Track & Trace" />} />
+            </Route>
             <Route path="*" element={<Navigate to="/workspace" replace />} />
           </Route>
         </Route>
       </Routes>
-      </RbacProvider>
-    </WorkspaceProvider>
   );
 }

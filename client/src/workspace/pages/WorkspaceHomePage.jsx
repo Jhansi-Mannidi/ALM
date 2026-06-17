@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { useRbac } from '../context/RbacContext';
 import { SOLUTIONS, ALL_APPS, getSolutionForApp } from '../data/workspaceCatalog';
+import { getSchema, getSolutionsForSchema, getWorkspace } from '../data/platformCatalog';
 import FilterTabs from '../components/FilterTabs';
 import { SolutionCard, AppCard } from '../components/WorkspaceCard';
 
@@ -13,8 +14,22 @@ function matchesSearch(text, query) {
 
 export default function WorkspaceHomePage() {
   const { user } = useApp();
-  const { filter, setFilter, search, viewMode, favoriteIds, recentIds } = useWorkspace();
+  const { filter, setFilter, search, viewMode, favoriteIds, recentIds, platformSelection } = useWorkspace();
   const { canAccessApp, canAccessSolution, currentRole } = useRbac();
+
+  const workspace = getWorkspace(platformSelection?.workspaceId);
+  const schema = getSchema(platformSelection?.workspaceId, platformSelection?.schemaId);
+
+  const contextSolutions = useMemo(() => {
+    if (!platformSelection?.workspaceId || !platformSelection?.schemaId) {
+      return SOLUTIONS.filter((s) => canAccessSolution(s.id));
+    }
+    return getSolutionsForSchema(platformSelection.workspaceId, platformSelection.schemaId).filter((s) =>
+      canAccessSolution(s.id)
+    );
+  }, [platformSelection, canAccessSolution]);
+
+  const contextSolutionIds = useMemo(() => new Set(contextSolutions.map((s) => s.id)), [contextSolutions]);
 
   const today = new Date().toLocaleDateString(undefined, {
     weekday: 'long',
@@ -28,15 +43,14 @@ export default function WorkspaceHomePage() {
 
   const items = useMemo(() => {
     const q = search.trim();
-    let solutions = SOLUTIONS.filter(
-      (s) =>
-        canAccessSolution(s.id) &&
-        (matchesSearch(s.name, q) || matchesSearch(s.description, q))
+    let solutions = contextSolutions.filter(
+      (s) => matchesSearch(s.name, q) || matchesSearch(s.description, q)
     );
     let apps = ALL_APPS.filter(
       (a) =>
         canAccessApp(a.id) &&
-        (matchesSearch(a.name, q) || matchesSearch(a.description, q))
+        (matchesSearch(a.name, q) || matchesSearch(a.description, q)) &&
+        (a.solutionId ? contextSolutionIds.has(a.solutionId) : true)
     );
 
     if (filter === 'favorites') {
@@ -52,7 +66,7 @@ export default function WorkspaceHomePage() {
     }
 
     return { solutions, apps };
-  }, [filter, search, favoriteIds, recentIds, canAccessApp, canAccessSolution]);
+  }, [filter, search, favoriteIds, recentIds, canAccessApp, contextSolutions, contextSolutionIds]);
 
   const gridClass = viewMode === 'list' ? 'ws-grid ws-grid-list' : 'ws-grid';
 
@@ -66,6 +80,12 @@ export default function WorkspaceHomePage() {
             <> • Access level: <strong>{currentRole.name}</strong></>
           )}
         </p>
+        {workspace && schema && (
+          <p className="ws-welcome-context">
+            {workspace.name} / {schema.name}
+            {schema.environment ? ` (${schema.environment})` : ''}
+          </p>
+        )}
       </div>
 
       <FilterTabs value={filter} onChange={setFilter} />
@@ -76,7 +96,7 @@ export default function WorkspaceHomePage() {
             ? 'No favorite apps yet. Star an app to add it here.'
             : filter === 'recent'
               ? 'No recently used apps yet.'
-              : 'No results match your search.'}
+              : 'No results match your search or permissions for this workspace context.'}
         </div>
       )}
 

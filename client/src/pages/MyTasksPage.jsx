@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import PageHeader from '../components/PageHeader';
 import { api } from '../api/client';
-import { AppIcon, IconButton, Icons } from '../components/icons';
+import { AppIcon, Icons } from '../components/icons';
+import ActionsMenu from '../components/ActionsMenu';
 import {
   formatSheetDate,
   isMyTasksActiveStatus,
@@ -327,21 +328,24 @@ export default function MyTasksPage() {
                   </td>
                   <td>
                     {t.postponed ? (
-                      <div className="fx g4 mytasks-post-actions">
-                        <IconButton
-                          icon={Icons.pencil}
-                          label={`Edit ${t.id}`}
-                          size={14}
-                          onClick={() => setPostponeModal({ task: t, mode: 'edit' })}
-                        />
-                        <IconButton
-                          icon={Icons.trash}
-                          label={`Remove postpone for ${t.id}`}
-                          variant="danger"
-                          size={14}
-                          onClick={() => removePostpone(t)}
-                        />
-                      </div>
+                      <ActionsMenu
+                        ariaLabel={`Actions for ${t.id}`}
+                        actions={[
+                          {
+                            id: 'edit',
+                            label: 'Edit',
+                            icon: Icons.pencil,
+                            onClick: () => setPostponeModal({ task: t, mode: 'edit' }),
+                          },
+                          {
+                            id: 'remove',
+                            label: 'Remove postpone',
+                            icon: Icons.trash,
+                            danger: true,
+                            onClick: () => removePostpone(t),
+                          },
+                        ]}
+                      />
                     ) : (
                       <span className="t-muted-xs">—</span>
                     )}

@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { api } from '../api/client';
 import { useApp } from '../context/AppContext';
 import { AppIcon, IconButton, Icons } from '../components/icons';
+import FinanceActionsMenu from '../workspace/pages/finance/FinanceActionsMenu';
 import PageHeader from '../components/PageHeader';
 import {
   buildMemberRows,
@@ -295,7 +296,7 @@ export default function MembersPage() {
     );
   }
 
-  const colCount = isProjectScope ? 9 : 10;
+  const colCount = isProjectScope ? 8 : 9;
 
   const subtitle = isProjectScope
     ? `${memberRows.length} member${memberRows.length !== 1 ? 's' : ''} on ${project.name}`
@@ -316,10 +317,11 @@ export default function MembersPage() {
         }
       />
 
-      <div className="fbar members-fbar">
-        <div className="si members-search">
-          <AppIcon icon={Icons.search} size={15} />
+      <div className="fbar">
+        <div className="si">
+          <AppIcon icon={Icons.search} size={12} />
           <input
+            type="search"
             placeholder={
               isProjectScope
                 ? 'Search by name or role…'
@@ -327,9 +329,22 @@ export default function MembersPage() {
             }
             value={memberSearch}
             onChange={(e) => setMemberSearch(e.target.value)}
+            aria-label="Search team members"
           />
+          {memberSearch && (
+            <button
+              type="button"
+              className="si-clear"
+              aria-label="Clear search"
+              onClick={() => setMemberSearch('')}
+            >
+              <AppIcon icon={Icons.x} size={12} />
+            </button>
+          )}
         </div>
-        <span className="fbar-cnt">{filteredRows.length} members</span>
+        <span className="fbar-cnt">
+          {filteredRows.length} member{filteredRows.length !== 1 ? 's' : ''}
+        </span>
       </div>
 
       <div className="tbl-wrap">
@@ -345,7 +360,6 @@ export default function MembersPage() {
               {!isProjectScope && <th>Projects</th>}
               <th>Assigned</th>
               <th>Bugs</th>
-              <th>Workload</th>
               <th>On-Time%</th>
               <th className="members-col-status">Status</th>
               <th className="members-col-action">Action</th>
@@ -407,22 +421,6 @@ export default function MembersPage() {
                   </span>
                 </td>
                 <td>
-                  <div style={{ width: 90 }}>
-                    <div className="prog prog-xs mb8">
-                      <div
-                        className="prog-fill"
-                        style={{
-                          width: `${Math.min(100, Math.round((totalAssigned / 12) * 100))}%`,
-                          background: totalAssigned > 10 ? 'var(--amber)' : 'var(--blue)',
-                        }}
-                      />
-                    </div>
-                    <div className="t-muted-xs">
-                      {totalAssigned > 10 ? 'High' : totalAssigned > 6 ? 'Medium' : 'Low'}
-                    </div>
-                  </div>
-                </td>
-                <td>
                   <span
                     style={{
                       fontWeight: 800,
@@ -439,36 +437,35 @@ export default function MembersPage() {
                   </span>
                 </td>
                 <td className="members-col-action">
-                  <div className="members-actions">
-                    {can(role, 'assign') && (
-                      <IconButton
-                        icon={Icons.userPlus}
-                        label="Assign task"
-                        size={11}
-                        className="icon-btn-sm"
-                        onClick={() => openAssign(u.id)}
-                      />
-                    )}
-                    {permissions.addMem && (
-                      <>
-                        <IconButton
-                          icon={Icons.pencil}
-                          label="Edit member"
-                          size={11}
-                          className="icon-btn-sm"
-                          onClick={() => openEdit(u, userProjects)}
-                        />
-                        <IconButton
-                          icon={Icons.trash}
-                          label={isProjectScope ? 'Remove from project' : 'Delete member'}
-                          variant="danger"
-                          size={11}
-                          className="icon-btn-sm"
-                          onClick={() => removeMember(u)}
-                        />
-                      </>
-                    )}
-                  </div>
+                  <FinanceActionsMenu
+                    actions={[
+                      ...(can(role, 'assign')
+                        ? [{
+                            id: `assign-${u.id}`,
+                            label: 'Assign',
+                            icon: Icons.userPlus,
+                            onClick: () => openAssign(u.id),
+                          }]
+                        : []),
+                      ...(permissions.addMem
+                        ? [
+                            {
+                              id: `edit-${u.id}`,
+                              label: 'Edit',
+                              icon: Icons.pencil,
+                              onClick: () => openEdit(u, userProjects),
+                            },
+                            {
+                              id: `delete-${u.id}`,
+                              label: isProjectScope ? 'Remove from project' : 'Delete',
+                              icon: Icons.trash,
+                              danger: true,
+                              onClick: () => removeMember(u),
+                            },
+                          ]
+                        : []),
+                    ]}
+                  />
                 </td>
               </tr>
             ))}

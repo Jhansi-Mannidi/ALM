@@ -248,7 +248,52 @@ router.post('/users', (req, res) => {
 });
 
 router.post('/auth/login', (req, res) => {
-  const { role } = req.body;
+  const { role, email, password } = req.body;
+
+  if (email) {
+    const normalized = String(email).trim().toLowerCase();
+    if (!normalized) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    if (!password || String(password).length < 4) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    let matchedRole = null;
+    let matchedUser = null;
+
+    for (const [roleKey, account] of Object.entries(roleUsers)) {
+      if (account?.email?.toLowerCase() === normalized) {
+        matchedRole = roleKey === 'admin' ? 'admin' : account.role || roleKey;
+        matchedUser = account;
+        break;
+      }
+    }
+
+    if (!matchedUser) {
+      const teamUser = users.find((u) => u.email?.toLowerCase() === normalized);
+      if (teamUser) {
+        matchedRole = teamUser.role;
+        matchedUser = teamUser;
+      }
+    }
+
+    const demoAccounts = {
+      'mannidi.jhansi+1@voltuswave.com': roleUsers.admin,
+      'jhansi.mannidi@voltuswave.io': users.find((u) => u.id === 'u3') || roleUsers.developer,
+    };
+    if (!matchedUser && demoAccounts[normalized]) {
+      matchedUser = demoAccounts[normalized];
+      matchedRole = matchedUser.role === 'admin' ? 'admin' : matchedUser.role;
+    }
+
+    if (!matchedUser) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    return res.json({ role: matchedRole, user: matchedUser });
+  }
+
   if (!roleUsers[role]) {
     return res.status(400).json({ error: 'Invalid role' });
   }
@@ -526,6 +571,13 @@ router.patch('/projects/:id/bugs/:bugId', (req, res) => {
 router.post('/projects/:id/members', (req, res) => {
   const p = findProject(req.params.id);
   if (!p) return res.status(404).json({ error: 'Project not found' });
+  if (req.body.userId) {
+    const u = findUser(req.body.userId);
+    if (!u) return res.status(404).json({ error: 'User not found' });
+    if (!p.members) p.members = [];
+    if (!p.members.includes(u.id)) p.members.push(u.id);
+    return res.status(201).json(u);
+  }
   if (!req.body.reportsTo) return res.status(400).json({ error: 'Reported By required' });
   const projectIds = [
     ...(Array.isArray(req.body.projectIds) ? req.body.projectIds : []),

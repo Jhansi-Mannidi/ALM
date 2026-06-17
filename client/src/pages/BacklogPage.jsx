@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { AppIcon, IconButton, Icons } from '../components/icons';
 import PageHeader from '../components/PageHeader';
@@ -22,7 +23,9 @@ const FILTERS = [
 ];
 
 export default function BacklogPage() {
-  const { role, project, users, setModal, setAssignCtx } = useApp();
+  const { role, permissions, project, users, setModal, setAssignCtx } = useApp();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [blFilter, setBlFilter] = useState('all');
   const [blSearch, setBlSearch] = useState('');
 
@@ -50,6 +53,18 @@ export default function BacklogPage() {
       <PageHeader
         title="Product Backlog"
         subtitle={`${project.issues.length} total · ${project.issues.filter((i) => !isWorkflowComplete(i.status)).length} open`}
+        actions={
+          permissions.createIssue && (
+            <button
+              type="button"
+              className="btn btn-primary btn-sm ph-btn-compact fx g4"
+              onClick={() => navigate('/create?type=feature', { state: { from: location.pathname } })}
+            >
+              <AppIcon icon={Icons.plus} size={14} />
+              Create Feature
+            </button>
+          )
+        }
       />
 
       <div className="fbar">

@@ -265,10 +265,9 @@ export default function WorkItemDetailView({
             )}
           </div>
 
-          {user && projects && (
+          {user && (
             <WorkItemWorkLog
               project={project}
-              projects={projects}
               targetType="issue"
               targetId={issue.id}
               users={users}

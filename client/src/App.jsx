@@ -3,13 +3,16 @@ import { MotionConfig, motion } from 'framer-motion';
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import AnimatedOutlet from './motion/AnimatedOutlet';
 import WorkspaceApp from './workspace/WorkspaceApp';
+import { WorkspaceProvider } from './workspace/context/WorkspaceContext';
+import { RbacProvider } from './workspace/context/RbacContext';
+import ApplicationLauncher from './workspace/components/ApplicationLauncher';
 import { AppProvider, useApp } from './context/AppContext';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
-import ProjectTabs from './components/ProjectTabs';
 import ToastContainer from './components/ToastContainer';
 import Modals from './components/Modals';
 import PortfolioPage from './pages/PortfolioPage';
+import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import MyTasksPage from './pages/MyTasksPage';
 import TaskDetailPage from './pages/TaskDetailPage';
@@ -76,7 +79,6 @@ function AppShell() {
       <main className="main">
         <ProjectRouteSync />
         <Topbar />
-        <ProjectTabs />
         <div className="content">
           <div className="page-view">
             <Routes>
@@ -116,59 +118,49 @@ function AppShell() {
   );
 }
 
-function AppInitGate({ children }) {
-  const { user, initializing, initError, retryInit } = useApp();
-
-  if (initializing) {
-    return (
+function AppInitSpinner() {
+  return (
+    <motion.div
+      className="app-init"
+      aria-busy="true"
+      aria-label="Loading application"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <motion.div
-        className="app-init"
-        aria-busy="true"
-        aria-label="Loading application"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <motion.div
-          className="app-init-spinner"
-          animate={{ rotate: 360 }}
-          transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-        />
-      </motion.div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="app-init app-init-error">
-        <div className="app-init-error-title">Could not load VoltusWave ALM</div>
-        <p className="app-init-error-msg">{initError || 'Unable to connect to the API.'}</p>
-        <button type="button" className="btn btn-primary" onClick={retryInit}>
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  return children;
+        className="app-init-spinner"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+      />
+    </motion.div>
+  );
 }
 
 function AppRouter() {
+  const { user, initializing } = useApp();
   const location = useLocation();
 
-  if (location.pathname === '/') {
-    return (
-      <AppInitGate>
-        <Navigate to="/workspace" replace />
-      </AppInitGate>
-    );
+  if (initializing) {
+    return <AppInitSpinner />;
   }
 
-  return (
-    <AppInitGate>
-      {location.pathname.startsWith('/workspace') ? <WorkspaceApp /> : <AppShell />}
-    </AppInitGate>
-  );
+  if (!user) {
+    if (location.pathname !== '/login') {
+      return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    }
+    return <LoginPage />;
+  }
+
+  if (location.pathname === '/login' || location.pathname === '/') {
+    return <Navigate to="/workspace" replace />;
+  }
+
+  if (location.pathname.startsWith('/workspace')) {
+    return <WorkspaceApp />;
+  }
+
+  return <AppShell />;
 }
 
 export default function App() {
@@ -177,9 +169,14 @@ export default function App() {
       <MotionConfig reducedMotion="user">
         <ThemeProvider>
           <AppProvider>
-            <BrowserRouter>
-              <AppRouter />
-            </BrowserRouter>
+            <WorkspaceProvider>
+              <RbacProvider>
+                <BrowserRouter>
+                  <AppRouter />
+                  <ApplicationLauncher />
+                </BrowserRouter>
+              </RbacProvider>
+            </WorkspaceProvider>
           </AppProvider>
         </ThemeProvider>
       </MotionConfig>

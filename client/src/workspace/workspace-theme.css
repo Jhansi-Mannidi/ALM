@@ -1,0 +1,363 @@
+/* Workspace — dark theme + responsive polish (uses ALM tokens from index.css) */
+
+[data-theme="dark"] .ws-shell {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+[data-theme="dark"] .ws-shell .topbar,
+[data-theme="dark"] .ws-header {
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  border-bottom-color: var(--border);
+}
+
+[data-theme="dark"] .ws-card,
+[data-theme="dark"] .ws-fin-kpi-card,
+[data-theme="dark"] .ws-hr-stat-card,
+[data-theme="dark"] .ws-rbac-stat-card,
+[data-theme="dark"] .ws-pm-card,
+[data-theme="dark"] .ws-office-card {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: var(--sh);
+}
+
+[data-theme="dark"] .ws-fin-kpi-revenue .ws-fin-kpi-icon {
+  color: #6ee7b7;
+  background: rgba(22, 163, 74, 0.18);
+}
+
+[data-theme="dark"] .ws-fin-kpi-expense .ws-fin-kpi-icon {
+  color: #fcd34d;
+  background: rgba(217, 119, 6, 0.18);
+}
+
+[data-theme="dark"] .ws-fin-kpi-margin .ws-fin-kpi-icon {
+  color: #93c5fd;
+  background: rgba(37, 99, 235, 0.18);
+}
+
+[data-theme="dark"] .ws-fin-kpi-cash .ws-fin-kpi-icon {
+  color: #67e8f9;
+  background: rgba(8, 145, 178, 0.18);
+}
+
+[data-theme="dark"] .ws-fin-kpi-value,
+[data-theme="dark"] .ws-fin-kpi-label,
+[data-theme="dark"] .ws-page-title,
+[data-theme="dark"] .ws-hr-stat-value,
+[data-theme="dark"] .ws-rbac-stat-value {
+  color: var(--heading);
+}
+
+[data-theme="dark"] .ws-module-sidebar,
+[data-theme="dark"] .ws-hr-sidebar,
+[data-theme="dark"] .ws-rbac-sidebar,
+[data-theme="dark"] .ws-fin-sidebar {
+  background: var(--sidebar-bg);
+  border-color: var(--sidebar-border);
+}
+
+[data-theme="dark"] .ws-module-drawer,
+[data-theme="dark"] .ws-rbac-assign-modal,
+[data-theme="dark"] .ws-pm-feature-modal,
+[data-theme="dark"] .ws-fin-form-modal .modal {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: var(--sh-md);
+}
+
+[data-theme="dark"] .ws-module-overlay,
+[data-theme="dark"] .modal-ov {
+  background: var(--overlay);
+}
+
+[data-theme="dark"] .ws-filter-btn,
+[data-theme="dark"] .ws-hr-pill,
+[data-theme="dark"] .ws-rbac-pill {
+  background: var(--g50);
+  border-color: var(--border);
+  color: var(--g600);
+}
+
+[data-theme="dark"] .ws-filter-btn.active,
+[data-theme="dark"] .ws-hr-pill.active,
+[data-theme="dark"] .ws-rbac-pill.active {
+  background: var(--blue-l);
+  border-color: rgba(37, 99, 235, 0.35);
+  color: var(--heading);
+}
+
+[data-theme="dark"] .ws-table-wrap,
+[data-theme="dark"] .ws-fin-table-wrap,
+[data-theme="dark"] .ws-hr-table-wrap {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .ws-table th,
+[data-theme="dark"] .ws-fin-table th,
+[data-theme="dark"] .ws-hr-table th {
+  background: var(--g50);
+  color: var(--g500);
+}
+
+[data-theme="dark"] .ws-table tr:hover td,
+[data-theme="dark"] .ws-fin-table tr:hover td,
+[data-theme="dark"] .ws-hr-table tr:hover td {
+  background: var(--g50);
+}
+
+[data-theme="dark"] .ws-search-input,
+[data-theme="dark"] .ws-fin-search,
+[data-theme="dark"] .ws-hr-search input,
+[data-theme="dark"] .ws-input,
+[data-theme="dark"] .ws-select,
+[data-theme="dark"] .ws-textarea {
+  background: var(--g50);
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+[data-theme="dark"] .ws-office-hero,
+[data-theme="dark"] .ws-solution-hero {
+  background: linear-gradient(135deg, var(--g50) 0%, var(--card) 100%);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .ws-rbac-perm-row.selected,
+[data-theme="dark"] .ws-rbac-module-row.active {
+  background: rgba(37, 99, 235, 0.14);
+}
+
+[data-theme="dark"] .ws-freight-subnav,
+[data-theme="dark"] .ws-freight-lead-card {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .ws-freight-root {
+  background: var(--background);
+}
+
+[data-theme="dark"] .ws-freight-rail {
+  background: #0f172a;
+}
+
+[data-theme="dark"] .ws-freight-icon-btn.filled:hover {
+  background: var(--g50);
+}
+
+[data-theme="dark"] .ws-freight-avatar {
+  background: rgba(37, 99, 235, 0.22);
+  color: #93c5fd;
+}
+
+/* Freight nav drawer — desktop uses contents so rail/subnav stay in grid */
+.ws-freight-nav-drawer {
+  display: contents;
+}
+
+.ws-freight-menu-btn,
+.ws-freight-mobile-overlay,
+.ws-freight-drawer-close {
+  display: none;
+}
+
+/* Workspace mobile / tablet consistency */
+@media (max-width: 900px) {
+  .ws-main {
+    padding: 16px 14px 40px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ws-hr-content,
+  .ws-rbac-content,
+  .ws-fin-content,
+  .ws-pm-content,
+  .ws-office-content {
+    padding: 16px 14px 32px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ws-fin-stats,
+  .ws-fin-kpi-grid,
+  .ws-hr-stats,
+  .ws-rbac-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ws-fin-table-wrap,
+  .ws-hr-table-wrap,
+  .ws-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ws-fin-table,
+  .ws-hr-table,
+  .ws-table {
+    min-width: 640px;
+  }
+
+  .ws-page-head,
+  .ws-fin-page-head,
+  .ws-hr-page-head {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .ws-page-actions,
+  .ws-fin-page-actions,
+  .ws-hr-page-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .ws-fin-stats,
+  .ws-fin-kpi-grid,
+  .ws-hr-stats,
+  .ws-rbac-stats,
+  .ws-grid,
+  .ws-freight-kpi-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ws-header-inner {
+    padding: 0 10px;
+    height: 48px;
+  }
+
+  .ws-main {
+    padding: 12px 10px 32px;
+  }
+}
+
+@media (max-width: 900px) {
+  .ws-freight-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ws-freight-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--card);
+    color: var(--heading);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .ws-freight-nav-drawer {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 200;
+    width: min(300px, 88vw);
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .ws-freight-root.freight-mobile-nav-open .ws-freight-nav-drawer {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+  }
+
+  .ws-freight-mobile-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    border: none;
+    padding: 0;
+    background: var(--overlay);
+    cursor: pointer;
+  }
+
+  .ws-freight-drawer-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-sm);
+    background: var(--card);
+    color: var(--heading);
+    cursor: pointer;
+    z-index: 3;
+  }
+
+  .ws-freight-rail {
+    position: static;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 48px 12px 8px;
+    gap: 6px;
+    background: #1e293b;
+  }
+
+  [data-theme="dark"] .ws-freight-rail {
+    background: #0f172a;
+  }
+
+  .ws-freight-subnav {
+    display: flex !important;
+    position: static;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    border-top: 1px solid var(--border);
+    border-right: none;
+    box-shadow: none;
+  }
+
+  .ws-freight-chrome {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .ws-freight-chrome-right {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .ws-freight-hide-mobile,
+  .ws-freight-ai-pill,
+  .ws-freight-tool-wrap.ws-freight-fullscreen-wrap {
+    display: none !important;
+  }
+
+  .ws-freight-content {
+    padding: 12px 10px 24px;
+  }
+
+  .ws-freight-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ws-freight-table {
+    min-width: 720px;
+  }
+}

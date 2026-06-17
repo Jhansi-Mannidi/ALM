@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { AppIcon, Icons } from '../../../components/icons';
+import { AppIcon, Icons } from './icons';
 
 const MENU_WIDTH = 220;
 const MENU_ITEM_HEIGHT = 34;
@@ -26,7 +26,7 @@ function computeMenuPosition(triggerEl, itemCount, hasDivider) {
   return { top, left, width: MENU_WIDTH };
 }
 
-export default function FinanceActionsMenu({ actions = [], disabled = false }) {
+export default function ActionsMenu({ actions = [], disabled = false, ariaLabel = 'Options' }) {
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState(null);
   const triggerRef = useRef(null);
@@ -82,19 +82,19 @@ export default function FinanceActionsMenu({ actions = [], disabled = false }) {
     ? createPortal(
         <div
           ref={menuRef}
-          className="ws-actions-dropdown ws-actions-dropdown-portal"
+          className="row-actions-dropdown row-actions-dropdown-portal"
           role="menu"
           style={{ top: menuPos.top, left: menuPos.left, width: menuPos.width }}
         >
           {actions.map((action, index) => {
             const showDivider = action.danger && index > 0 && !actions[index - 1]?.danger;
             return (
-              <div key={action.id} className="ws-actions-dropdown-group">
-                {showDivider && <div className="ws-actions-divider" role="separator" />}
+              <div key={action.id} className="row-actions-dropdown-group">
+                {showDivider && <div className="row-actions-divider" role="separator" />}
                 <button
                   type="button"
                   role="menuitem"
-                  className={`ws-actions-item${action.danger ? ' danger' : ''}`}
+                  className={`row-actions-item${action.danger ? ' danger' : ''}`}
                   disabled={action.disabled}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -103,11 +103,11 @@ export default function FinanceActionsMenu({ actions = [], disabled = false }) {
                   }}
                 >
                   {action.icon && (
-                    <span className="ws-actions-item-icon">
+                    <span className="row-actions-item-icon">
                       <AppIcon icon={action.icon} size={14} />
                     </span>
                   )}
-                  <span className="ws-actions-item-label">{action.label}</span>
+                  <span className="row-actions-item-label">{action.label}</span>
                 </button>
               </div>
             );
@@ -119,12 +119,12 @@ export default function FinanceActionsMenu({ actions = [], disabled = false }) {
 
   return (
     <>
-      <div className="ws-actions-menu">
+      <div className="row-actions-menu">
         <button
           ref={triggerRef}
           type="button"
-          className={`ws-actions-trigger${open ? ' active' : ''}`}
-          aria-label="Options"
+          className={`row-actions-trigger${open ? ' active' : ''}`}
+          aria-label={ariaLabel}
           aria-expanded={open}
           aria-haspopup="menu"
           disabled={disabled}

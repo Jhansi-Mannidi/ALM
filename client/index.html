@@ -8,6 +8,7 @@
       (function () {
         var t = localStorage.getItem('almsphere-theme') || 'light';
         document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.style.colorScheme = t;
       })();
     </script>
     <title>VoltusWave ALM</title>

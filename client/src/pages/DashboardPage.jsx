@@ -1,7 +1,10 @@
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { AppIcon, Icons, NOTIFICATION_ICONS, SDLC_ICONS } from '../components/icons';
 import PageHeader from '../components/PageHeader';
+import { MotionInteractive } from '../motion/MotionCard';
+import { MotionStagger } from '../motion/MotionStagger';
 import { isWorkflowComplete, normalizeWorkflowStatus, sprintCompletion, uById } from '../utils/helpers';
 
 function DashProgress({ value, color = 'var(--blue)', size = 'md', className = '' }) {
@@ -14,7 +17,12 @@ function DashProgress({ value, color = 'var(--blue)', size = 'md', className = '
       aria-valuemax={100}
       style={{ '--dash-prog-color': color }}
     >
-      <div className="dash-prog-fill" style={{ width: `${value}%` }} />
+      <motion.div
+        className="dash-prog-fill"
+        initial={{ width: 0 }}
+        animate={{ width: `${value}%` }}
+        transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      />
     </div>
   );
 }
@@ -35,7 +43,7 @@ function HealthGauge({ value, color }) {
           </linearGradient>
         </defs>
         <circle cx="56" cy="56" r={r} fill="none" stroke="var(--g200)" strokeWidth="9" />
-        <circle
+        <motion.circle
           cx="56"
           cy="56"
           r={r}
@@ -47,6 +55,9 @@ function HealthGauge({ value, color }) {
           strokeLinecap="round"
           transform="rotate(-90 56 56)"
           className="dash-health-ring"
+          initial={{ strokeDashoffset: c }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
         />
       </svg>
       <div className="dash-health-score">
@@ -57,9 +68,15 @@ function HealthGauge({ value, color }) {
   );
 }
 
+function sprintStatusLabel(status) {
+  if (status === 'done') return 'Done';
+  if (status === 'active') return 'Active';
+  return 'Planned';
+}
+
 function KpiCard({ label, value, sub, icon, tone }) {
   return (
-    <div className={`dash-stat dash-stat--${tone}`}>
+    <MotionInteractive className={`dash-stat dash-stat--${tone}`}>
       <div className="dash-stat-top">
         <span className="dash-stat-label">{label}</span>
         <span className="dash-stat-icon">
@@ -68,7 +85,7 @@ function KpiCard({ label, value, sub, icon, tone }) {
       </div>
       <div className="dash-stat-value">{value}</div>
       <div className="dash-stat-sub">{sub}</div>
-    </div>
+    </MotionInteractive>
   );
 }
 
@@ -97,7 +114,8 @@ export default function DashboardPage() {
   const mems = p.members.map((id) => uById(users, id)).filter(Boolean);
   const inFlight = p.issues.filter((i) => !isWorkflowComplete(i.status)).length;
   const sprintProg = sprintCompletion(p, p.curSprint);
-  const healthColor = p.status === 'delayed' ? 'var(--red)' : 'var(--blue)';
+  const healthColor =
+    p.health >= 80 ? 'var(--green)' : p.status === 'delayed' ? 'var(--red)' : 'var(--blue)';
 
   return (
     <div className="project-dash">
@@ -112,8 +130,9 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="dash-stats g4 mb20">
+      <MotionStagger className="dash-kpi-grid">
         <KpiCard
+          key="kpi-total"
           label="Total Issues"
           value={p.issues.length}
           tone="blue"
@@ -125,6 +144,7 @@ export default function DashboardPage() {
           }
         />
         <KpiCard
+          key="kpi-done"
           label="Completed"
           value={done}
           tone="green"
@@ -134,6 +154,7 @@ export default function DashboardPage() {
           }
         />
         <KpiCard
+          key="kpi-sprint"
           label="Sprint Progress"
           value={`${sprintProg.done}/${sprintProg.total}`}
           tone="purple"
@@ -141,6 +162,7 @@ export default function DashboardPage() {
           sub={<>{sprintProg.pct}% complete</>}
         />
         <KpiCard
+          key="kpi-bugs"
           label="Open Bugs"
           value={openBugs}
           tone="red"
@@ -151,14 +173,16 @@ export default function DashboardPage() {
             </span>
           }
         />
-      </div>
+      </MotionStagger>
 
       <div className="dash-grid">
         <div className="dash-col">
-          <div className="card dash-card">
+          <MotionInteractive className="card dash-card">
             <div className="card-hd">
               <div className="card-title">Project Health Index</div>
-              <span className="chip chip-green">{p.health}/100</span>
+              <span className={`chip ${p.health >= 80 ? 'chip-green' : p.health >= 60 ? 'chip-amber' : 'chip-red'}`}>
+                {p.health}/100
+              </span>
             </div>
             <div className="card-body dash-health-body">
               <div className="dash-health-layout">
@@ -171,9 +195,9 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </MotionInteractive>
 
-          <div className="card dash-card">
+          <MotionInteractive className="card dash-card">
             <div className="card-hd">
               <div className="card-title">Sprint History</div>
               <Link to="/sprint" className="card-action">
@@ -181,17 +205,20 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="card-body dash-list-body">
-              {p.sprints.map((s) => {
+              {p.sprints.map((s, index) => {
                 const sp = sprintCompletion(p, s.num);
                 const barColor = s.status === 'done' ? 'var(--green)' : 'var(--blue)';
                 return (
-                  <div key={s.num} className={`dash-sprint-row${s.status === 'active' ? ' active' : ''}`}>
+                  <motion.div
+                    key={s.num}
+                    className={`dash-sprint-row${s.status === 'active' ? ' active' : ''}`}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.28, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                  >
                     <div className="sprint-num-badge">S{s.num}</div>
                     <div className="dash-sprint-info">
-                      <div className="dash-sprint-name">
-                        {s.name}
-                        {s.status === 'active' ? ' (Active)' : ''}
-                      </div>
+                      <div className="dash-sprint-name">{s.name}</div>
                       <div className="dash-sprint-dates">
                         {s.start} – {s.end}
                       </div>
@@ -205,17 +232,17 @@ export default function DashboardPage() {
                     <span
                       className={`chip dash-sprint-chip ${s.status === 'done' ? 'chip-green' : s.status === 'active' ? 'chip-blue' : 'chip-gray'}`}
                     >
-                      {s.status}
+                      {sprintStatusLabel(s.status)}
                     </span>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
-          </div>
+          </MotionInteractive>
         </div>
 
         <div className="dash-col">
-          <div className="card dash-card">
+          <MotionInteractive className="card dash-card">
             <div className="card-hd">
               <div className="card-title">Sprint {p.curSprint} Status</div>
             </div>
@@ -245,9 +272,9 @@ export default function DashboardPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </MotionInteractive>
 
-          <div className="card dash-card">
+          <MotionInteractive className="card dash-card">
             <div className="card-hd">
               <div className="card-title">SDLC Phase Status</div>
             </div>
@@ -260,8 +287,14 @@ export default function DashboardPage() {
                   ['Testing', 'chip-amber', 'Partial'],
                   ['Deployment', 'chip-gray', 'Pending'],
                   ['Maintenance', 'chip-gray', 'Upcoming'],
-                ].map(([nm, ch, lb]) => (
-                  <div key={nm} className={`dash-sdlc-item${lb === 'Active' ? ' active' : ''}`}>
+                ].map(([nm, ch, lb], index) => (
+                  <motion.div
+                    key={nm}
+                    className={`dash-sdlc-item${lb === 'Active' ? ' active' : ''}`}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.26, delay: index * 0.035, ease: [0.22, 1, 0.36, 1] }}
+                  >
                     <span className="dash-sdlc-icon">
                       <AppIcon icon={SDLC_ICONS[nm]} size={20} />
                     </span>
@@ -269,24 +302,30 @@ export default function DashboardPage() {
                       <div className="dash-sdlc-name">{nm}</div>
                       <span className={`chip dash-sdlc-chip ${ch}`}>{lb}</span>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </div>
-          </div>
+          </MotionInteractive>
         </div>
 
         <div className="dash-col">
-          <div className="card dash-card">
+          <MotionInteractive className="card dash-card">
             <div className="card-hd">
               <div className="card-title">Team · {mems.length}</div>
               <Link to="/project-team" className="card-action">
                 All →
               </Link>
             </div>
-            <div className="card-body dash-list-body">
-              {mems.slice(0, 6).map((u) => (
-                <div key={u.id} className="dash-team-row">
+            <div className="card-body dash-list-body dash-team-scroll">
+              {mems.map((u, index) => (
+                <motion.div
+                  key={u.id}
+                  className="dash-team-row"
+                  initial={{ opacity: 0, x: 8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.25, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                >
                   <div className={`av av-sm ${u.c}`}>{u.ini}</div>
                   <div className="dash-team-info">
                     <div className="dash-team-name">{u.name}</div>
@@ -296,18 +335,24 @@ export default function DashboardPage() {
                     <div className="dash-team-stat-val">{u.tasks}</div>
                     <div className="dash-team-stat-lbl">tasks</div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </MotionInteractive>
 
-          <div className="card dash-card dash-card-grow">
+          <MotionInteractive className="card dash-card dash-card-grow">
             <div className="card-hd">
               <div className="card-title">Recent Activity</div>
             </div>
             <div className="card-body dash-list-body">
-              {notifications.slice(0, 5).map((n) => (
-                <div key={n.id} className="dash-act-item">
+              {notifications.slice(0, 5).map((n, index) => (
+                <motion.div
+                  key={n.id}
+                  className="dash-act-item"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.24, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+                >
                   <div className="notif-icon-wrap">
                     <AppIcon icon={NOTIFICATION_ICONS[n.type] || NOTIFICATION_ICONS.default} size={14} />
                   </div>
@@ -315,10 +360,10 @@ export default function DashboardPage() {
                     <div className="act-text" dangerouslySetInnerHTML={{ __html: n.text }} />
                     <div className="act-time">{n.time}</div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </MotionInteractive>
         </div>
       </div>
     </div>

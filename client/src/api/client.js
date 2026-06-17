@@ -29,6 +29,8 @@ async function request(path, options = {}) {
 
 export const api = {
   login: (role) => request('/auth/login', { method: 'POST', body: JSON.stringify({ role }) }),
+  loginWithCredentials: (email, password) =>
+    request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   getUsers: () => request('/users'),
   createUser: (data) => request('/users', { method: 'POST', body: JSON.stringify(data) }),
   updateUser: (userId, data) =>

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { api } from '../api/client';
-import { AppIcon, IconButton, Icons } from '../components/icons';
+import { AppIcon, Icons } from '../components/icons';
+import FinanceActionsMenu from '../workspace/pages/finance/FinanceActionsMenu';
 import PageHeader from '../components/PageHeader';
 import TimeTrackerButton from '../components/TimeTrackerButton';
 import { can, isWorkflowComplete, uById, workflowStatusChip } from '../utils/helpers';
@@ -240,14 +241,30 @@ export default function BugsPage() {
                     )}
                   </td>
                   <td>
-                    <div className="fx g4">
-                      {!isWorkflowComplete(b.status) && (can(role, 'assign') || user?.id === b.assign) && (
-                        <IconButton icon={Icons.checkCircle} label="Resolve bug" variant="success" onClick={() => resolveBug(b.id)} />
-                      )}
-                      {can(role, 'assign') && !isWorkflowComplete(b.status) && (
-                        <IconButton icon={Icons.arrowLeftRight} label="Reassign bug" onClick={() => toast('Bug reassigned', 'ok')} />
-                      )}
-                    </div>
+                    <FinanceActionsMenu
+                      actions={[
+                        ...(!isWorkflowComplete(b.status) && (can(role, 'assign') || user?.id === b.assign)
+                          ? [
+                              {
+                                id: `resolve-${b.id}`,
+                                label: 'Resolve',
+                                icon: Icons.checkCircle,
+                                onClick: () => resolveBug(b.id),
+                              },
+                            ]
+                          : []),
+                        ...(can(role, 'assign') && !isWorkflowComplete(b.status)
+                          ? [
+                              {
+                                id: `reassign-${b.id}`,
+                                label: 'Reassign',
+                                icon: Icons.arrowLeftRight,
+                                onClick: () => toast('Bug reassigned', 'ok'),
+                              },
+                            ]
+                          : []),
+                      ]}
+                    />
                   </td>
                 </tr>
               );

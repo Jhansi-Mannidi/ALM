@@ -232,6 +232,29 @@ export default function TimesheetView({ mode = 'project' }) {
         </p>
       )}
 
+      <div className="time-kpis g5 mb16">
+        <div className="time-kpi">
+          <div className="time-kpi-label">Period total</div>
+          <div className="time-kpi-value">{formatDuration(rangeTotal)}</div>
+        </div>
+        <div className="time-kpi">
+          <div className="time-kpi-label">Today</div>
+          <div className="time-kpi-value">{formatDuration(todayTotal)}</div>
+        </div>
+        <div className="time-kpi">
+          <div className="time-kpi-label">{isOrganization ? 'Employees logged' : 'Members logged'}</div>
+          <div className="time-kpi-value">{membersLogged}</div>
+        </div>
+        <div className="time-kpi">
+          <div className="time-kpi-label">Work entries</div>
+          <div className="time-kpi-value">{workEntries}</div>
+        </div>
+        <div className="time-kpi">
+          <div className="time-kpi-label">Active timers</div>
+          <div className="time-kpi-value">{activeTimers}</div>
+        </div>
+      </div>
+
       <div className="time-filters">
         <div className="time-filters-row">
           <div className="time-spent-date-field">
@@ -324,29 +347,6 @@ export default function TimesheetView({ mode = 'project' }) {
         <button type="button" className="btn btn-ghost btn-sm" onClick={() => selectDay(today)}>
           View today&apos;s entries
         </button>
-      </div>
-
-      <div className="time-kpis g5 mb16">
-        <div className="time-kpi">
-          <div className="time-kpi-label">Period total</div>
-          <div className="time-kpi-value">{formatDuration(rangeTotal)}</div>
-        </div>
-        <div className="time-kpi">
-          <div className="time-kpi-label">Today</div>
-          <div className="time-kpi-value">{formatDuration(todayTotal)}</div>
-        </div>
-        <div className="time-kpi">
-          <div className="time-kpi-label">{isOrganization ? 'Employees logged' : 'Members logged'}</div>
-          <div className="time-kpi-value">{membersLogged}</div>
-        </div>
-        <div className="time-kpi">
-          <div className="time-kpi-label">Work entries</div>
-          <div className="time-kpi-value">{workEntries}</div>
-        </div>
-        <div className="time-kpi">
-          <div className="time-kpi-label">Active timers</div>
-          <div className="time-kpi-value">{activeTimers}</div>
-        </div>
       </div>
 
       {!viewTeam && (

@@ -38,5 +38,11 @@ export function ModuleNavProvider({ children }) {
 }
 
 export function useModuleNav() {
+  const ctx = useContext(ModuleNavContext);
+  if (!ctx) throw new Error('useModuleNav must be used within ModuleNavProvider');
+  return ctx;
+}
+
+export function useModuleNavOptional() {
   return useContext(ModuleNavContext);
 }

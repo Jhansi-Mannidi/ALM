@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { AppIcon, Icons } from './icons';
-import TimeTrackerButton from './TimeTrackerButton';
 import { roleLabel, uById } from '../utils/helpers';
 import {
   formatDuration,
@@ -28,7 +27,6 @@ function defaultEndTime() {
 
 export default function WorkItemWorkLog({
   project,
-  projects,
   targetType,
   targetId,
   users,
@@ -128,16 +126,6 @@ export default function WorkItemWorkLog({
           <span className="wi-worklog-stat-value">{formatDuration(taskTotalMinutes)}</span>
         </div>
         <div className="wi-worklog-actions">
-          <TimeTrackerButton
-            projectId={project.id}
-            targetType={targetType}
-            targetId={targetId}
-            userId={user.id}
-            projects={projects}
-            loggedMinutes={sumMinutesForTarget(project, user.id, targetId, todayISO())}
-            onChange={onRefresh}
-            toast={toast}
-          />
           <button type="button" className="btn btn-ghost btn-sm fx g4" onClick={openForm}>
             <AppIcon icon={Icons.clock} size={14} />
             Log work

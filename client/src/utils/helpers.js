@@ -642,17 +642,17 @@ export const SIDEBAR_PROJECT_NAV = [
 ];
 
 export const PROJECT_SECTIONS = [
-  { path: 'dashboard', label: 'Summary' },
-  { path: 'project-team', label: 'Team' },
+  { path: 'dashboard', label: 'Overview' },
+  { path: 'project-team', label: 'Project Team' },
   { path: 'backlog', label: 'Backlog', badgeKey: 'backlog' },
-  { path: 'sprint', label: 'Board' },
-  { path: 'scrum', label: 'Scrum' },
-  { path: 'scope', label: 'Scope' },
-  { path: 'bugs', label: 'Bugs', badgeKey: 'bugs', badgeRed: true },
-  { path: 'time', label: 'Time' },
-  { path: 'deploy', label: 'Deploy' },
+  { path: 'sprint', label: 'Sprint Board' },
+  { path: 'scrum', label: 'Scrum Board' },
+  { path: 'scope', label: 'Scope & Requirements' },
+  { path: 'bugs', label: 'Defects', badgeKey: 'bugs', badgeRed: true },
+  { path: 'time', label: 'Timesheets' },
+  { path: 'deploy', label: 'Deployments' },
   { path: 'credentials', label: 'Credentials' },
   { path: 'maint', label: 'Maintenance' },
   { path: 'calendar', label: 'Calendar' },
-  { path: 'reports', label: 'Reports' },
+  { path: 'reports', label: 'Analytics & Reports' },
 ];

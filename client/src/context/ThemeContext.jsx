@@ -10,7 +10,9 @@ export function ThemeProvider({ children }) {
   });
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
+    const root = document.documentElement;
+    root.setAttribute('data-theme', theme);
+    root.style.colorScheme = theme;
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 

@@ -4,8 +4,30 @@ import { can, canCreateAnyWorkItem, isWorkflowComplete, roleLabel } from '../uti
 import { readStarredProjectIds, writeStarredProjectIds } from '../utils/starredProjects';
 
 const AppContext = createContext(null);
-const DEFAULT_ROLE = 'admin';
+const AUTH_SESSION_KEY = 'voltuswave-auth-session';
 const SIDEBAR_COLLAPSED_KEY = 'voltuswave-sidebar-collapsed';
+
+function readAuthSession() {
+  try {
+    const raw = sessionStorage.getItem(AUTH_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeAuthSession(session) {
+  try {
+    if (session) {
+      sessionStorage.setItem(AUTH_SESSION_KEY, JSON.stringify(session));
+    } else {
+      sessionStorage.removeItem(AUTH_SESSION_KEY);
+    }
+    localStorage.removeItem(AUTH_SESSION_KEY);
+  } catch {
+    /* ignore */
+  }
+}
 
 function readSidebarCollapsed() {
   try {
@@ -88,6 +110,18 @@ export function AppProvider({ children }) {
       api.getUsers(),
     ]);
     applySession(r, u, projs, notifs, usrs);
+    writeAuthSession({ role: r, email: u?.email || null });
+  }, [applySession]);
+
+  const loginWithCredentials = useCallback(async (email, password) => {
+    const { role: r, user: u } = await api.loginWithCredentials(email, password);
+    const [projs, notifs, usrs] = await Promise.all([
+      api.getProjects(),
+      api.getNotifications(),
+      api.getUsers(),
+    ]);
+    applySession(r, u, projs, notifs, usrs);
+    writeAuthSession({ role: r, email: u?.email || email });
   }, [applySession]);
 
   const switchRole = useCallback(
@@ -101,6 +135,7 @@ export function AppProvider({ children }) {
   );
 
   const logout = useCallback(() => {
+    writeAuthSession(null);
     setRole(null);
     setUser(null);
     setProject(null);
@@ -200,9 +235,14 @@ export function AppProvider({ children }) {
       setInitError(null);
       setInitializing(true);
       try {
-        await login(DEFAULT_ROLE);
+        localStorage.removeItem(AUTH_SESSION_KEY);
+        const session = readAuthSession();
+        if (session?.role) {
+          await login(session.role);
+        }
       } catch (e) {
-        console.error('Failed to initialize session', e);
+        console.error('Failed to restore session', e);
+        writeAuthSession(null);
         if (!cancelled) setInitError(e.message || 'Failed to connect to API');
       } finally {
         if (!cancelled) setInitializing(false);
@@ -217,8 +257,12 @@ export function AppProvider({ children }) {
     setInitError(null);
     setInitializing(true);
     try {
-      await login(DEFAULT_ROLE);
+      const session = readAuthSession();
+      if (session?.role) {
+        await login(session.role);
+      }
     } catch (e) {
+      writeAuthSession(null);
       setInitError(e.message || 'Failed to connect to API');
     } finally {
       setInitializing(false);
@@ -249,6 +293,7 @@ export function AppProvider({ children }) {
     toasts,
     toast,
     login,
+    loginWithCredentials,
     logout,
     switchRole,
     switchProject,

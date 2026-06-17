@@ -9,9 +9,12 @@ import {
   ALL_PERMISSION_IDS,
   expandPermissions,
   getAccessibleAppIds,
+  getAccessibleSchemaIds,
   getAccessibleSolutionIds,
+  getAccessibleWorkspaceIds,
   hasPermission,
 } from '../data/rbacCatalog';
+import { WORKSPACES } from '../data/platformCatalog';
 
 const RbacContext = createContext(null);
 
@@ -66,7 +69,7 @@ function syncRoleUserCounts(roles, assignments) {
 }
 
 export function RbacProvider({ children }) {
-  const { role: almRole } = useApp();
+  const { role: almRole, user } = useApp();
   const [assignments, setAssignmentsState] = useState(readAssignments);
   const [roles, setRolesState] = useState(() => syncRoleUserCounts(readRoles(), readAssignments()));
 
@@ -91,17 +94,45 @@ export function RbacProvider({ children }) {
     });
   }, []);
 
-  const currentRbacRoleId = almRole ? (ALM_ROLE_TO_RBAC[almRole] ?? 'developer') : 'super-admin';
+  const assignmentForUser = useMemo(
+    () => assignments.find((a) => a.email?.toLowerCase() === user?.email?.toLowerCase()),
+    [assignments, user?.email]
+  );
+
+  const currentRbacRoleId =
+    assignmentForUser?.roleId ?? (almRole ? (ALM_ROLE_TO_RBAC[almRole] ?? 'developer') : 'super-admin');
   const currentRole = roles.find((r) => r.id === currentRbacRoleId) ?? roles[0];
   const currentPermissions = currentRole?.permissions ?? [];
+  const roleScope = currentRole?.scope ?? 'all-workspaces';
 
-  const canAccessApp = useCallback(
-    (appId) => getAccessibleAppIds(currentPermissions).includes(appId),
-    [currentPermissions]
+  const accessibleWorkspaceIds = useMemo(
+    () => getAccessibleWorkspaceIds(currentPermissions, roleScope),
+    [currentPermissions, roleScope]
+  );
+
+  const accessibleWorkspaces = useMemo(
+    () => WORKSPACES.filter((w) => accessibleWorkspaceIds.includes(w.id)),
+    [accessibleWorkspaceIds]
+  );
+
+  const canAccessWorkspace = useCallback(
+    (workspaceId) => accessibleWorkspaceIds.includes(workspaceId),
+    [accessibleWorkspaceIds]
+  );
+
+  const canAccessSchema = useCallback(
+    (workspaceId, schemaId) =>
+      getAccessibleSchemaIds(currentPermissions, workspaceId, roleScope).includes(schemaId),
+    [currentPermissions, roleScope]
   );
 
   const canAccessSolution = useCallback(
-    (solutionId) => getAccessibleSolutionIds(currentPermissions).includes(solutionId),
+    (solutionId) => getAccessibleSolutionIds(currentPermissions, roleScope).includes(solutionId),
+    [currentPermissions, roleScope]
+  );
+
+  const canAccessApp = useCallback(
+    (appId) => getAccessibleAppIds(currentPermissions).includes(appId),
     [currentPermissions]
   );
 
@@ -185,8 +216,12 @@ export function RbacProvider({ children }) {
       currentRbacRoleId,
       currentRole,
       currentPermissions,
-      canAccessApp,
+      roleScope,
+      accessibleWorkspaces,
+      canAccessWorkspace,
+      canAccessSchema,
       canAccessSolution,
+      canAccessApp,
       can,
     }),
     [
@@ -203,8 +238,12 @@ export function RbacProvider({ children }) {
       currentRbacRoleId,
       currentRole,
       currentPermissions,
-      canAccessApp,
+      roleScope,
+      accessibleWorkspaces,
+      canAccessWorkspace,
+      canAccessSchema,
       canAccessSolution,
+      canAccessApp,
       can,
     ]
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../../api/client';
 import { useApp } from '../../../context/AppContext';
+import PageHeader from '../../../components/PageHeader';
 import { AppIcon, Icons } from '../../../components/icons';
 import { EmployeeAvatar } from '../hr/EmployeeModals';
 
@@ -129,14 +130,12 @@ export default function EmployeeProfilePage() {
   }
 
   return (
-    <div className="ws-hr-page ws-emp-portal-page ws-emp-profile-content">
-      <div className="ws-admin-head">
-        <div>
-          <h1 className="ws-page-title">My Profile</h1>
-          <p className="ws-page-subtitle">Your employment and contact information</p>
-        </div>
-        <div className="fx g8">
-          {editing ? (
+    <div className="ws-hr-page ws-emp-portal-page">
+      <PageHeader
+        title="My Profile"
+        subtitle="Your employment and contact information"
+        actions={
+          editing ? (
             <>
               <button type="button" className="btn btn-ghost" onClick={cancelEdit} disabled={saving}>
                 Cancel
@@ -150,9 +149,9 @@ export default function EmployeeProfilePage() {
               <AppIcon icon={Icons.pencil} size={14} />
               Edit profile
             </button>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
 
       <div className="card ws-emp-profile-hero">
         <div className="ws-emp-profile-hero-inner">
@@ -170,7 +169,7 @@ export default function EmployeeProfilePage() {
       </div>
 
       <div className="ws-hr-grid-2">
-        <div className="card ws-hr-panel">
+        <div className="card ws-hr-panel ws-hr-panel--structured">
           <div className="ws-hr-panel-head">
             <h2 className="ws-hr-panel-title">Contact</h2>
           </div>
@@ -221,7 +220,7 @@ export default function EmployeeProfilePage() {
           </div>
         </div>
 
-        <div className="card ws-hr-panel">
+        <div className="card ws-hr-panel ws-hr-panel--structured">
           <div className="ws-hr-panel-head">
             <h2 className="ws-hr-panel-title">Employment</h2>
           </div>
@@ -234,7 +233,7 @@ export default function EmployeeProfilePage() {
           </div>
         </div>
 
-        <div className="card ws-hr-panel" style={{ gridColumn: '1 / -1' }}>
+        <div className="card ws-hr-panel ws-hr-panel--structured" style={{ gridColumn: '1 / -1' }}>
           <div className="ws-hr-panel-head">
             <h2 className="ws-hr-panel-title">About</h2>
           </div>

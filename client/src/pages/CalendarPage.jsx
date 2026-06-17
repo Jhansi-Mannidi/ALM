@@ -12,7 +12,6 @@ import {
   isToday,
   toISODate,
 } from '../utils/calendarHelpers';
-import { uById } from '../utils/helpers';
 import { todayISO } from '../utils/timeHelpers';
 
 const MAX_VISIBLE_ITEMS = 4;
@@ -91,7 +90,6 @@ export default function CalendarPage() {
 
   if (!project) return null;
 
-  const currentUser = uById(users, user?.id);
   const activeFilter = FILTER_OPTIONS.find((f) => f.id === filterId) || FILTER_OPTIONS[0];
 
   const prevMonth = () => setViewDate(new Date(year, month - 1, 1));
@@ -126,11 +124,6 @@ export default function CalendarPage() {
               aria-label="Search calendar"
             />
           </div>
-          {currentUser && (
-            <span className={`cal-toolbar-av av av-sm ${currentUser.c}`} title={currentUser.name}>
-              {currentUser.ini}
-            </span>
-          )}
           <div className="cal-toolbar-menu-wrap">
             <button
               type="button"
