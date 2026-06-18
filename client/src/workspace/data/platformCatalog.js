@@ -81,14 +81,17 @@ export function getAppsForSolution(solutionId) {
   return getSolution(solutionId)?.apps ?? [];
 }
 
+export function getPreferredSolutionId(solutions) {
+  return solutions.find((s) => s.id === 'business-operations')?.id ?? solutions[0]?.id ?? null;
+}
+
 export function getDefaultPlatformSelection(accessibleWorkspaces) {
   const workspace = accessibleWorkspaces[0] ?? WORKSPACES[0];
   const schema = workspace?.schemas[0];
   const solutions = schema ? getSolutionsForSchema(workspace.id, schema.id) : [];
-  const systemAdmin = solutions.find((s) => s.id === 'system-administration');
   return {
     workspaceId: workspace?.id ?? null,
     schemaId: schema?.id ?? null,
-    solutionId: systemAdmin?.id ?? solutions[0]?.id ?? null,
+    solutionId: getPreferredSolutionId(solutions),
   };
 }

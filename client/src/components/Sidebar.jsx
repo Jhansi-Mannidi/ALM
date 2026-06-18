@@ -96,7 +96,7 @@ export default function Sidebar() {
         <strong>Tasks & Projects</strong>
       </div>
       <button type="button" className="sidebar-close" aria-label="Close menu" onClick={() => setSidebarOpen(false)}>
-        <AppIcon icon={Icons.x} size={18} />
+        <AppIcon icon={Icons.x} size={18} /> 
       </button>
       <div className="sb-section">
         <NavBtn to="/portfolio" onNavigate={handlePrimaryNav}>

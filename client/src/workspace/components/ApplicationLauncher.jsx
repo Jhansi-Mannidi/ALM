@@ -8,6 +8,7 @@ import { useRbac } from '../context/RbacContext';
 import {
   getAppsForSolution,
   getDefaultPlatformSelection,
+  getPreferredSolutionId,
   getSchema,
   getSolutionsForSchema,
   getStandaloneAppsForSchema,
@@ -413,7 +414,7 @@ export default function ApplicationLauncher() {
                   setPlatformSelection({
                     workspaceId: w.id,
                     schemaId: firstSchema?.id ?? null,
-                    solutionId: nextSolutions[0]?.id ?? null,
+                    solutionId: getPreferredSolutionId(nextSolutions),
                   });
                   closeLayer();
                 }}
@@ -480,7 +481,7 @@ export default function ApplicationLauncher() {
                   setPlatformSelection({
                     workspaceId: workspace.id,
                     schemaId: s.id,
-                    solutionId: nextSolutions[0]?.id ?? null,
+                    solutionId: getPreferredSolutionId(nextSolutions),
                   });
                   closeLayer();
                 }}
