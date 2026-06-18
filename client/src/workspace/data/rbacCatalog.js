@@ -29,7 +29,7 @@ export const RBAC_MODULES = [
     description: 'Project management, sprints, work items & agile delivery',
     icon: 'listChecks',
     color: '#2563EB',
-    appIds: ['tasks-projects', 'scrum-master'],
+    appIds: ['tasks-projects'],
     permissions: [
       { id: 'projects.access', label: 'Access Projects & Tasks', description: 'View and open project workspace' },
       { id: 'projects.manage', label: 'Manage Projects', description: 'Create, edit, and configure projects' },

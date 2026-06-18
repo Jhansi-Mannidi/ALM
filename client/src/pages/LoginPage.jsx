@@ -3,15 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import ThemeToggle from '../components/ThemeToggle';
 import { AppIcon, Icons } from '../components/icons';
+import vLogo from '../assets/voltuswave-v-logo.png';
 import './login.css';
 
-const DEFAULT_EMAIL = 'sasi.paul@almsphere.io';
+const DEFAULT_EMAIL = 'sasi@voltuswave.com';
+const DEFAULT_PASSWORD = 'Apple#123';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { loginWithCredentials, initError } = useApp();
   const [email, setEmail] = useState(DEFAULT_EMAIL);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(DEFAULT_PASSWORD);
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -45,7 +47,7 @@ export default function LoginPage() {
           <div className="vw-login-card">
             <div className="vw-login-brand">
               <div className="vw-login-logo" aria-hidden>
-                <span className="vw-login-logo-mark">V</span>
+                <img className="vw-login-logo-mark" src={vLogo} alt="" />
               </div>
               <div>
                 <div className="vw-login-brand-name">VOLTUSWAVE</div>
@@ -106,18 +108,6 @@ export default function LoginPage() {
               <button type="submit" className="vw-login-submit" disabled={busy}>
                 {busy ? 'Signing in…' : 'Sign In'}
               </button>
-
-              <div className="vw-login-divider">
-                <span>Or</span>
-              </div>
-
-              <button
-                type="button"
-                className="vw-login-otp"
-                onClick={() => setError('OTP sign-in is not enabled in this demo. Use email and password.')}
-              >
-                Use OTP
-              </button>
             </form>
 
             <p className="vw-login-foot">
@@ -126,7 +116,7 @@ export default function LoginPage() {
             </p>
 
             <p className="vw-login-demo-hint">
-              Demo: use your team email and any password (4+ characters).
+              Demo: use sasi@voltuswave.com and Apple#123.
             </p>
           </div>
         </div>

@@ -19,18 +19,6 @@ export const PRODUCT_DEVELOPMENT_APPS = [
     externalRoute: '/portfolio',
     externalLabel: 'Open VoltusWave ALM',
   },
-  {
-    id: 'scrum-master',
-    name: 'Scrum Master',
-    description: 'Agile sprint management with full Scrum support',
-    icon: 'gitBranch',
-    solutionId: 'product-development',
-    notificationCount: 8,
-    isNew: true,
-    highlights: ['Sprint 4 in progress', '8 story points remaining', 'Daily standup at 10 AM'],
-    externalRoute: '/portfolio',
-    externalLabel: 'Open in VoltusWave ALM',
-  },
 ];
 
 export const SOLUTIONS = [
@@ -99,7 +87,7 @@ export const SOLUTIONS = [
     description: 'Discovery, prioritization, roadmaps & stakeholder portals',
     icon: 'layers',
     color: '#2563EB',
-    notificationCount: 19,
+    notificationCount: 11,
     stats: [
       { label: 'Products', value: '2' },
       { label: 'Open Tasks', value: '12' },

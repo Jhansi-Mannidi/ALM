@@ -15,7 +15,7 @@ export const USERS = [
 ];
 
 export const ROLE_USERS = {
-  admin:{id:'u0',name:'Sasi Paul',ini:'SP',role:'admin',email:'sasi.paul@almsphere.io',c:'c1'},
+  admin:{id:'u0',name:'Sasi Paul',ini:'SP',role:'admin',email:'sasi@voltuswave.com',c:'c1'},
   manager:USERS[0],
   teamlead:USERS[1],
   developer:USERS[2],

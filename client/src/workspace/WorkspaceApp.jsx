@@ -118,7 +118,7 @@ export default function WorkspaceApp() {
       <Routes>
         <Route path="/workspace" element={<WorkspaceShell />}>
           <Route element={<AnimatedOutlet className="ws-page-motion" getKey={getWorkspaceAnimationKey} />}>
-            <Route index element={<Navigate to="/workspace/admin/rbac" replace />} />
+            <Route index element={<div className="ws-empty-landing" aria-hidden="true" />} />
             <Route path="home" element={<WorkspaceHomePage />} />
             <Route path="solutions/:solutionId" element={<SolutionPage />} />
             <Route path="solutions/:solutionId/apps/:appId" element={<WorkspaceAppPage />} />
@@ -235,7 +235,7 @@ export default function WorkspaceApp() {
               <Route path="accounting" element={<FreightPlaceholderPage title="Accounting" />} />
               <Route path="tracking" element={<FreightPlaceholderPage title="Track & Trace" />} />
             </Route>
-            <Route path="*" element={<Navigate to="/workspace/admin/rbac" replace />} />
+            <Route path="*" element={<Navigate to="/workspace" replace />} />
           </Route>
         </Route>
       </Routes>

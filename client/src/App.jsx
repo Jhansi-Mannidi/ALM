@@ -153,7 +153,7 @@ function AppRouter() {
   }
 
   if (location.pathname === '/login' || location.pathname === '/') {
-    return <Navigate to="/workspace/admin/rbac" replace />;
+    return <Navigate to="/workspace" replace />;
   }
 
   if (location.pathname.startsWith('/workspace')) {

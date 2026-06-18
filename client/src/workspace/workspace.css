@@ -382,6 +382,10 @@
   min-height: 0;
 }
 
+.ws-empty-landing {
+  min-height: calc(100vh - var(--topbar-h, 40px) - 64px);
+}
+
 .ws-page {
   max-width: 1400px;
   margin: 0 auto;
