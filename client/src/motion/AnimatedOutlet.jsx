@@ -1,14 +1,17 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLocation, useOutlet } from 'react-router-dom';
 
-export default function AnimatedOutlet({ className = '' }) {
+export default function AnimatedOutlet({ className = '', getKey }) {
   const outlet = useOutlet();
   const location = useLocation();
   if (!outlet) return null;
+
+  const routeKey = getKey ? getKey(location) : location.pathname;
+
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
-        key={location.pathname}
+        key={routeKey}
         className={className}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

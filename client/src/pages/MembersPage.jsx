@@ -351,7 +351,7 @@ export default function MembersPage() {
         <div className="card-hd" style={{ padding: '11px 14px' }}>
           <div className="card-title">Workload & Performance</div>
         </div>
-        <table className="tbl">
+        <table className="tbl members-table">
           <thead>
             <tr>
               <th>Member</th>

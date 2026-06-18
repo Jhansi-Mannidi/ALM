@@ -11,8 +11,6 @@ export default function EmployeeLayout() {
   return (
     <ModuleAppShell
       moduleTitle="Employee Portal"
-      moduleIcon="users"
-      backTo="/workspace/solutions/business-operations"
       sections={[
         { id: 'workspace', label: 'Workspace', items: EMPLOYEE_WORKSPACE_NAV },
         { id: 'people', label: 'People', items: EMPLOYEE_PEOPLE_NAV },

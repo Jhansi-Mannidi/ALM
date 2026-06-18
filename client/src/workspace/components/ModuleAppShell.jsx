@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { AppIcon, Icons, resolveIcon } from '../../components/icons';
-import { WorkspaceIcon } from './WorkspaceIcons';
 import { useModuleNav } from '../context/ModuleNavContext';
 
 const SECTION_DEFAULT_ICONS = {
@@ -70,9 +69,6 @@ function findActiveSection(sections, pathname) {
 
 export default function ModuleAppShell({
   moduleTitle,
-  moduleIcon = 'layers',
-  backTo = '/workspace',
-  backLabel = 'Back to Workspace',
   sections = [],
   panelFooter = null,
   children,
@@ -191,10 +187,6 @@ export default function ModuleAppShell({
           ))}
         </div>
         {panelFooter && <div className="ws-module-sidepanel-foot">{panelFooter}</div>}
-        <Link to={backTo} className="ws-module-back-link" title={backLabel} onClick={closeNav}>
-          <AppIcon icon={Icons.chevronRight} size={12} className="ws-back-chevron" />
-          <span>{backLabel}</span>
-        </Link>
       </>
     );
   };
@@ -244,6 +236,13 @@ export default function ModuleAppShell({
       )}
 
       <aside className={`sidebar ws-module-rail${mobileNavOpen ? ' open' : ''}`}>
+        <div className="ws-module-mobile-drawer-head">
+          <div>
+            <span>Navigation</span>
+            <strong>{moduleTitle}</strong>
+          </div>
+        </div>
+
         <button
           type="button"
           className="ws-module-drawer-close"
@@ -252,14 +251,6 @@ export default function ModuleAppShell({
         >
           <AppIcon icon={Icons.x} size={18} />
         </button>
-
-        <div className="sb-brand ws-module-rail-brand">
-          <div className="sb-brand-main">
-            <div className="sb-logo ws-module-rail-logo">
-              <WorkspaceIcon name={moduleIcon} size={14} className="sb-logo-icon" />
-            </div>
-          </div>
-        </div>
 
         {renderRailSections()}
 

@@ -15,8 +15,6 @@ export default function FinanceLayout() {
   return (
     <ModuleAppShell
       moduleTitle="Finance & Operations"
-      moduleIcon="dollar"
-      backTo="/workspace/solutions/business-operations"
       sections={FINANCE_NAV_SECTIONS}
       panelFooter={
         settings ? (

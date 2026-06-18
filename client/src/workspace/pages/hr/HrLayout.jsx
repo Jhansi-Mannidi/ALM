@@ -6,8 +6,6 @@ export default function HrLayout() {
   return (
     <ModuleAppShell
       moduleTitle="HR & People"
-      moduleIcon="users"
-      backTo="/workspace/solutions/business-operations"
       sections={[
         { id: 'workspace', label: 'Workspace', items: HR_WORKSPACE_NAV },
         { id: 'recruitment', label: 'Recruitment', items: HR_RECRUITMENT_NAV },

@@ -6,8 +6,6 @@ export default function RbacLayout() {
   return (
     <ModuleAppShell
       moduleTitle="Roles & Permissions"
-      moduleIcon="shield"
-      backTo="/workspace/home"
       sections={[{ id: 'admin', label: 'Administration', items: RBAC_NAV }]}
     >
       <Outlet />

@@ -8,8 +8,6 @@ export default function ProductLayout() {
     <PmDeleteConfirmProvider>
       <ModuleAppShell
         moduleTitle="Product Management"
-        moduleIcon="layers"
-        backTo="/workspace/solutions/product-development"
         sections={PM_NAV_SECTIONS}
       >
         <Outlet />

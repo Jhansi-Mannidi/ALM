@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AppIcon, Icons } from '../../components/icons';
 import { getSolution } from '../data/workspaceCatalog';
 import { useWorkspace } from '../context/WorkspaceContext';
@@ -17,9 +17,6 @@ export default function SolutionPage() {
     return (
       <div className="ws-page">
         <p>Solution not found.</p>
-        <Link to="/workspace/home" className="btn btn-ghost btn-sm">
-          Back to Workspace
-        </Link>
       </div>
     );
   }
@@ -27,10 +24,6 @@ export default function SolutionPage() {
   if (!canAccessSolution(solutionId)) {
     return (
       <div className="ws-page">
-        <Link to="/workspace/home" className="ws-back-link">
-          <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
-          Back to Workspace
-        </Link>
         <div className="ws-rbac-access-denied card">
           <AppIcon icon={Icons.lock} size={32} />
           <h2>Access Restricted</h2>
@@ -60,11 +53,6 @@ export default function SolutionPage() {
       className="ws-page ws-solution-page"
       style={{ '--solution-color': solution.color }}
     >
-      <Link to="/workspace/home" className="ws-back-link">
-        <AppIcon icon={Icons.chevronRight} size={14} className="ws-back-chevron" />
-        Back to Workspace
-      </Link>
-
       <header className="ws-solution-banner">
         <div className="ws-solution-banner-glow" aria-hidden />
         <div className="ws-solution-banner-inner">

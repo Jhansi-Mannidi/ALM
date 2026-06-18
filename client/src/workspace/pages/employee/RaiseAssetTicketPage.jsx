@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../../../api/client';
 import { AppIcon, Icons } from '../../../components/icons';
@@ -8,6 +8,55 @@ const PRIORITIES = [
   { id: 'medium', label: 'Medium' },
   { id: 'high', label: 'High' },
 ];
+
+function FormSelect({ value, options, onChange, placeholder = 'Select...' }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const selected = options.find((option) => option.value === value);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onPointerDown = (event) => {
+      if (!ref.current?.contains(event.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onPointerDown);
+    return () => document.removeEventListener('mousedown', onPointerDown);
+  }, [open]);
+
+  return (
+    <div className="ws-form-select" ref={ref}>
+      <button
+        type="button"
+        className={`fi ws-form-select-btn${open ? ' open' : ''}`}
+        onClick={() => setOpen((current) => !current)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span>{selected?.label || placeholder}</span>
+        <AppIcon icon={Icons.chevronDown} size={16} />
+      </button>
+      {open && (
+        <div className="ws-form-select-menu" role="listbox">
+          {options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className={`ws-form-select-option${option.value === value ? ' active' : ''}`}
+              role="option"
+              aria-selected={option.value === value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function RaiseAssetTicketPage() {
   const navigate = useNavigate();
@@ -83,45 +132,44 @@ export default function RaiseAssetTicketPage() {
           <div className="ws-emp-form-grid">
             <div className="fl">
               <label>Request type</label>
-              <select className="fi" value={form.type} onChange={(e) => set('type', e.target.value)} required>
-                {meta.types.map((t) => (
-                  <option key={t.id} value={t.id}>{t.label}</option>
-                ))}
-              </select>
+              <FormSelect
+                value={form.type}
+                options={meta.types.map((t) => ({ value: t.id, label: t.label }))}
+                onChange={(value) => set('type', value)}
+              />
             </div>
 
             <div className="fl">
               <label>Category</label>
-              <select className="fi" value={form.category} onChange={(e) => set('category', e.target.value)} required>
-                {meta.categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+              <FormSelect
+                value={form.category}
+                options={meta.categories.map((category) => ({ value: category, label: category }))}
+                onChange={(value) => set('category', value)}
+              />
             </div>
 
             <div className="fl">
               <label>Priority</label>
-              <select className="fi" value={form.priority} onChange={(e) => set('priority', e.target.value)}>
-                {PRIORITIES.map((p) => (
-                  <option key={p.id} value={p.id}>{p.label}</option>
-                ))}
-              </select>
+              <FormSelect
+                value={form.priority}
+                options={PRIORITIES.map((priority) => ({ value: priority.id, label: priority.label }))}
+                onChange={(value) => set('priority', value)}
+              />
             </div>
 
             <div className="fl">
               <label>Related asset (optional)</label>
-              <select
-                className="fi"
+              <FormSelect
                 value={form.relatedAssetId}
-                onChange={(e) => handleAssetChange(e.target.value)}
-              >
-                <option value="">— Not linked to an asset —</option>
-                {assets.map((asset) => (
-                  <option key={asset.id} value={asset.id}>
-                    {asset.name} ({asset.assetTag})
-                  </option>
-                ))}
-              </select>
+                options={[
+                  { value: '', label: '— Not linked to an asset —' },
+                  ...assets.map((asset) => ({
+                    value: asset.id,
+                    label: `${asset.name} (${asset.assetTag})`,
+                  })),
+                ]}
+                onChange={handleAssetChange}
+              />
             </div>
 
             <div className="fl ws-emp-form-field full">

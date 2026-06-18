@@ -8,8 +8,6 @@ export default function OfficeLayout() {
     <OfficeDeleteConfirmProvider>
       <ModuleAppShell
         moduleTitle="Office Manager"
-        moduleIcon="building"
-        backTo="/workspace/solutions/business-operations"
         sections={OFFICE_NAV_SECTIONS}
       >
         <Outlet />

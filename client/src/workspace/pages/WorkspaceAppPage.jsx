@@ -15,9 +15,6 @@ export default function WorkspaceAppPage() {
     return (
       <div className="ws-page">
         <p>App not found.</p>
-        <Link to="/workspace/home" className="btn btn-ghost btn-sm">
-          Back to Workspace
-        </Link>
       </div>
     );
   }

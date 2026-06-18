@@ -91,6 +91,10 @@ export default function Sidebar() {
 
   return (
     <aside className={`sidebar${sidebarOpen ? ' open' : ''}${sidebarCollapsed ? ' collapsed' : ''}`}>
+      <div className="sb-mobile-head">
+        <span>Navigation</span>
+        <strong>Tasks & Projects</strong>
+      </div>
       <button type="button" className="sidebar-close" aria-label="Close menu" onClick={() => setSidebarOpen(false)}>
         <AppIcon icon={Icons.x} size={18} />
       </button>

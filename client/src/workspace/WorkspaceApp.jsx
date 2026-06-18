@@ -95,11 +95,29 @@ import FreightPlaceholderPage from './pages/freight/FreightPlaceholderPage';
 import './workspace.css';
 import './workspace-theme.css';
 
+const STABLE_MODULE_ROUTE_PREFIXES = [
+  '/workspace/admin/rbac',
+  '/workspace/employee',
+  '/workspace/hr',
+  '/workspace/finance',
+  '/workspace/product',
+  '/workspace/office',
+  '/workspace/freight',
+];
+
+function getWorkspaceAnimationKey(location) {
+  const modulePrefix = STABLE_MODULE_ROUTE_PREFIXES.find((prefix) => (
+    location.pathname === prefix || location.pathname.startsWith(`${prefix}/`)
+  ));
+
+  return modulePrefix ?? location.pathname;
+}
+
 export default function WorkspaceApp() {
   return (
       <Routes>
         <Route path="/workspace" element={<WorkspaceShell />}>
-          <Route element={<AnimatedOutlet className="ws-page-motion" />}>
+          <Route element={<AnimatedOutlet className="ws-page-motion" getKey={getWorkspaceAnimationKey} />}>
             <Route index element={<Navigate to="/workspace/admin/rbac" replace />} />
             <Route path="home" element={<WorkspaceHomePage />} />
             <Route path="solutions/:solutionId" element={<SolutionPage />} />
